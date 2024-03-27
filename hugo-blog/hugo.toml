@@ -1,3 +1,4 @@
-baseURL = 'https://example.org/'
+baseURL = 'https://wiki.databurst.ir'
 languageCode = 'en-us'
-title = 'My New Hugo Site'
+title = 'Databurst Data Engineering Wiki'
+theme = "hugo-book"

@@ -3,6 +3,7 @@ version: '3'
 services:
   wiki:
     image: databurst/data-engineering-wiki
+    platform: linux/amd64
     container_name: wiki
     ports:
       - 1313:1313

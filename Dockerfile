@@ -1,6 +1,7 @@
-FROM golang:alpine3.19
+FROM golang:1.22.1-bullseye
 
-RUN apk add --no-cache hugo git
+RUN apt update && \
+    apt install -y hugo git
 
 WORKDIR /site
 

@@ -1,4 +1,4 @@
-FROM alpine:3.19.1
+FROM golang:alpine3.19
 
 RUN apk add --no-cache hugo git
 

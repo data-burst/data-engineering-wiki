@@ -6,7 +6,4 @@ WORKDIR /site
 
 COPY hugo-blog .
 
-RUN hugo
-
 ENTRYPOINT hugo server -D --bind "0.0.0.0"
-

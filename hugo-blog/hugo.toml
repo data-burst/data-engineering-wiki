@@ -1,4 +1,4 @@
-baseURL = 'https://wiki.databurst.ir'
+baseURL = 'https://wiki.databurst.tech'
 languageCode = 'en-us'
 title = 'Databurst Data Engineering Wiki'
 theme = "hugo-book"

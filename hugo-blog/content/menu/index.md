@@ -56,7 +56,7 @@ headless: true
 - [Pipeline Orchestration]({{< relref "/docs/roadmap/pipeline-orchestration" >}})
   - [3rd]({{< relref "/docs/roadmap/collapsed/3rd-level" >}})
     - [4th]({{< relref "/docs/roadmap/collapsed/3rd-level/4th-level" >}})
-- [Messaging and Streaming Platform]({{< relref "/docs/roadmap/messaging-streaming >}})
+- [Messaging and Streaming Platform]({{< relref "/docs/roadmap/messaging-streaming" >}})
   - [3rd]({{< relref "/docs/roadmap/collapsed/3rd-level" >}})
     - [4th]({{< relref "/docs/roadmap/collapsed/3rd-level/4th-level" >}})
 - [Data Governance]({{< relref "/docs/roadmap/data-governance" >}})

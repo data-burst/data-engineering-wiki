@@ -74,7 +74,7 @@ headless: true
 - [CI/CD]({{< relref "/docs/roadmap/CICD" >}})
   - [3rd]({{< relref "/docs/roadmap/collapsed/3rd-level" >}})
     - [4th]({{< relref "/docs/roadmap/collapsed/3rd-level/4th-level" >}})
-- [Infrastructure as Code]({{< relref "/docs/roadmap/infra-as-code" >}})
+- [Infrastructure as Code]({{< relref "/docs/roadmap/infrastructure-as-code" >}})
   - [3rd]({{< relref "/docs/roadmap/collapsed/3rd-level" >}})
     - [4th]({{< relref "/docs/roadmap/collapsed/3rd-level/4th-level" >}})
 - [Observability]({{< relref "/docs/roadmap/observability" >}})

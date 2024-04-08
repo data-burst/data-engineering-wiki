@@ -71,7 +71,7 @@ headless: true
 - [Container Orchestration]({{< relref "/docs/roadmap/container-orchestration" >}})
   - [3rd]({{< relref "/docs/roadmap/collapsed/3rd-level" >}})
     - [4th]({{< relref "/docs/roadmap/collapsed/3rd-level/4th-level" >}})
-- [CI/CD]({{< relref "/docs/roadmap/CICD" >}})
+- [CICD]({{< relref "/docs/roadmap/CICD" >}})
   - [3rd]({{< relref "/docs/roadmap/collapsed/3rd-level" >}})
     - [4th]({{< relref "/docs/roadmap/collapsed/3rd-level/4th-level" >}})
 - [Infrastructure as Code]({{< relref "/docs/roadmap/infrastructure-as-code" >}})

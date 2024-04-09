@@ -1,5 +1,5 @@
 ---
-name: CI/CD pipeline for building Docker image
+name: Build 
 
 on: 
   push:

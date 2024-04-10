@@ -1,0 +1,29 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows:
+      - Build
+    types:
+      - completed
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: docker compose deployments
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SERVER_USER }}
+        key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }}
+        port: ${{ secrets.PORT }}
+        script: bash /opt/apps/deploy
+
+

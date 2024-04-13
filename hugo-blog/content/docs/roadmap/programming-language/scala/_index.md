@@ -1,3 +1,7 @@
+---
+weight: 50
+---
+
 # Scala
 
 ## Introduction

@@ -1,3 +1,7 @@
+---
+weight: 100
+---
+
 # Go
 
 ## Introduction

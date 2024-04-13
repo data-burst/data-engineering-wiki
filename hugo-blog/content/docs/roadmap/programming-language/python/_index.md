@@ -33,4 +33,4 @@ Here are some suggestions for learning python, you can choose any of them to sta
 - [Python Full Course for free](https://www.youtube.com/watch?v=XKHEtdqhLK8)
 
 ### Miscellaneous
-- [https://wiki.python.org/moin/BeginnersGuide/Programmers](https://wiki.python.org/moin/BeginnersGuide/Programmers)
+- [List of Tutorials suggested by Python Docs](https://wiki.python.org/moin/BeginnersGuide/Programmers)

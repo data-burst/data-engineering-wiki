@@ -34,7 +34,7 @@ Hypertext Transfer Protocol (HTTP) is the foundation of data communication on th
 
 ### Courses
 - [HTTP/1 to HTTP/2 to HTTP/3](https://www.youtube.com/watch?v=a-sBfyiXysI)
-- (HTTP Status Codes explained in 5 minutes)[https://www.youtube.com/watch?v=qmpUfWN7hh4]
+- [HTTP Status Codes explained in 5 minutes](https://www.youtube.com/watch?v=qmpUfWN7hh4)
 
 ### Documentation
 - [Hypertext Transfer Protocol -- HTTP/1.1](https://www.w3.org/Protocols/rfc2616/rfc2616.html)

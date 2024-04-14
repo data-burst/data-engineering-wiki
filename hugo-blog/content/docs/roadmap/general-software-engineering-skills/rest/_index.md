@@ -2,9 +2,6 @@
 title: "REST"
 weight: 4
 ---
-
-# REST
-
 # Enhancing Web Development with RESTful Architectures
 
 ## Introduction

@@ -2,8 +2,6 @@
 title: "JWT"
 weight: 2
 ---
-# JTW
-
 # The Key to Secure and Efficient Web Applications
 
 ## Introduction

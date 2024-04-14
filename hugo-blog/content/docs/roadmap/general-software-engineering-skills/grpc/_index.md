@@ -2,8 +2,6 @@
 title: "gRPC"
 weight: 5
 ---
-# gRPC
-
 # Enhancing Microservices Communication with gRPC
 
 ## Introduction

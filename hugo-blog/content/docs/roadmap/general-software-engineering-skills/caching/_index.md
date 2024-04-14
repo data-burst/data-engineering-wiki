@@ -2,9 +2,6 @@
 title: "Caching"
 weight: 6
 ---
-
-# Caching
-
 # Accelerating Web Performance
 
 ## Introduction

@@ -2,9 +2,6 @@
 title: "GraphQL"
 weight: 3
 ---
-
-# GraphQL 
-
 # Revolutionizing Data Fetching for Efficient Web Applications
 
 ## Introduction

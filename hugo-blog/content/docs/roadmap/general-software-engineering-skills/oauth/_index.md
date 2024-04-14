@@ -2,9 +2,6 @@
 title: "OAuth"
 weight: 1
 ---
-
-# OAuth
-
 # The Gateway to Secure Authorization
 
 

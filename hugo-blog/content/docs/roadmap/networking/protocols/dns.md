@@ -1,6 +1,7 @@
 ---
 title: "DNS"
 ---
+# DNS
 
 ## Introduction
 
@@ -13,6 +14,7 @@ The process of DNS resolution involves converting a hostname (such as www.exampl
 In order to understand the process behind the DNS resolution, it’s important to learn about the different hardware components a DNS query must pass between. For the web browser, the DNS lookup occurs "behind the scenes" and requires no interaction from the user’s computer apart from the initial request.
 
 There are 4 DNS servers involved in loading a webpage:
+
 - **DNS recursor** - The recursor can be thought of as a librarian who is asked to go find a particular book somewhere in a library.
 - **Root nameserver** - The root server is the first step in translating (resolving) human readable host names into IP addresses.
 - **TLD nameserver** - The top level domain server (TLD) can be thought of as a specific rack of books in a library.
@@ -25,17 +27,14 @@ The DNS has been an essential component of the functionality of the Internet sin
 ### Books
 
 - [DNS and BIND](https://www.oreilly.com/library/view/dns-and-bind/0596100574/)
-
 - [Pro DNS and BIND 10](https://www.amazon.com/Pro-DNS-BIND-Ron-Aitchison/dp/1430230487)
 
 ### Courses
 
 - [Everything You Need to Know About DNS](https://www.youtube.com/watch?v=27r4Bzuj5NQ)
-
 - [Web Hosting Tutorial for Beginners](https://www.youtube.com/watch?v=BDdACdrs1vE)
 
 ### Miscellaneous
 
 - [What is DNS? | How DNS works](https://www.cloudflare.com/learning/dns/what-is-dns/)
-
 - [What is DNS? Basics for Beginners](https://www.freecodecamp.org/news/what-is-dns-for-beginners/)

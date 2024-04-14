@@ -1,8 +1,7 @@
 ---
 title: "VPN"
 ---
-
-# VPN (Virtual Private Network)
+# VPN
 
 ## Introduction
 
@@ -15,10 +14,8 @@ A VPN hides your IP address by letting the network redirect it through a special
 ### Books
 
 - [The Tao of Network Security Monitoring: Beyond Intrusion Detection](https://www.amazon.com/Tao-Network-Security-Monitoring-Intrusion/dp/0321246772)
-
 - [Network Security Hacks: Tips & Tools for Protecting Your Privacy](https://www.oreilly.com/library/view/network-security-hacks/0596527632/)
 
 ### Miscellaneous
 
 - [What is VPN? How It Works, Types of VPN - Kaspersky](https://www.kaspersky.com/resource-center/definitions/what-is-a-vpn)
-

@@ -1,8 +1,7 @@
 ---
 title: "SSH"
 ---
-
-# SSH (Secure Shell)
+# SSH
 
 ## Introduction
 

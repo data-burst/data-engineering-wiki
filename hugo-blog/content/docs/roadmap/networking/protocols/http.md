@@ -1,7 +1,6 @@
 ---
 title: "HTTP"
 ---
-
 # HTTP
 
 ## Introduction
@@ -33,9 +32,11 @@ Hypertext Transfer Protocol (HTTP) is the foundation of data communication on th
 - [HTTP: The Definitive Guide (Definitive Guides)](https://www.amazon.com/HTTP-Definitive-Guide-Guides/dp/1565925092)
 
 ### Courses
+
 - [HTTP/1 to HTTP/2 to HTTP/3](https://www.youtube.com/watch?v=a-sBfyiXysI)
 - [HTTP Status Codes explained in 5 minutes](https://www.youtube.com/watch?v=qmpUfWN7hh4)
 
 ### Documentation
+
 - [Hypertext Transfer Protocol -- HTTP/1.1](https://www.w3.org/Protocols/rfc2616/rfc2616.html)
 - [HTTP - MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/HTTP)

@@ -2,8 +2,7 @@
 title: "TCP/IP"
 weight: 1
 ---
-
-# TCP/IP (Transmission Control Protocol/Internet Protocol)
+# TCP/IP
 
 ## Introduction
 
@@ -18,17 +17,14 @@ The main work of TCP/IP is to transfer the data of a computer from one device to
 ### Books
 
 - [TCP/IP Illustrated, Volume 1: The Protocols](https://www.amazon.com/TCP-Illustrated-Vol-Addison-Wesley-Professional/dp/0201633469)
-
 - [TCP/IP Guide: A Comprehensive, Illustrated Internet Protocols Reference](https://www.amazon.com/TCP-Guide-Comprehensive-Illustrated-Protocols/dp/159327047X)
 
 ### Courses
 
 - [TCP/IP Tutorial - What Is TCP/IP And How Does It Work?](https://www.youtube.com/watch?v=kE7OLr9zTqk)
-
 - [TCP/IP Protocol Explained | What Is TCP/IP Address? | TCP/IP Configuration Tutorial | Simplilearn](https://www.youtube.com/watch?v=CsektxtqA8c)
 
 ### Miscellaneous
 
 - [TCP/IP Model - GeeksforGeeks](https://www.geeksforgeeks.org/tcp-ip-model/)
-
 - [What is TCP/IP in Networking? | Fortinet](https://www.fortinet.com/resources/cyberglossary/tcp-ip)

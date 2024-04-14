@@ -1,4 +1,5 @@
 ---
+title: "GraphQL"
 weight: 3
 ---
 

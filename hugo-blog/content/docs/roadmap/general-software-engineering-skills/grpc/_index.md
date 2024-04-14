@@ -1,4 +1,5 @@
 ---
+title: "gRPC"
 weight: 5
 ---
 # gRPC

@@ -37,7 +37,7 @@ Follow the instruction below:
 4. Modify the configuration and add the `book` theme to `hugo.toml`:
 
     ```toml
-    baseURL = 'https://wiki.databurst.ir'
+    baseURL = 'https://wiki.databurst.tech'
     languageCode = 'en-us'
     title = 'Databurst Data Engineering Wiki'
     theme = "hugo-book"

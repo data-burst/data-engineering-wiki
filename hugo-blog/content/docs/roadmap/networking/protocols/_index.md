@@ -3,8 +3,9 @@ weight: 1
 ---
 
 ## Table of Contents
-- [DNS](dns.md)
-- [HTTP](http.md)
-- [HTTPS](https.md)
-- [SSH](ssh.md)
-- [TCP/IP](tcp.md)
+
+- [DNS](dns)
+- [HTTP](http)
+- [HTTPS](https)
+- [SSH](ssh)
+- [TCP/IP](tcp)

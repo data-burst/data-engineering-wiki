@@ -20,10 +20,6 @@ Hypertext Transfer Protocol Secure (HTTPS) is an extension of HTTP that adds a l
 ### Books
 - [Bulletproof SSL and TLS](https://www.amazon.com/Bulletproof-SSL-TLS-Understanding-Applications/dp/1907117040)
 
-### Courses
-- Udacity: "Securing Web Applications with HTTPS"
-- Pluralsight: "Understanding HTTPS"
-
 ### Documentation
 - [What is HTTPS?](https://www.cloudflare.com/learning/ssl/what-is-https/)
 - [What Is HyperText Transfer Protocol Secure (HTTPS)?](https://www.fortinet.com/resources/cyberglossary/what-is-https)

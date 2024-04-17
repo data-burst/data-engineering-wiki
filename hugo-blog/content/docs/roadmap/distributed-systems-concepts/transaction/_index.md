@@ -2,7 +2,7 @@
 weight: 6
 ---
 
-# CAP
+# Transaction
 
 ## Introduction
 

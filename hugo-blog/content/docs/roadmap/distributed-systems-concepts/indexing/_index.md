@@ -2,7 +2,7 @@
 weight: 7
 ---
 
-# CAP
+# Indexing
 
 ## Introduction
 

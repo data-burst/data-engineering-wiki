@@ -2,7 +2,7 @@
 weight: 9
 ---
 
-# CAP
+# Consistency vs Eventual Consistency
 
 ## Introduction
 

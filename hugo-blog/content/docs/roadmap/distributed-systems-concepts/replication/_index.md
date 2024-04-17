@@ -2,7 +2,7 @@
 weight: 5
 ---
 
-# CAP
+# Replication
 
 ## Introduction
 

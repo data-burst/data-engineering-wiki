@@ -2,7 +2,7 @@
 weight: 8
 ---
 
-# CAP
+# Batch and Stream Processing
 
 ## Introduction
 

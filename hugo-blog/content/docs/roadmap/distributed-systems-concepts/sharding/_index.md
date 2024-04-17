@@ -2,7 +2,7 @@
 weight: 3
 ---
 
-# CAP
+# Sharding
 
 ## Introduction
 

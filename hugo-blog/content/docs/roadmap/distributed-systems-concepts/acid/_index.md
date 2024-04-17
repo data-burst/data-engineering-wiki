@@ -3,7 +3,7 @@ title: "ACID"
 weight: 5
 ---
 
-# CAP
+# ACID
 
 ## Introduction
 

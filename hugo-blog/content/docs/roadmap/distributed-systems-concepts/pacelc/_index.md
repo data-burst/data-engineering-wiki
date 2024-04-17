@@ -3,7 +3,7 @@ title: "PACELC"
 weight: 2
 ---
 
-# CAP
+# PACELC
 
 ## Introduction
 

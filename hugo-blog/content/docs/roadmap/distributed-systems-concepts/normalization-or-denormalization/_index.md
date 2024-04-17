@@ -2,7 +2,7 @@
 weight: 10
 ---
 
-# CAP
+# Normalization or Denormalization
 
 ## Introduction
 

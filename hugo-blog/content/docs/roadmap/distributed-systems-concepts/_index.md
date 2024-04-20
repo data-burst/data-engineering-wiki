@@ -12,11 +12,12 @@ weight: 9
 A distributed system is a network of independent computers that appear to the user as a single coherent system. This setup allows for the sharing of resources and capabilities, enabling higher levels of performance, reliability, and scalability than might be possible with a single computer.
 
 The main goal of distributed systems is to coordinate the process and manage data among multiple computers to improve efficiency and performance. Examples include cloud computing platforms, distributed databases, and real-time data processing systems. The complexity in distributed systems arises from the need to handle issues like data consistency, fault tolerance, and communication across diverse and sometimes unreliable networks.
-
-
 <div align=center>
-    <img src="distributest_systems.jpg" width="450" alt="Distributed Systems"/>
+
+![Distributed Systems](distributest_systems.jpg)
+
 </div>
+
 
 ## Learning Resources
 

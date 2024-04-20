@@ -38,7 +38,7 @@ For example, that all values in a column must be unique.
 - [Database and Transaction Processing](https://www.amazon.com/Database-Transaction-Processing-Philip-Lewis/dp/0201708728)
 
 ### Courses
--[ACID Properties in Databases With Examples](https://www.youtube.com/watch?v=GAe5oB742dw)
+- [ACID Properties in Databases With Examples](https://www.youtube.com/watch?v=GAe5oB742dw)
 
 ### Miscellaneous
 - [ACID Transactions](https://www.educative.io/courses/distributed-systems-practitioners/acid-transactions)

@@ -28,3 +28,6 @@ A partition is a communications break within a distributed system—a lost or te
 
 ### Courses
 - [CAP Theorem Simplified](https://www.youtube.com/watch?v=BHqjEjzAicA)
+
+### Articles
+- [A critique of the CAP theorem](https://martin.kleppmann.com/2015/09/17/critique-of-the-cap-theorem.html)

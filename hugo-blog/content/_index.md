@@ -1,3 +1,5 @@
+# Databurst Data Engineering Wiki
+
 Welcome to the official wiki of DataBurst, your comprehensive resource for all things related to data engineering. Our team, comprised of dedicated data engineering professionals, is committed to providing you with the latest insights, best practices, and detailed discussions that span the breadth of data engineering and our innovative products.
 
 ![DataBurst](logo.jpg)

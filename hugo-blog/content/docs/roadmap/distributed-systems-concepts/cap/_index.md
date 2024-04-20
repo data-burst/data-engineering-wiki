@@ -2,7 +2,6 @@
 title: "CAP"
 weight: 1
 ---
-<div style="text-align: justify">
 
 # CAP
 
@@ -19,11 +18,7 @@ Availability means that any client making a request for data gets a response, ev
 - **Partition tolerance**
 A partition is a communications break within a distributed system—a lost or temporarily delayed connection between two nodes. Partition tolerance means that the cluster must continue to work despite any number of communication breakdowns between nodes in the system.
 
-<div align=center>
-
-![CAP Theorem](cap-1.jpg)
-
-</div>
+![CAP Theorem](cap.png)
 
 ## Learning Resources
 
@@ -33,5 +28,3 @@ A partition is a communications break within a distributed system—a lost or te
 
 ### Courses
 - [CAP Theorem Simplified](https://www.youtube.com/watch?v=BHqjEjzAicA)
-
-</div>

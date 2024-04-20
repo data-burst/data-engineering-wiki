@@ -2,9 +2,7 @@
 
 ## Welcome to DataBurst Wiki! 🚀
 
-<p align=center>
-    <img src="./logo.jpg" alt="databurst logo"/>
-</p>
+![Logo](./logo.jpg?width=200)
 
 Explore our central hub for all things data engineering:
 

@@ -35,5 +35,5 @@ Replicated services are generally used for building stateless services, whereas 
 - [The Basics of Database Sharding and Partitioning in System Design](https://www.youtube.com/watch?v=be6PLMKKSto)
 
 ### Miscellaneous
-- [https://www.digitalocean.com/community/tutorials/understanding-database-sharding](Understanding Database Sharding)
+- [Understanding Database Sharding](https://www.digitalocean.com/community/tutorials/understanding-database-sharding)
 - [Sharding in Distributed Systems](https://medium.com/whiteblock/sharding-in-distributed-systems-29ba2f7f135b)

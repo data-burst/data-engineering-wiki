@@ -10,4 +10,4 @@ Welcome to the DataBurst Data Engineering Roadmap! Our roadmap is crafted to sup
 
 For a comprehensive view and to contribute to the ongoing development of the roadmap, visit our [GitHub repository](https://github.com/data-burst/data-engineering-roadmap). Your insights and improvements are invaluable to us!
 
-Explore, engage, and help us enhance the roadmap for the data engineering community.
+Explore, engage, and help us enhance the roadmap for the data engineering community.git config pull.rebase true

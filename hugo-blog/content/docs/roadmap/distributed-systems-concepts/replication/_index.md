@@ -31,6 +31,8 @@ Replicated services are generally used for building stateless services, whereas 
 
 ### Courses
 - [Sharding | Horizontal Scaling | System Design Interview Basics](https://www.youtube.com/watch?v=0DzRdQ-sOTg)
+- [Distributed Systems 5.1: Replication](https://www.youtube.com/watch?v=mBUCF1WGI_I)
+- [Database Replication Explained (in 5 Minutes)](https://www.youtube.com/watch?v=bI8Ry6GhMSE)
 
 ### Miscellaneous
 - [What is Replication in Distributed System?](https://www.geeksforgeeks.org/what-is-replication-in-distributed-system/)

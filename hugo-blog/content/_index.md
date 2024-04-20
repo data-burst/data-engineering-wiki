@@ -1,17 +1,23 @@
 # Databurst Data Engineering Wiki
 
-Welcome to the official wiki of DataBurst, your comprehensive resource for all things related to data engineering. Our team, comprised of dedicated data engineering professionals, is committed to providing you with the latest insights, best practices, and detailed discussions that span the breadth of data engineering and our innovative products.
+## Welcome to DataBurst Wiki! 🚀
 
-![DataBurst](logo.jpg)
+<p align=center>
+    <img src="./logo.jpg" alt="databurst logo"/>
+</p>
 
-This wiki serves as a central hub for:
+Explore our central hub for all things data engineering:
 
-- **The Data Engineering Roadmap:** A detailed guide tailored for both newcomers and seasoned experts. Dive into each topic for a deeper understanding and practical applications.
-- **DataBurst Products and Services:** Explore how our solutions can transform your data operations and business intelligence.
-- **Community Contributions and Collaborations:** Engage with our content, suggest improvements, and share your insights. Your participation is crucial to the evolution of our resources.
+- 🗺️ [**The Data Engineering Roadmap**](https://github.com/data-burst/data-engineering-roadmap): Dive into topics tailored for both newcomers and seasoned experts.
 
+- 💡 [**DataBurst Products and Services**](https://github.com/data-burst): Discover how our solutions transform data operations and business intelligence.
 
+- 🌐 **Community Contributions and Collaborations**: Engage, suggest improvements, and share insights. Your participation shapes our resources.
 
-We encourage you to visit our [GitHub community](https://github.com/data-burst) to contribute to our projects, explore our [official website](https://databurst.tech/) to learn more about our services, and connect with us on [Linkedin](https://www.linkedin.com/company/databurst/) to stay updated on company news and job opportunities. For real-time discussions and support, join our vibrant [Discord community](https://discord.com/invite/DWVD3gVv).
+### Connect with Us
 
-Dive into our wiki, explore the vast array of topics, and join us in shaping the future of data engineering. Let’s harness the power of data together with DataBurst!
+- [![GitHub](https://img.shields.io/badge/GitHub-DataBurst-blue?style=social&logo=github)](https://github.com/data-burst) Contribute to our projects.
+- [![LinkedIn](https://img.shields.io/badge/LinkedIn-DataBurst-blue?style=social&logo=linkedin)](https://www.linkedin.com/company/databurst/) Stay updated on company news.
+- [![Discord](https://img.shields.io/badge/Discord-Join%20our%20community-brightgreen?style=social&logo=discord)](https://discord.com/invite/DWVD3gVv) Real-time discussions and support.
+
+Dive in, explore, and let's harness the power of data together! 🌟

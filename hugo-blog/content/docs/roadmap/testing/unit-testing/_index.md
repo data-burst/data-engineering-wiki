@@ -19,17 +19,13 @@ Unit testing provides several benefits:
 
 ### Books
 
-1. [Test Driven Development: By Example" by Kent Beck](https://www.amazon.de/-/en/Kent-Beck/dp/0321146530): This book provides a comprehensive introduction to the concept of Test Driven Development, which heavily involves unit testing.
-2. **"Pragmatic Unit Testing in Java 8 with JUnit" by Jeff Langr**: A great resource for Java developers wanting to learn more about unit testing with JUnit.
+- [Test Driven Development: By Example" by Kent Beck](https://www.amazon.de/-/en/Kent-Beck/dp/0321146530): This book provides a comprehensive introduction to the concept of Test Driven Development, which heavily involves unit testing.
+- [Pragmatic Unit Testing in Java 8 with JUnit" by Jeff Langr](https://www.amazon.com/Pragmatic-Unit-Testing-Java-JUnit/dp/1941222595): A great resource for Java developers wanting to learn more about unit testing with JUnit.
 
 ### Courses
 
-1. **"Unit Testing for Software Engineers"**: This course on Udemy provides a comprehensive overview of unit testing, covering everything from the basics to more advanced topics.
-2. **"JavaScript Testing: Unit vs Functional vs Integration Tests"**: This course on Pluralsight focuses on unit testing within the context of JavaScript.
+- [Unit Testing for Software Engineers](https://www.udemy.com/course/refactoru-intro-unit-test/?ranMID=39197&ranEAID=SAyYsTvLiGQ&ranSiteID=SAyYsTvLiGQ-If_bh_8o68DRgxbwD9TtuA&LSNPUBID=SAyYsTvLiGQ&utm_source=aff-campaign&utm_medium=udemyads): This course on Udemy provides a comprehensive overview of unit testing, covering everything from the basics to more advanced topics.
 
 ### Miscellaneous
 
-1. **YouTube**: There are many great tutorials and walkthroughs available for free on YouTube. Channels like "Traversy Media" and "The Net Ninja" often cover topics related to unit testing.
-2. **Blogs and Articles**: Websites like Medium, Dev.to, and Stack Overflow have numerous articles written by experienced developers sharing their knowledge and experience with unit testing.
-
-Remember, the key to effective unit testing is to write tests that are independent, small, and focus on a single function or module. Happy testing!
+- **YouTube**: There are many great tutorials and walkthroughs available for free on YouTube. Channels like "Traversy Media" and "The Net Ninja" often cover topics related to unit testing.

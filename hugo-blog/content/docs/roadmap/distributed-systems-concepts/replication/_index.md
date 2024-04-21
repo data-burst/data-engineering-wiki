@@ -24,11 +24,6 @@ Replicated services are generally used for building stateless services, whereas 
 
 ## Learning Resources
 
-
-
-### Books
-- [Designing Distributed Systems](https://www.oreilly.com/library/view/designing-distributed-systems/9781491983638/)
-
 ### Courses
 - [Sharding | Horizontal Scaling | System Design Interview Basics](https://www.youtube.com/watch?v=0DzRdQ-sOTg)
 - [Distributed Systems 5.1: Replication](https://www.youtube.com/watch?v=mBUCF1WGI_I)

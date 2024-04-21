@@ -18,11 +18,6 @@ PACELC was developed to address a key limitation of the CAP theorem: it makes no
 
 ## Learning Resources
 
-
-
-### Books
-- ["Designing Data-Intensive Applications" by Martin Kleppmann](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
-
 ### Courses
 - [Latency and Consistency Tradeoffs in Modern Distributed Databases](https://www.scylladb.com/glossary/pacelc-theorem/#:~:text=Learn%20about%20PACELC%20vs%20CAP%20theorem)
 - [CAP Theorem & PACELC in Distributed System | System Design Interview Concept | CAP Theorem Explained](https://www.youtube.com/watch?v=BaKtC-VIYrM)

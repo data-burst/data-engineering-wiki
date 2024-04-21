@@ -21,11 +21,6 @@ A partition is a *communications break* within a distributed system; A lost or t
 
 ## Learning Resources
 
-### Books
-
-- ["Distributed Systems" by Andrew S. Tanenbaum and Maarten van Steen](https://www.distributed-systems.net/index.php/books/ds4/)
-- ["Designing Data-Intensive Applications" by Martin Kleppmann](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
-
 ### Courses
 
 - [CAP Theorem Simplified](https://www.youtube.com/watch?v=BHqjEjzAicA)

@@ -24,11 +24,6 @@ Replicated services are generally used for building stateless services, whereas 
 
 ## Learning Resources
 
-
-
-### Books
-- [Designing Distributed Systems](https://www.oreilly.com/library/view/designing-distributed-systems/9781491983638/)
-
 ### Courses
 - [What is DATABASE SHARDING?](https://www.youtube.com/watch?v=5faMjKuB9bc)
 - [Sharding | Horizontal Scaling | System Design Interview Basics](https://www.youtube.com/watch?v=0DzRdQ-sOTg)

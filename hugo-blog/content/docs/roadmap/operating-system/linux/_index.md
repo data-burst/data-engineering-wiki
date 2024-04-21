@@ -13,8 +13,7 @@ Linux is a powerful, open-source operating system widely used in data engineerin
 Here are some suggestions for learning linux, you can choose any of them to start being more familar with linux:
 
 ### Books
-- [The Linux Command Line](https://www.readthistwice.com/book/how-linux-works-brian-ward)
-- [How Linux Works](https://www.readthistwice.com/book/how-linux-works-brian-ward)
+- [How Linux Works What Every Superuser Should Know](https://www.readthistwice.com/book/how-linux-works-brian-ward)
 - [Linux Pocket Guide](https://www.readthistwice.com/book/linux-pocket-guide)
 
 ### Courses

@@ -16,8 +16,8 @@ The main goal of distributed systems is to coordinate the process and manage dat
 ## Learning Resources
 
 ### Books
-- ["Distributed Systems" by Andrew S. Tanenbaum and Maarten van Steen](https://www.distributed-systems.net/index.php/books/ds4/)
-- ["Designing Data-Intensive Applications" by Martin Kleppmann](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
+- [Distributed Systems](https://www.distributed-systems.net/index.php/books/ds4/)
+- [Designing Data-Intensive Applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
 - [Designing Distributed Systems](https://www.oreilly.com/library/view/designing-distributed-systems/9781491983638/)
 
 ### Courses

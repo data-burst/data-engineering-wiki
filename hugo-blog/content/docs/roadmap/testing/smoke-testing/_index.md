@@ -28,4 +28,4 @@ A smoke test suite can be automated or a combination of manual and automated tes
 ### Miscellaneous
 
 - [Smoke Testing on Guru99](https://www.guru99.com/smoke-testing.html) : This web page provides a comprehensive guide on smoke testing.
-- [Smoke Testing" on GeeksforGeeks](https://www.geeksforgeeks.org/smoke-testing-software-testing/) : This web page offers a detailed explanation of smoke testing and its importance in software development.
+- [Smoke Testing on GeeksforGeeks](https://www.geeksforgeeks.org/smoke-testing-software-testing/) : This web page offers a detailed explanation of smoke testing and its importance in software development.

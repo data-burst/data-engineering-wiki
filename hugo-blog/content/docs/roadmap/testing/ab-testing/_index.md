@@ -13,11 +13,13 @@ A/B testing, also known as split testing, is a method of comparing two versions 
 
 A/B testing allows individuals, teams, and companies to make careful changes to their user experiences while collecting data on the results. This allows them to construct hypotheses, and to learn better why certain elements of their experiences impact user behavior.
 
+## Learning resources
+
 ### Books
 
-- [Trustworthy Online Controlled Experiments: A Practical Guide to A/B Testing](https://www.amazon.de/-/en/Ron-Kohavi/dp/1108724264) by Ron Kohavi, Diane Tang, and Ya Xu. This book covers everything from the basics to advanced topics in A/B testing.
+- [Trustworthy Online Controlled Experiments: A Practical Guide to A/B Testing](https://www.amazon.com/Trustworthy-Online-Controlled-Experiments-Practical/dp/1108724264) by Ron Kohavi, Diane Tang, and Ya Xu. This book covers everything from the basics to advanced topics in A/B testing.
 
-- [A/B Testing: The Most Powerful Way to Turn Clicks Into Customers](https://www.amazon.de/-/en/Dan-Siroker/dp/1118792416) by Dan Siroker and Pete Koomen. The authors share their experiences with A/B testing at Google and offer practical tips.
+- [A/B Testing: The Most Powerful Way to Turn Clicks Into Customers](https://www.amazon.com/Testing-Most-Powerful-Clicks-Customers/dp/1118792416) by Dan Siroker and Pete Koomen. The authors share their experiences with A/B testing at Google and offer practical tips.
 
 ### Courses
 

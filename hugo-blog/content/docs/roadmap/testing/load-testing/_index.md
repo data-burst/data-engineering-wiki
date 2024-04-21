@@ -11,6 +11,8 @@ Load testing is a type of performance testing that simulates real-world load on 
 
 During load testing, the system is monitored to identify bottlenecks such as database configuration issues, network bottleneck, and CPU utilization. It helps in determining how the application behaves when multiple users access it simultaneously. This testing is crucial for applications that are expected to serve multiple users at the same time.
 
+## Learning resources
+
 ### Books
 
 - [The Art of Application Performance Testing](https://www.amazon.com/Art-Application-Performance-Testing-Strategy/dp/1491900547) by Ian Molyneaux: This book provides a comprehensive introduction to the basic concepts of load testing.

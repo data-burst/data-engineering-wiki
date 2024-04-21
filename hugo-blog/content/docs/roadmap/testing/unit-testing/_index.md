@@ -17,9 +17,11 @@ Unit testing provides several benefits:
 2. **Facilitates change**: Unit tests can provide a safety net that allows developers to make changes to code with confidence, knowing that if something breaks, it will be caught by the tests.
 3. **Simplifies integration**: By testing each unit of code individually, integration becomes much easier as you can be confident that each unit is working correctly.
 
+## Learning resources
+
 ### Books
 
-- [Test Driven Development: By Example" by Kent Beck](https://www.amazon.de/-/en/Kent-Beck/dp/0321146530): This book provides a comprehensive introduction to the concept of Test Driven Development, which heavily involves unit testing.
+- [Test Driven Development: By Example" by Kent Beck](https://www.amazon.com/Test-Driven-Development-Kent-Beck/dp/0321146530): This book provides a comprehensive introduction to the concept of Test Driven Development, which heavily involves unit testing.
 - [Pragmatic Unit Testing in Java 8 with JUnit" by Jeff Langr](https://www.amazon.com/Pragmatic-Unit-Testing-Java-JUnit/dp/1941222595): A great resource for Java developers wanting to learn more about unit testing with JUnit.
 
 ### Courses

@@ -12,4 +12,4 @@ Windows is a user-friendly operating system with widespread adoption across pers
 
 You can check the official Microsoft website to get more information about windows operating system:
 
-- [Microdoft Official Website](https://www.microsoft.com/en-gb/windows/)
+- [Microsoft Official Website](https://www.microsoft.com/en-gb/windows/)

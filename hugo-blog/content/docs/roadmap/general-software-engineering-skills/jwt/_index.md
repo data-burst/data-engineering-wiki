@@ -38,5 +38,5 @@ Here are some suggestions for learning JWT, which will help you become more prof
 
 ### Miscellaneous
 
-- [JWT](jwt.io): An interactive website by Auth0 that provides a debugger, libraries, and detailed documentation on JWT.
+- [JWT](https://jwt.io/): An interactive website by Auth0 that provides a debugger, libraries, and detailed documentation on JWT.
 

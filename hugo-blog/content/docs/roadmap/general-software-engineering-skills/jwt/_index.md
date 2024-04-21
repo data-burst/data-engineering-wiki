@@ -22,11 +22,6 @@ A JWT typically looks like `xxxxx.yyyyy.zzzzz` and is composed of three parts se
 
 3. **Signature**: To create the signature part, you have to take the encoded header, the encoded payload, a secret, the algorithm specified in the header, and sign that.
 
-## Conclusion
-
-**JWTs** are a stateless, compact, and secure way of handling user authentication and maintaining sessions. They are self-contained, easily transmitted, and require no server-side storage making them an excellent choice for RESTful APIs.
-
-
 ## Learning Resources
 
 Here are some suggestions for learning JWT, which will help you become more proficient in secure application development:

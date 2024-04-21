@@ -25,10 +25,6 @@ OAuth has several different "flows" for different types of applications:
 
 4. **Client Credentials Flow**: This is used when the client itself is the resource owner.
 
-## Conclusion
-
-**OAuth** is a powerful protocol for authorizing APIs, enabling more diverse services to interact securely. However, it's important to ensure that it's correctly implemented to protect the security of your user's data.
-
 ## Learning Resources
 
 Here are some suggestions for learning OAuth, which will help you become more proficient in implementing secure authorization:

@@ -18,10 +18,6 @@ In GraphQL, you'll define a **schema** that represents all the possible data you
 2. **Strong Type System**: GraphQL APIs are organized in terms of types and fields, not endpoints. This makes the API self-documenting.
 3. **Real-time Updates with Subscriptions**: GraphQL includes built-in support for real-time updates with its **subscription** system.
 
-## Conclusion
-GraphQL represents a powerful alternative to REST and offers significant benefits in both flexibility and efficiency. It's definitely worth considering for your next API design.
-
-
 ## Learning Resources
 
 Here are some suggestions for learning GraphQL, which will help you become more proficient in leveraging this powerful API technology:

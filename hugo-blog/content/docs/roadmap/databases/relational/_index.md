@@ -11,6 +11,8 @@ Relational databases are a fundamental part of modern data management. They prov
 
 Relational databases are based on the relational model, where data is organized into one or more tables. Each table has a unique key and each row in the table represents a unique record. These records are linked to each other through their keys, forming a "relation".
 
+![relational-db](image.png)
+
 There are several tools available for managing relational databases, including **[PostgreSQL](https://postgresql.org/)**, **[SQL Server](https://www.microsoft.com/en-us/sql-server)**, and **[MySQL](https://www.mysql.com/)**. These tools provide a variety of features for database management, such as data indexing, query optimization, and data integrity enforcement.
 
 ## Learning Resources

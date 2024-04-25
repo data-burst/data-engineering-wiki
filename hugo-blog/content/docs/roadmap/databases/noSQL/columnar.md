@@ -16,7 +16,7 @@ Columnar databases store data in a column-oriented format, where each column rep
 
 3. **Read-Optimized**: Columnar databases prioritize read operations over writes. They're ideal for scenarios where data is ingested once but queried frequently.
 
-![columnarDB](image.png)
+![columnarDB](columnar.png)
 
 ## Related Tools
 

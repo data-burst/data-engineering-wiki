@@ -16,6 +16,13 @@ Three popular data modeling schemas used in modern data warehousing are the Star
 - **Denormalization:** Occasionally used to enhance performance in read-heavy systems by reducing the number of joins.
 - **Integrity Constraints:** Rules that ensure the accuracy and reliability of the data, such as primary keys, foreign keys, and unique constraints.
 
+### Use Cases and Selection Criteria:
+
+- **Star Schema** is best when simplicity and fast query performance are paramount, typically used in straightforward business intelligence scenarios with stable, predictable query patterns.
+- **Snowflake Schema** is preferred when reducing storage costs and improving data integrity are more important than immediate query performance. It's suitable for environments where the data is not excessively large, or complex joins are manageable.
+- **Data Vault** is ideal for complex, large-scale business environments that undergo frequent changes in the data capture processes. It's excellent for organizations that need a robust, historical audit trail of their data integration processes.
+When designing a database, the choice of schema often depends on specific business needs, the nature of the data, and the expected query patterns. It's important to consider how the data will be used, the types of queries that will be run, and the necessity for flexibility and scalability when selecting a data modeling approach.
+
 ## Learning Resources
 
 ### Books

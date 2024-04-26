@@ -4,7 +4,7 @@ weight: 2
 title: Snowflake
 ---
 
-# Snowflake
+# Snowflake Schema
 
 ## Introduction
 
@@ -15,6 +15,8 @@ The Snowflake Schema is a variant of the star schema where dimension tables are 
 - **Normalization:** Dimension tables are normalized into multiple related tables, reducing redundancy and potentially saving storage space.
 - **Complexity:** More complex joins are needed to execute queries, which can slow down query performance compared to the star schema.
 - **Maintenance:** Easier to maintain due to normalization, as changes in data structure are localized to specific areas of the schema.
+
+![Snowflake Schema](snowflake-schema.png)
 
 
 ## Learning Resources

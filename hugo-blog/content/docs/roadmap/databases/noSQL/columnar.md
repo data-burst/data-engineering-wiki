@@ -10,11 +10,11 @@ Columnar databases have gained prominence in recent years due to their efficienc
 
 Columnar databases store data in a column-oriented format, where each column represents a specific attribute (e.g., age, salary, product name). Here are some key features of columnar databases:
 
-1. **Compression Efficiency**: Columnar databases compress data more effectively because similar values are stored together. This reduces storage costs and improves query performance.
+-  **Compression Efficiency**: Columnar databases compress data more effectively because similar values are stored together. This reduces storage costs and improves query performance.
 
-2. **Analytical Queries**: These databases excel at analytical queries, such as aggregations, filtering, and sorting. They're commonly used for business intelligence (BI) and data warehousing.
+-  **Analytical Queries**: These databases excel at analytical queries, such as aggregations, filtering, and sorting. They're commonly used for business intelligence (BI) and data warehousing.
 
-3. **Read-Optimized**: Columnar databases prioritize read operations over writes. They're ideal for scenarios where data is ingested once but queried frequently.
+-  **Read-Optimized**: Columnar databases prioritize read operations over writes. They're ideal for scenarios where data is ingested once but queried frequently.
 
 ## Related Tools
 

@@ -10,10 +10,10 @@ Graph databases represent a paradigm shift in database technology, as they are d
 
 The core strength of graph databases lies in their ability to efficiently manage and query highly connected data. This allows for more intuitive data modeling and access, reflecting the interconnectedness of real-world systems. As such, understanding graph databases and how to interact with them through tools like Neo4j and Microsoft Azure Cosmos DB is crucial for developers and data architects working with complex, relationship-rich data.
 
-### Neo4j
+## Neo4j
 **[Neo4j](https://neo4j.com/)** is one of the most popular graph database management systems. It is open-source and designed for storing and querying interconnected data with its graph processing engine. Neo4j uses a query language called Cypher, which is declarative and designed to be easily readable and expressive for managing graph data.
 
-### Microsoft Azure Cosmos DB
+## Microsoft Azure Cosmos DB
 **[Microsoft Azure Cosmos DB](https://azure.microsoft.com/en-us/products/cosmos-db)** is a globally distributed, multi-model database service that offers graph processing capabilities through the Gremlin API. It provides turnkey global distribution, elastic scaling of throughput and storage, and multi-model support, all backed by SLAs covering throughput, latency, availability, and consistency.
 
 ## Learning Resources

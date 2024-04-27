@@ -13,13 +13,13 @@ The architecture of time-series databases is uniquely designed to handle vast vo
 
 To effectively harness the power of time-series databases, it's crucial to understand not only the underlying principles but also the tools available in this domain. Among the most prominent tools are TimescaleDB, Prometheus, and InfluxDB. Each of these tools offers distinct features and advantages tailored to different use cases and operational environments.
 
-### TimescaleDB
+## TimescaleDB
 **[TimescaleDB](https://www.timescale.com/)** is an open-source database designed to harness the power of SQL for handling time-series data with the scalability and flexibility that modern applications require. Built on top of PostgreSQL, it offers full SQL support, making it easy to integrate with existing applications and tools that use PostgreSQL.
 
-### Prometheus
+## Prometheus
 **[Prometheus](https://prometheus.io/)** is an open-source monitoring system with a strong focus on reliability and scalability. It collects and stores its metrics as time-series data, allowing users to use its powerful query language to analyze how metrics change over time. This makes Prometheus exceptionally well-suited for monitoring the performance and health of IT infrastructure and applications.
 
-### InfluxDB
+## InfluxDB
 **[InfluxDB](https://www.influxdata.com/)**, another popular open-source time-series database, is designed for high-performance data storage and retrieval. It uses a custom query language called InfluxQL, which simplifies the task of storing and querying time-series data. InfluxDB is particularly favored for applications that require real-time analysis and performance.
 
 ## Learning Resources

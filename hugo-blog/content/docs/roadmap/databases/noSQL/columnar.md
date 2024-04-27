@@ -2,7 +2,7 @@
 title: "Columnar"
 weight: 1
 ---
-# Columnar Databases: A Brief Overview
+# Columnar 
 
 Columnar databases have gained prominence in recent years due to their efficiency in handling analytical workloads. Unlike traditional row-based databases, which store data in rows, columnar databases organize data in columns. This design choice offers several advantages, especially for read-heavy operations. In this blog post, we'll explore the basics of columnar databases and introduce some popular tools in this space.
 
@@ -15,8 +15,6 @@ Columnar databases store data in a column-oriented format, where each column rep
 2. **Analytical Queries**: These databases excel at analytical queries, such as aggregations, filtering, and sorting. They're commonly used for business intelligence (BI) and data warehousing.
 
 3. **Read-Optimized**: Columnar databases prioritize read operations over writes. They're ideal for scenarios where data is ingested once but queried frequently.
-
-![columnarDB](columnar.png)
 
 ## Related Tools
 

@@ -5,7 +5,7 @@ weight: 5
 
 # Vector
 
-### Introduction
+## Introduction
 
 In the burgeoning field of AI and machine learning, managing and searching through vast datasets efficiently is critical. This is where vector databases come into play. Unlike traditional databases that store data in rows and columns, vector databases store data as vectors. Each vector represents a data point in a high-dimensional space, making it incredibly useful for similarity search applications, such as image recognition, recommendation systems, and natural language processing.
 

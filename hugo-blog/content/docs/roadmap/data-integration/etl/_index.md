@@ -43,5 +43,4 @@ ETL is a critical component in data management, especially in distributed system
 - [What is ETL? The Ultimate Guide](https://www.matillion.com/blog/what-is-etl-the-ultimate-guide)
 - [What is ETL?](https://www.qlik.com/us/etl)
 - [What is ETL (Extract Transform Load)?](https://aws.amazon.com/what-is/etl/)
-- []()
 

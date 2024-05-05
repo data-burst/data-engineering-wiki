@@ -33,7 +33,7 @@ CDC (Change Data Capture) is a data management technique used to identify and tr
 - **Oracle GoldenGate:** A comprehensive CDC and data replication tool for Oracle databases.
 - **AWS DMS:** AWS Data Migration Service provides CDC capabilities for cloud migrations.
 - **Talend:** Offers CDC features as part of its data integration suite.
-- 
+
 ![CDC (Change Data Capture)](cdc.png)
 
 CDC is crucial in data management strategies that require timely and accurate data updates. By focusing on capturing changes rather than entire datasets, CDC optimizes data transfer and helps organizations build efficient and scalable data processing architectures.

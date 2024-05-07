@@ -1,6 +1,6 @@
 ---
 bookCollapseSection: true
-weight: 12
+weight: 7
 ---
 
 # Design Patterns 

@@ -1,6 +1,6 @@
 ---
 title: "Creational"
-weight: 1
+weight: 2
 ---
 
 # Creational Design Pattern

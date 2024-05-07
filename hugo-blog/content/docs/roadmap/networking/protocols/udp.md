@@ -1,6 +1,5 @@
 ---
 title: "udp"
-weight: 1
 ---
 
 # UDP

@@ -1,6 +1,6 @@
 ---
 title: "Structural"
-weight: 1
+weight: 3
 ---
 
 ### Structural Design Pattern

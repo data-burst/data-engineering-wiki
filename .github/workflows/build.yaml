@@ -6,6 +6,7 @@ on:
     branches:
       - main
     paths:
+      - 'Dockerfile'
       - 'hugo-blog/**'
       - '.github/workflows/**'
 jobs:

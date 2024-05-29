@@ -65,5 +65,5 @@ For more detailed information and documentation about each specific block storag
 - [Amazon Elastic Block Store (EBS) Overview](https://www.youtube.com/watch?v=77qLAl-lRpo)
 
 ### Miscellaneous
--[What is block storage? amazon](https://aws.amazon.com/what-is/block-storage/)
--[What is block storage? cloudflare](https://www.cloudflare.com/learning/cloud/what-is-block-storage/)
+- [What is block storage? amazon](https://aws.amazon.com/what-is/block-storage/)
+- [What is block storage? cloudflare](https://www.cloudflare.com/learning/cloud/what-is-block-storage/)

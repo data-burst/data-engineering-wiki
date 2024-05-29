@@ -26,12 +26,17 @@ Block storage offers several advantages over other storage architectures, includ
 
 ### Examples of Block Storage
 
-#### 1. Ceph
-Ceph is a highly scalable open-source distributed storage platform renowned for its reliability and flexibility. It provides block, object, and file storage within a unified system, leveraging a distributed architecture for fault tolerance and high availability. Key features of Ceph include:
-- **Unified Storage**: Offers block, object, and file storage capabilities within a single platform, simplifying storage management.
-- **Scalability**: Scales seamlessly from small deployments to large-scale storage clusters, accommodating growing data demands.
-- **Reliability**: Ensures data durability and availability through redundancy and fault tolerance mechanisms.
-- **Community Support**: Backed by an active open-source community, providing continuous development and support.
+#### 1. Ceph as Block Storage
+Ceph, known primarily for its distributed object storage capabilities, also provides robust block storage functionality through its RADOS Block Device (RBD) subsystem. Here's how Ceph functions as block storage:
+
+- **Block Storage Model**: Ceph's RBD allows users to create virtual block devices within a Ceph cluster, which can be mounted and accessed by client applications. Data is organized into fixed-size blocks, providing high-performance block-level access to storage.
+
+- **High Performance**: Ceph's block storage offers high performance and low-latency access, making it suitable for performance-sensitive applications such as databases, virtual machines, and enterprise applications.
+
+- **Scalability**: Similar to its object storage functionality, Ceph's block storage scales horizontally across multiple nodes in a cluster, enabling seamless expansion of storage capacity as data volumes grow.
+
+- **Use Cases**: Ceph's block storage is commonly used in virtualized environments, providing storage for virtual machines, containers, and other applications requiring block-level access to storage. Its high performance and scalability make it well-suited for demanding workloads.
+
 
 #### 2. Hadoop Distributed File System (HDFS)
 Hadoop Distributed File System (HDFS) is a distributed file system designed for storing and processing large datasets in parallel across a cluster of commodity hardware. While primarily associated with big data processing, HDFS also functions as a block storage system. Key features of HDFS include:

@@ -49,6 +49,9 @@ Each type of storage—block, object, and file—serves different needs in the d
   
 ### Courses
 - [AWS Storage: EBS vs. S3 vs. EFS](https://www.youtube.com/watch?v=_CN7KqC3y3s)
+- [Data Storage Types: File, Block, & Object](https://www.youtube.com/watch?v=KhHr4chx_ZM)
+- [Block vs Object vs File Storage | Cloud Storage Types Explained](https://www.youtube.com/watch?v=sswLpKeAoxs)
+- [File vs. Object vs. Block Storage](https://www.youtube.com/watch?v=EqC2-lB5Xck)
 
 ### Miscellaneous
 - [Distributed Storage Systems](https://www.geeksforgeeks.org/distributed-storage-systems/)

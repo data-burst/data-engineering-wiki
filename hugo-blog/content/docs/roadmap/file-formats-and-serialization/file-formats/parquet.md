@@ -1,8 +1,6 @@
 ---
 title: "Parquet"
 ---
-Sure, here is a brief overview of Parquet for your wiki page:
-
 # Parquet
 
 ## Introduction

@@ -29,7 +29,7 @@ In this example, each line represents a different person, and the comma-separate
 
 ## Usecase
 
-CSV files are commonly used for moving tabular data between two different programs. For example, they are often used as a simple method to transfer a large database between programs. 
+CSV files are commonly used for moving tabular data between two different programs. For example, they are often used as a simple method to transfer a large database between programs.
 
 They are also used for storing data logs or other types of structured data, due to their simplicity and wide support. Many applications allow you to import and export data in the CSV format, including spreadsheet programs like Microsoft Excel and Google Sheets, and database management systems like MySQL and PostgreSQL.
 

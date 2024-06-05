@@ -81,4 +81,4 @@ Presto is a powerful and versatile SQL query engine designed for high-performanc
 
 ### Miscellaneous
 - [Fast and Reliable SQL Engine for Data Analytics and the Open Lakehouse](https://www.youtube.com/watch?v=QhgkbJJZoag)
-- [Presto](https://github.com/prestodb/presto)
+- [Presto Github](https://github.com/prestodb/presto)

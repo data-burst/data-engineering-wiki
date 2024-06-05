@@ -12,8 +12,11 @@ CDC (Change Data Capture) is a data management technique used to identify and tr
 
 ### How CDC Works
 **1. Capture:** CDC monitors a source database for changes. Different methods can be used to capture changes, such as transaction log scanning, triggers, or timestamps.
+
 **2. Record:** Once changes are detected, CDC records them in a staging area or a log table. This record includes the type of change (insert, update, or delete) and the specific data fields that were affected.
+
 **3. Process:** The recorded changes are processed and transformed according to the needs of the target system or application. This might involve filtering, mapping, or other forms of transformation.
+
 **4. Deliver:** Finally, the processed changes are delivered to the target system, which could be a data warehouse, another database, or a message queue for further processing.
 
 ### Methods of CDC Implementation

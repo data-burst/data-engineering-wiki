@@ -24,10 +24,9 @@ title: "Lambda"
 
 ## Learning Resources
 
-### Books
+### Articles
+
 - [Lambda Architecture: Design Simpler, Resilient, Maintainable, and Scalable Big Data Solutions](https://www.infoq.com/articles/lambda-architecture-scalable-big-data-solutions/)
 - [Lambda Architecture | Snowflake](https://www.snowflake.com/guides/lambda-architecture)
-
-### Courses
 - [What Is Lambda Architecture? - Databricks](https://www.databricks.com/glossary/lambda-architecture)
 

@@ -92,8 +92,5 @@ Big Data Query Engines are critical components in the modern data ecosystem, ena
 ### Books
 - [How Query Engines Work](https://andygrove.io/how-query-engines-work/)
 
-### Courses
-- [What is BigQuery?](https://www.youtube.com/watch?v=d3MDxC_iuaw)
-
 ### Miscellaneous
 - [WHAT IS A QUERY ENGINE?](https://www.alluxio.io/learn/presto/query/#:~:text=At%20a%20high%20level%2C%20a,answers%20for%20users%20or%20applications.)

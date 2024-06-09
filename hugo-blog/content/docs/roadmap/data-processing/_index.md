@@ -9,7 +9,9 @@ title: "Data Processing"
 
 Data processing in the field of data engineering refers to the collection and manipulation of raw data to produce meaningful information. It involves the conversion of raw data into machine-readable form, flow of data through the CPU and memory, construction of output, and the interpretation of the output. Data processing functions include validation, sorting, summarization, aggregation, analysis, reporting, and classification.
 
-Data processing frameworks, such as Apache Spark, Apache Kafka, Amazon Kinesis, and Apache NiFi, are designed to handle large volumes of data, perform complex transformations, and facilitate quick insights. These frameworks are capable of processing data in real-time (streaming), in batches, or a hybrid of both. They are designed to be highly scalable, reliable, and distributed, meaning they can process data across many machines in parallel, increasing the speed of data processing tasks.
+Data processing frameworks, such as Apache Spark, Apache Kafka, Amazon Kinesis, Apache NiFi, and MapReduce, are designed to handle large volumes of data, perform complex transformations, and facilitate quick insights. These frameworks are capable of processing data in real-time (streaming), in batches, or a hybrid of both. They are designed to be highly scalable, reliable, and distributed, meaning they can process data across many machines in parallel, increasing the speed of data processing tasks.
+
+MapReduce is a programming model and an associated implementation for processing and generating big data sets with a parallel, distributed algorithm on a cluster. It’s a key component of the Apache Hadoop software framework. In a MapReduce computation, input data is broken down into chunks for processing by different nodes in a distributed system. Intermediate results are then combined (or “reduced”) to solve the problem at hand.
 
 These frameworks are platform-independent and can run on various operating systems, including but not limited to Linux, Windows, and MacOS. This makes them versatile tools for data processing in diverse environments.
 

@@ -53,3 +53,10 @@ Stream processing is a method where data is continuously processed, with new dat
 - [Spark in Action](https://www.manning.com/books/spark-in-action-second-edition)
 - [Kafka: The Definitive Guide, 2nd Edition](https://www.oreilly.com/library/view/kafka-the-definitive/9781492043072/)
 - [Event Streams in Action](https://www.amazon.com/dp/1617292346?linkCode=gs2&tag=uuid0a-21)
+
+### Courses
+
+- [dbt (data-build-tool)](https://www.youtube.com/watch?v=5rNquRnNb4E&list=PLy4OcwImJzBLJzLYxpxaPUmCWp8j1esvT)
+- [PySpark Tutorial](https://www.youtube.com/watch?v=_C8kWso4ne4&pp=ygUOc3BhcmsgdHV0b3JpYWw%3D)
+- [Apache Kafka Tutorial](https://www.youtube.com/watch?v=gg-VwXSRnmg&list=PLkz1SCf5iB4enAR00Z46JwY9GGkaS2NON)
+- [Introduction to Amazon Kinesis](https://www.youtube.com/watch?v=MbEfiX4sMXc)

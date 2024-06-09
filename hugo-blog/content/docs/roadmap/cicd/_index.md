@@ -1,6 +1,6 @@
 ---
 bookCollapseSection: true
-weight: 24
+weight: 26
 ---
 
 # CICD

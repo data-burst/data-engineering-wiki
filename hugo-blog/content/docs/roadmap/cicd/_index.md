@@ -85,7 +85,7 @@ and deliver high-quality software at a rapid pace.
 
 ## Learning Resources
 
-Here are some suggestions for getting more insights on Containerization:
+Here are some suggestions for learning more about implementing CICD pipelines:
 
 ### Books
 - [Automating DevOps with GitLab CI/CD Pipelines](https://www.amazon.ca/Automating-DevOps-GitLab-Pipelines-efficient/dp/1803233001)

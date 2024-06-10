@@ -58,6 +58,9 @@ Zabbix is an open-source monitoring software tool for diverse IT components, inc
 - [Prometheus: Up & Running: Infrastructure and Application Performance Monitoring](https://www.amazon.com/Prometheus-Infrastructure-Application-Performance-Monitoring/dp/1492034142) by Brian Brazil.
 - [The Art of Monitoring](https://www.amazon.com/Art-Monitoring-James-Turnbull-ebook/dp/B01GU387MS) by James Turnbull.
 
+### Courses
+- [Monitoring and Observability for Development and DevOps](https://www.classcentral.com/course/monitoring-and-observability-for-development-and--207405) provides a thorough introduction to monitoring and observability with popular tools like Prometheus and Grafana
+
 ### Miscellaneous
 - [Getting Started with Prometheus and Grafana](https://www.youtube.com/watch?v=h4Sl21AKiDg)
 - [Setting Up Alertmanager](https://prometheus.io/docs/alerting/latest/alertmanager/)

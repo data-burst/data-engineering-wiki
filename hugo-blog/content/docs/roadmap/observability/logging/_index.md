@@ -57,10 +57,8 @@ Graylog is an open-source log management platform that provides real-time analys
 - [Observability Engineering: Achieving Production Excellence](https://amazon.com/Observability-Engineering-Achieving-Production-Excellence/dp/1492076449) by Charity Majors, Liz Fong-Jones, and George Miranda.
 - [The Authoritative Guide to Understanding the Concepts Surrounding Logging and Log Management](https://www.amazon.com/Logging-Log-Management-Authoritative-Understanding/dp/1597496359) by Anton Chuvakin, Kevin Schmidt, and Chris Phillips.
 
-### Courses
-- [FreeCodeCamp's Introduction to Monitoring and Observability](https://www.freecodecamp.org/learn/quality-assurance/)
-
 ### Miscellaneous
+- [What Is Observability?](https://www.youtube.com/watch?v=bvVgP4tw_Hc)
 - [Introduction to the ELK Stack](https://www.youtube.com/playlist?list=PLS1QulWo1RIYkDHcPXUtH4sqvQQMH3_TN)
 - [Getting Started with Graylog](https://docs.graylog.org/en/4.0/pages/getting_started.html)
 - [Understanding Loki and Grafana for Log Aggregation](https://grafana.com/docs/loki/latest/)

@@ -6,7 +6,7 @@ title: "Messaging and Streaming Platform"
 ## Introduction
 
 In today's digital age, the ability to transmit data efficiently and reliably is crucial for any enterprise. Messaging and streaming platforms have become the backbone of modern data pipelines, enabling real-time data processing, analytics, and integration across various applications and systems. These platforms facilitate seamless communication between distributed components, ensuring that messages are delivered in a consistent, reliable manner. This blog post will delve into the fundamentals of messaging and streaming platforms and highlight some of the leading tools in this domain: Apache Kafka, NATS, RabbitMQ, and Apache Pulsar.
-
+![Messaging and Streaming Platform](image.jpeg)
 Messaging and streaming platforms serve different purposes within an ecosystem. Messaging platforms are typically used for asynchronous communication between services, decoupling the sender and receiver and ensuring message delivery even if the receiver is temporarily unavailable. Streaming platforms, on the other hand, are designed for handling continuous streams of data, enabling real-time processing and analytics.
 
 ## Apache Kafka

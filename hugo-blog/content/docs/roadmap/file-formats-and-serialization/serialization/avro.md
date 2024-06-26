@@ -34,3 +34,14 @@ Avro is widely used in the Hadoop ecosystem, including by Kafka, HBase, and Cass
 The schema evolution mechanism in Avro is both powerful and useful. It allows old software to read new data, and new software to read old data. This is a critical feature for data storage systems that need to manage large amounts of historical data, and for systems that require long-term data compatibility.
 
 In summary, Avro is a versatile data serialization system that allows for efficient, schema-evolved data storage and retrieval, with robust support for a wide variety of programming languages.
+
+
+## Learning Resources
+
+### Courses
+
+- [Introduction to Apache Avro playlist](https://www.youtube.com/watch?v=SZX9DM_gyOE&list=PLsC0nE-wJ1I6uYSZomY4-WWeOuLeDEDAK&ab_channel=StephaneMaarek) by Stephane Maarek
+
+### Miscellaneous
+- [Apache Avro's Official Documentation](https://avro.apache.org/docs/)
+- [IBM's Blog](https://www.ibm.com/topics/avro)

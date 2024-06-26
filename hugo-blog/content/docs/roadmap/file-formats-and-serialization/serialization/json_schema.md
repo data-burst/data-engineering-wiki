@@ -1,7 +1,7 @@
 ---
-title: "Protocol Buffer"
+title: "Json Schema"
 ---
-# Protocol Buffer
+# Json Schema
 
 ## Introduction
 

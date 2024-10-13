@@ -31,6 +31,7 @@ Here are some suggestions for learning python, you can choose any of them to sta
 ### Courses
 - [Python Tutorial - Python Full Course for Beginners](https://www.youtube.com/watch?v=_uQrJ0TkZlc)
 - [Python Full Course for free](https://www.youtube.com/watch?v=XKHEtdqhLK8)
+- [CS50's Introduction to Programming with Python](https://www.harvardonline.harvard.edu/course/cs50s-introduction-programming-python)
 
 ### Miscellaneous
 - [List of Tutorials suggested by Python Docs](https://wiki.python.org/moin/BeginnersGuide/Programmers)

@@ -9,7 +9,7 @@ title: Relational Data Warehouse
 
 A Relational Data Warehouse is a critical component in the world of data management, designed to support large-scale decision-making processes by storing vast amounts of structured data. It forms the backbone for organizations looking to centralize data from various operational systems into a single, unified repository, making it easier to analyze and extract insights.
 
-###The Concept of Relational Data Warehousing
+### The Concept of Relational Data Warehousing
 At its core, a relational data warehouse leverages the principles of relational databases. This means data is organized into tables that follow a strict schema, where columns define data types, and rows store individual records. Each table in a relational data warehouse can relate to others through primary keys and foreign keys, allowing for flexible yet structured data querying.
 
 

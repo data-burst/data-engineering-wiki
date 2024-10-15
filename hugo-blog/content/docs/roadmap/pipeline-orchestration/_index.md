@@ -74,6 +74,7 @@ Pipeline orchestration is a fundamental aspect of modern data engineering, enabl
 ### Courses
 - [Why You Need Data Orchestration](https://www.youtube.com/watch?v=ZtlS5-G-gng)
 - [Top 5 Open Source Data Orchestration tools](https://www.youtube.com/watch?v=8WeNYROA-Tw)
+- [Airflow Tutorial for Beginners - Full Course in 2 Hours](https://www.youtube.com/watch?v=K9AnJ9_ZAXE)
 
 ### Miscellaneous
 - [What Is Data Pipeline Orchestration and Why You Need It](https://www.ascend.io/blog/what-is-data-pipeline-orchestration-and-why-you-need-it/)

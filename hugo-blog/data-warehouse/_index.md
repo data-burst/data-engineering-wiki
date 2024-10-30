@@ -65,8 +65,8 @@ OLAP is a data analysis approach that enables users to analyze data across multi
 - *Building the Data Warehouse* by W. H. Inmon
 
 ### Courses
-- **Data Warehousing and Business Intelligence** – Coursera
-- **Fundamentals of Data Warehousing** – Udacity
+- **[Data Warehousing and Business Intelligence Specialization](https://www.coursera.org/specializations/data-warehousing)** – Coursera
+- **[Cloud Data Warehouses](https://www.udacity.com/course/cloud-data-warehouses--cd12440)** – Udacity
 
 ---
 

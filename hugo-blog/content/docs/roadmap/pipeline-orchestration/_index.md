@@ -36,7 +36,7 @@ Workflows are described as a **DAG** (directed acyclic graph): tasks are nodes, 
     <rect x="20" y="140" width="180" height="54" rx="6" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4"/><text x="34" y="162" font-size="12" font-weight="600" fill="#17151F">extract_users</text><text x="34" y="182" font-size="11" fill="#531A8A">success · 40s</text>
   </g>
   <g class="f m" data-step="2">
-    <rect x="290" y="90" width="180" height="54" rx="6" fill="#fff" stroke="#C2382F" stroke-width="1.6"/><text x="304" y="112" font-size="12" font-weight="600" fill="#17151F">build_sales</text><text x="304" y="132" font-size="11" fill="#C2382F">failed · try 1 of 3</text>
+    <rect x="290" y="90" width="180" height="54" rx="6" fill="#fff" stroke="#C2382F" stroke-width="1.6"/><text x="304" y="112" font-size="12" font-weight="600" fill="#17151F">build_sales</text><text x="304" y="132" font-size="11" fill="#C2382F">failed · try 1 of 4</text>
     <text x="380" y="166" text-anchor="middle" font-size="11" fill="#C2382F">warehouse timeout</text>
   </g>
   <g class="f m" data-step="3">
@@ -63,7 +63,7 @@ Workflows are described as a **DAG** (directed acyclic graph): tasks are nodes, 
 <ol class="lx-caps">
   <li>Five tasks, four dependencies. The scheduler creates a <b>run</b> for the 2026-11-15 data interval. Nothing can start until its upstream tasks succeed.</li>
   <li>The two extracts have no upstream tasks, so they run <b>in parallel</b> and both succeed.</li>
-  <li>build_sales starts and <b>fails</b>: the warehouse timed out. It has <b>retries = 3</b>, so nothing downstream runs and no one is paged yet.</li>
+  <li>build_sales starts and <b>fails</b>: the warehouse timed out. It has <b>retries = 3</b> (up to 4 tries), so nothing downstream runs and no one is paged yet.</li>
   <li>After the retry delay, try 2 <b>succeeds</b>. Transient failures heal themselves; only exhausted retries alert.</li>
   <li>Both downstream tasks were waiting on build_sales. Now they run in parallel. The run is green.</li>
   <li>A bug was fixed in build_sales. A <b>backfill</b> re-runs the DAG for each past day, each with its own data interval. This only works if every task is <b>idempotent</b>.</li>
@@ -72,7 +72,7 @@ Workflows are described as a **DAG** (directed acyclic graph): tasks are nodes, 
 
 ## Core concepts
 
-- **Schedule and data interval**: a daily run for 2026-11-15 processes that day's data, even if it actually starts on the 16th or is re-run a month later. Tasks should read the interval from the run context, never from `now()`.
+- **Schedule and data interval**: a daily run for 2026-11-15 processes that day's data, even if it actually starts on the 16th or is re-run a month later. Tasks should read the logical date or data interval from the run context, never from `now()`.
 - **Dependencies**: explicit task-to-task edges, or **asset/data-aware scheduling**, where a DAG runs when the table it reads has been updated (Airflow assets, Dagster software-defined assets).
 - **Retries and timeouts**: retry transient errors with a delay; set a timeout so a hung task doesn't block the pipeline forever.
 - **Idempotency**: running a task twice for the same interval gives the same result. Overwrite a partition or `MERGE`, never blindly `INSERT`.
@@ -111,11 +111,13 @@ sales_daily()
 
 Backfill a week: `airflow backfill create --dag-id sales_daily --from-date 2026-11-08 --to-date 2026-11-14`.
 
+One Airflow 3 detail: by default a cron schedule such as `@daily` no longer gets a one-day data interval; the run's interval is zero-length and its logical date is the moment it is scheduled. If tasks should process "the previous day" from the interval, as in Airflow 2, pass `CronDataIntervalTimetable` (from `airflow.sdk`) as the schedule or set `[scheduler] create_cron_data_intervals = True`.
+
 ## Tools in 2026
 
 | Tool | Model | Good fit |
 |---|---|---|
-| [Apache Airflow](https://airflow.apache.org/) | Task DAGs in Python | The default. Huge provider ecosystem; managed as MWAA, Cloud Composer, Astronomer. Airflow 3 (2025) added DAG versioning, a new UI, assets and scheduler-managed backfills. |
+| [Apache Airflow](https://airflow.apache.org/) | Task DAGs in Python | The default. Huge provider ecosystem; managed as MWAA, Cloud Composer, Astronomer. Airflow 3 (2025) added DAG versioning, a new React UI, assets (renamed from datasets), the Task SDK and scheduler-managed backfills. |
 | [Dagster](https://dagster.io/) | Data assets in Python | Teams who think in tables, not tasks; strong lineage, testing and dbt integration |
 | [Prefect](https://www.prefect.io/) | Python functions as flows | Dynamic, Python-heavy workflows with little boilerplate |
 | [Argo Workflows](https://argoproj.github.io/workflows/) | Kubernetes CRDs (YAML) | Container-native jobs, ML pipelines, teams already on Kubernetes |

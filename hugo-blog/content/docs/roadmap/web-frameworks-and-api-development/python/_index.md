@@ -1,74 +1,100 @@
 ---
 weight: 1
+description: "Python web frameworks in 2026: FastAPI, Django, Flask and Litestar compared, WSGI vs ASGI, async pitfalls, servers like Uvicorn and Granian, and how to choose."
 ---
-
 # Python
 
-## Introduction
+Python is the most common language in data work, so it is often the natural choice when a data team needs an API: the same models, database drivers and libraries (pandas, Polars, DuckDB, scikit-learn) are already there. Python web frameworks fall into two families, defined by how they talk to the web server:
 
-Python has become one of the most popular programming languages, particularly in the field of web development. 
-Among the many web frameworks available for Python, Flask, Django, and FastAPI stand out due to their unique features and widespread adoption. 
-Each framework caters to different needs and preferences, making them suitable for a variety of projects.
+- **WSGI** (synchronous): one request occupies one worker thread or process until it finishes. Flask and classic Django.
+- **ASGI** (asynchronous): one worker can juggle thousands of requests that are waiting on I/O, and it supports WebSockets and streaming. FastAPI, Litestar, Starlette, and Django's async views.
 
-### Flask
-
-Flask is a lightweight and flexible web framework designed to be simple yet powerful. It follows a minimalist approach, 
-providing the essential tools to build web applications while allowing developers to add extensions as needed. 
-Flask is often chosen for smaller projects or applications where simplicity and control over the architecture are paramount. 
-It follows the WSGI (Web Server Gateway Interface) standard, making it compatible with a wide range of web servers. 
-Flask’s simplicity and extensive documentation make it an excellent choice for beginners and those who prefer a more hands-on approach to development.
-
-### Django
-
-Django is a high-level web framework that emphasizes rapid development and a clean, pragmatic design. 
-Known for its "batteries-included" philosophy, Django comes with a plethora of built-in features such as an ORM (Object-Relational Mapping),
-authentication, and an admin interface, which can significantly speed up development time. 
-Django's strong emphasis on best practices and security makes it a preferred choice for large-scale applications and enterprise-level projects. 
-Its comprehensive documentation and active community support further enhance its appeal to developers seeking a robust and scalable framework.
+## The frameworks
 
 ### FastAPI
 
-FastAPI is a modern web framework designed for building APIs with Python 3.6+ based on standard Python type hints. 
-It is built on top of Starlette for the web parts and Pydantic for the data parts. FastAPI is known for its high performance, 
-thanks to its asynchronous capabilities and efficient handling of concurrent requests. It provides automatic generation 
-of OpenAPI and JSON Schema documentation, making it a popular choice for developers looking to create APIs quickly and efficiently. 
-FastAPI’s focus on speed, type safety, and developer experience has made it a rapidly growing framework in the Python ecosystem.
+**FastAPI** builds an API from ordinary Python **type hints**. It uses **Pydantic** (v2, with a Rust core) to validate and serialize data and **Starlette** for the ASGI web layer, and it generates an **OpenAPI** schema with interactive docs at `/docs` automatically. It is the default choice for new APIs and ML model serving in 2026.
 
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 
-### Comparison
+app = FastAPI()
 
-While Flask, Django, and FastAPI all serve the purpose of web development, they cater to different needs and project requirements. 
-Flask’s lightweight and unopinionated nature allows for maximum flexibility, making it ideal for small to medium-sized applications 
-where the developer prefers to choose their tools and components. Django’s comprehensive feature set and emphasis on convention over 
-configuration provide a structured environment that accelerates development for large and complex projects. 
-In contrast, FastAPI shines in building modern, high-performance APIs with minimal effort, thanks to its asynchronous support and automatic documentation.
+class Order(BaseModel):
+    id: int
+    user: str
+    total: float
 
-When choosing between these frameworks, developers should consider the project’s specific requirements, 
-their familiarity with the frameworks, and the desired balance between flexibility, speed, and scalability. 
-Flask is excellent for projects needing a simple and customizable approach, Django is perfect for full-fledged applications 
-requiring robust built-in features, and FastAPI is ideal for high-performance API development with a focus on type safety and quick iteration.
+@app.get("/orders/{order_id}")
+async def get_order(order_id: int) -> Order:     # "abc" → 422 automatically
+    row = await db.fetch_one("SELECT id, user, total FROM orders WHERE id = $1", order_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail="order not found")
+    return Order(**row)
+```
 
+Run it with `fastapi dev main.py` locally, and `fastapi run` or `uvicorn main:app --workers 4` in production.
+
+### Django
+
+**Django** is the "batteries included" framework: ORM, migrations, authentication, an auto-generated **admin** interface, forms, templates and security defaults in one package. Django 5.2 is the current LTS release and the 6.x series is current. For APIs, add **Django REST Framework** (mature, huge ecosystem) or **Django Ninja** (FastAPI-style type hints on top of Django). Choose Django when you need a full application with users and an admin panel, for example an internal tool for managing pipeline configuration or data quality rules.
+
+### Flask
+
+**Flask** (3.x) is a small WSGI micro-framework: routing, request handling and templates, and you add everything else through extensions (SQLAlchemy, Flask-Login). It is simple to learn and still widely used: Airflow 2's web UI is a Flask app (Airflow 3 moved its API server to FastAPI). For new JSON APIs, FastAPI usually gives you more for the same effort.
+
+### Litestar
+
+**Litestar** is an ASGI framework in the same spirit as FastAPI, with built-in dependency injection, DTOs, and support for Pydantic, msgspec and attrs models. A good option if you want more structure than FastAPI provides.
+
+## How to choose
+
+| Need | Pick |
+|---|---|
+| JSON API, model serving, typed contracts | **FastAPI** (or Litestar) |
+| Full web app with users, admin, ORM, migrations | **Django** (+ DRF or Django Ninja for the API) |
+| Small, simple synchronous service or legacy codebase | **Flask** |
+| Dashboard or data app, not an API | Streamlit, Dash or Panel instead of a web framework |
+
+## Servers
+
+| Server | Interface | Notes |
+|---|---|---|
+| **Uvicorn** | ASGI | The standard for FastAPI and Starlette |
+| **Granian** | ASGI, WSGI | Rust-based, fast, one server for both kinds |
+| **Gunicorn** | WSGI | Process manager for Flask/Django; can also run Uvicorn workers |
+| **Hypercorn** | ASGI | Supports HTTP/2 and HTTP/3 |
+
+## Common mistakes
+
+- **Blocking calls inside `async def`.** `requests.get()`, `time.sleep()` or a sync database driver inside an async endpoint freezes the whole event loop and every other request with it. Use async libraries (`httpx`, `asyncpg`, `psycopg` async) or declare the endpoint with plain `def` so FastAPI runs it in a thread pool.
+- **Heavy CPU work in the request.** Training a model or crunching a big DataFrame in an endpoint blocks workers. Hand it to a task queue (Celery, Dramatiq, Arq) or a pipeline and return a job ID.
+- **Loading a model or a big file per request.** Load once at startup with FastAPI's `lifespan` handler.
+- **Using the development server in production** (`flask run`, `manage.py runserver`).
+- **Returning whole tables.** Paginate, and stream large exports instead of building them in memory.
 
 ## Learning Resources
 
-Here are some suggestions for learning Python's web frameworks, you can choose any of them to start your API design journey:
+### Official tutorials
+
+- [FastAPI tutorial](https://fastapi.tiangolo.com/tutorial/)
+- [Django tutorial](https://docs.djangoproject.com/en/stable/intro/) and [Django REST Framework](https://www.django-rest-framework.org/)
+- [Flask tutorial](https://flask.palletsprojects.com/en/stable/tutorial/)
+- [Litestar documentation](https://docs.litestar.dev/)
+- [Pydantic documentation](https://docs.pydantic.dev/latest/)
 
 ### Books
-- [Django 4 By Example](https://www.amazon.com/Django-Example-powerful-reliable-applications/dp/1801813051/ref=cm_cr_arp_d_product_top?ie=UTF8)
-- [Two Scoops of Django 3.x](https://daniel.feldroy.com/books/tech)
-- [Microservice APIs: Using Python, Flask, FastAPI, OpenAPI](https://www.amazon.com/Microservice-APIs-Jose-Haro-Peralta/dp/1617298417)
-- [FastAPI](https://www.oreilly.com/library/view/fastapi/9781098135492/)
-- [Flask Web Development: Developing Web Applications with Python](https://www.amazon.ca/Flask-Web-Development-Developing-Applications/dp/1491991739/ref=sr_1_7)
 
+- [FastAPI: Modern Python Web Development](https://www.oreilly.com/library/view/fastapi/9781098135492/): Bill Lubanovic
+- [Microservice APIs: Using Python, Flask, FastAPI, OpenAPI and more](https://www.manning.com/books/microservice-apis): José Haro Peralta
+- [Two Scoops of Django](https://daniel.feldroy.com/books/tech): Daniel and Audrey Feldroy
+- [Flask Web Development, 2nd edition](https://www.oreilly.com/library/view/flask-web-development/9781491991725/): Miguel Grinberg
 
 ### Courses
-- [Django For Everybody](https://www.youtube.com/watch?v=o0XbHvKxw7Y)
-- [Python Django 7 Hour Course](https://www.youtube.com/watch?v=PtQiiknWUcI)
-- [Python API Development - Comprehensive Course for Beginners](https://www.youtube.com/watch?v=0sOvCWFmrtA)
-- [FastAPI - A python framework | Full Course](https://www.youtube.com/watch?v=7t2alSnE2-I)
-- [Flask Course - Python Web Application Development](https://www.youtube.com/watch?v=Qr4QMBUPxWo)
 
-### Miscellaneous
-- [Django's Official Tutorial](https://docs.djangoproject.com/en/5.0/intro/)
-- [FastAPI's Official Tutorial](https://fastapi.tiangolo.com/tutorial/)
-- [Flask's Official Tutorial](https://flask.palletsprojects.com/en/3.0.x/tutorial/)
+- [Python API Development: Comprehensive Course for Beginners](https://www.youtube.com/watch?v=0sOvCWFmrtA): freeCodeCamp, FastAPI + PostgreSQL
+- [Django for Everybody](https://www.dj4e.com/): Charles Severance
+- [The Flask Mega-Tutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-2024-edition-chapter-i-hello-world): Miguel Grinberg
+
+See also: [Python language]({{< relref "/docs/roadmap/programming-language/python" >}}), [REST]({{< relref "/docs/roadmap/general-software-engineering-skills/rest" >}}).

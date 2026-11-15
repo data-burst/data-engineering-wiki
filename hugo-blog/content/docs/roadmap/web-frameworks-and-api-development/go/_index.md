@@ -1,67 +1,100 @@
 ---
 weight: 2
+description: "Go web development in 2026: the net/http standard library with method routing, chi, Gin, Echo and Fiber compared, middleware, timeouts, and how to choose."
 ---
-
 # Go
 
-## Introduction
-Golang, or Go, is a statically typed, compiled programming language designed by Google. It is known for its simplicity, efficiency, 
-and strong support for concurrent programming, making it an excellent choice for web development. 
-Go's performance is comparable to low-level languages like C and C++, while its ease of use is similar to high-level 
-languages like Python and JavaScript. This combination allows developers to build scalable and high-performance 
-web applications with ease. The language's standard library includes robust support for HTTP, 
-making it a natural fit for web services and APIs. Additionally, Go's growing ecosystem of 
-frameworks and libraries further streamlines the development process, 
-enabling developers to focus on building features rather than managing infrastructure.
+**Go** is a compiled, statically typed language from Google built for networked services. It compiles to a single static binary, starts instantly, uses little memory, and handles thousands of concurrent requests with **goroutines** (lightweight threads) and ordinary blocking code. Much of the cloud-native and data infrastructure stack is written in Go: Kubernetes, Docker, Terraform, Prometheus, Grafana, etcd, CockroachDB, Redpanda's tooling and many Kafka connectors. Data teams reach for it for high-throughput ingestion services, CLIs and Kubernetes operators.
 
+## Start with the standard library
 
-### Gin
+Go's `net/http` is a production-grade HTTP server, not a toy. Since **Go 1.22** its router supports **methods and path parameters**, which removed the main reason to pull in a third-party router:
 
-Gin is a high-performance web framework for the Go programming language, designed with simplicity and speed in mind. 
-It leverages the fast HTTP router, making it one of the fastest frameworks available in the Go ecosystem. 
-Gin is known for its minimalistic approach, providing only the essential features out of the box, such as routing,
-middleware support, and JSON handling. Its API is designed to be simple and intuitive, 
-making it easy for developers to build web applications quickly. Gin's performance is enhanced 
-by its use of httprouter, a lightweight and efficient HTTP request router, which contributes to its impressive speed.
+```go
+package main
 
+import (
+    "encoding/json"
+    "net/http"
+    "strconv"
+    "time"
+)
 
-### Fiber
+type Order struct {
+    ID    int64   `json:"id"`
+    User  string  `json:"user"`
+    Total float64 `json:"total"`
+}
 
-Fiber is another popular web framework for Go, inspired by the Express framework for Node.js. 
-It aims to provide a similar experience to Express but with the added benefits of Go's performance 
-and concurrency model. Fiber is built on top of Fasthttp, an alternative HTTP engine for Go that 
-is optimized for high performance. This foundation allows Fiber to handle a large number of 
-concurrent connections efficiently. Fiber offers a rich set of features, including routing, middleware, 
-template engines, and WebSocket support, making it a versatile choice for developing modern web applications.
+func getOrder(w http.ResponseWriter, r *http.Request) {
+    id, err := strconv.ParseInt(r.PathValue("id"), 10, 64)
+    if err != nil {
+        http.Error(w, "invalid id", http.StatusBadRequest)
+        return
+    }
+    order := Order{ID: id, User: "sara", Total: 120} // look up in the DB here
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(order)
+}
 
-### Comparison
+func main() {
+    mux := http.NewServeMux()
+    mux.HandleFunc("GET /orders/{id}", getOrder)
+    srv := &http.Server{
+        Addr:         ":8080",
+        Handler:      mux,
+        ReadTimeout:  5 * time.Second, // the zero-value server has no timeouts
+        WriteTimeout: 10 * time.Second,
+    }
+    srv.ListenAndServe()
+}
+```
 
-Gin and Fiber are both high-performance web frameworks for Go, but they 
-cater to slightly different needs. Gin is known for its simplicity, ease of use,
-and efficient performance, making it ideal for developers who want a straightforward 
-framework to build robust web applications quickly. 
-It uses the net/http package, which, while slightly slower than Fasthttp, is still highly efficient for most use cases. 
-Fiber, on the other hand, is built on top of the Fasthttp package, which gives it an edge in raw performance, 
-making it suitable for applications requiring extremely high throughput and low latency. 
-However, Fiber's extensive feature set and flexibility come with a steeper learning curve compared to Gin. 
-The choice between Gin and Fiber ultimately depends on the specific requirements of the project 
-and the developer's familiarity with Go web development.
+**Middleware** in Go is just a function that wraps a handler: `func(next http.Handler) http.Handler`. Logging, auth and recovery are each a few lines.
+
+## The frameworks
+
+| Library | Built on | Character |
+|---|---|---|
+| **net/http** | Standard library | Zero dependencies, stable forever under the Go 1 compatibility promise. Enough for most services since 1.22. |
+| **chi** | net/http | A small router with route groups, sub-routers and a middleware collection. Handlers stay plain `http.Handler`, so everything in the ecosystem works. |
+| **Gin** | net/http | The most popular Go framework. Its own `gin.Context`, fast routing, binding and validation of JSON and query parameters, lots of middleware. |
+| **Echo** | net/http | Similar to Gin: its own context, binding, validation, and well-organized docs. |
+| **Fiber** | fasthttp | Express-style API and very high raw throughput, but **not** compatible with `net/http` handlers, middleware or HTTP/2. |
+
+## How to choose
+
+- **Default:** `net/http`. Add **chi** when you want route groups and ready-made middleware while staying standard-compatible.
+- **Gin or Echo** when the team wants batteries (binding, validation, error handling) and prefers a framework's conventions.
+- **Fiber** only if benchmarks of **your** workload show `net/http` is the bottleneck, which is rare: the database or downstream calls usually dominate.
+- For **gRPC** services, use `grpc-go` or **connect-go** instead of an HTTP framework. See [gRPC]({{< relref "/docs/roadmap/general-software-engineering-skills/grpc" >}}).
+
+## Common mistakes
+
+- **Using `http.ListenAndServe` or the default `http.Client` without timeouts.** Both wait forever by default. Create an `http.Server` and `http.Client{Timeout: ...}` explicitly.
+- **Ignoring `r.Context()`.** Pass the request context into database and HTTP calls so work stops when the client disconnects.
+- **Starting goroutines per request without limits.** Bound concurrency with a worker pool or `errgroup.SetLimit`.
+- **Not shutting down gracefully.** Handle SIGTERM and call `srv.Shutdown(ctx)` so in-flight requests finish during a Kubernetes rollout.
+- **Choosing a framework for benchmark numbers** rather than ecosystem fit.
 
 ## Learning Resources
 
-### Books
-- [Building Distributed Applications in Gin](https://www.amazon.ca/Building-Distributed-Applications-Gin-hands/dp/1801074852)
+### Official
 
+- [Tutorial: Developing a RESTful API with Go and Gin](https://go.dev/doc/tutorial/web-service-gin)
+- [Routing enhancements for Go 1.22](https://go.dev/blog/routing-enhancements): the new `net/http` patterns
+- [net/http package documentation](https://pkg.go.dev/net/http)
+- [chi](https://go-chi.io/), [Gin](https://gin-gonic.com/en/docs/), [Echo](https://echo.labstack.com/docs), [Fiber](https://docs.gofiber.io/)
+
+### Books
+
+- [Let's Go and Let's Go Further](https://lets-go.alexedwards.net/): Alex Edwards, the best practical guides to Go web apps and APIs with the standard library
+- [Learning Go, 2nd edition](https://www.oreilly.com/library/view/learning-go-2nd/9781098139285/): Jon Bodner
+- [Building Distributed Applications in Gin](https://www.packtpub.com/en-us/product/building-distributed-applications-in-gin-9781801074858): Mohamed Labouardy
 
 ### Courses
+
 - [Crash course in Gin Framework](https://www.youtube.com/watch?v=N14HOh10ghY)
-- [Creating Golang REST API with Gin-Gonic Web Framework & MongoDB](https://www.youtube.com/watch?v=vDIAwtGU9LE)
-- [Go Programming - Fiber Web Framework](https://www.youtube.com/watch?v=xHvzNJzA9DQ)
 - [Go Fiber Web Framework](https://www.youtube.com/watch?v=RK6KnzIfeJQ)
-- [Build a REST API in Go using Fiber + GORM](https://www.youtube.com/watch?v=dpx6hpr-wE8)
 
-
-### Miscellaneous
-- [Gin Tutorial](https://go.dev/doc/tutorial/web-service-gin)
-- [Gin's Official Examples](https://gin-gonic.com/docs/examples/)
-- [Fiber's Official Documentation](https://docs.gofiber.io/)
+See also: [Go language]({{< relref "/docs/roadmap/programming-language/go" >}}), [REST]({{< relref "/docs/roadmap/general-software-engineering-skills/rest" >}}).

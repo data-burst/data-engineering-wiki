@@ -32,7 +32,7 @@ code,kbd,pre,samp{font-family:var(--mono)}
 .markdown a{text-decoration:none;border-bottom:1px solid var(--acc-m)}
 .markdown a:hover{border-color:var(--acc)}
 .markdown code{background:var(--panel);color:var(--ink);border:1px solid var(--line2);border-radius:4px;padding:.05em .35em;font-size:.86em}
-.markdown pre{background:#260246!important;color:#EEEAF5;border-radius:8px;padding:.9rem 1.1rem;font-size:.84rem}
+.markdown pre{background:var(--panel)!important;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.9rem 1.1rem;font-size:.84rem;line-height:1.65}
 .markdown pre code{background:none;border:none;color:inherit;padding:0}
 .markdown blockquote{background:var(--acc-l);border:none;border-radius:6px;padding:.9rem 1.2rem .9rem 1.4rem;margin:1.75rem 0}
 .markdown blockquote::before{background:var(--acc);width:3px;border-radius:6px 0 0 6px}
@@ -153,8 +153,8 @@ code,kbd,pre,samp{font-family:var(--mono)}
 .markdown .rc-tbl th{padding:.3rem .5rem;text-align:left;font-size:.68rem;color:var(--faint);font-weight:600;border-bottom:1px solid var(--line)}
 .markdown .rc-tbl td{padding:.25rem .5rem;border-bottom:1px solid var(--line2)}
 .markdown .rc-tbl .hot{color:var(--acc);font-weight:700}
-.rc-q{font-family:var(--mono);background:#260246;color:#EEEAF5;border-radius:6px;padding:.6rem .8rem;font-size:.8rem;line-height:1.6;white-space:pre}
-.rc-q .k{color:#E2B6FB}
+.rc-q{font-family:var(--mono);background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:.6rem .8rem;font-size:.8rem;line-height:1.6;white-space:pre}
+.rc-q .k{color:var(--acc);font-weight:600}
 .rc-disk{margin-top:1rem}
 .rc-disk .lb{font:600 .72rem var(--mono);text-transform:uppercase;letter-spacing:.5px;display:flex;justify-content:space-between;align-items:baseline;gap:1rem}
 .rc-disk .lb span{text-transform:none;letter-spacing:0;color:var(--muted);font-weight:500}

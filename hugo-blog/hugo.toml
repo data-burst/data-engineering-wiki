@@ -33,3 +33,7 @@ notAlternative = true
 home = ["html", "rss", "llms"]
 page = ["html", "txt"]
 section = ["html", "txt"]
+
+# Calm, readable code highlighting on a light background.
+[markup.highlight]
+style = "github"

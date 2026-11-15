@@ -37,10 +37,10 @@ Because the loop never stops, the same mechanism handles a first deploy, a crash
 
 | | Kubernetes | Docker Swarm | Apache Mesos |
 |---|---|---|---|
-| Status | De facto standard, CNCF graduated | Maintained (by Mirantis), small ecosystem | **Retired** to the Apache Attic |
+| Status | De facto standard, CNCF graduated | Maintained (in Docker Engine; Mirantis supports it commercially), small ecosystem | **Retired** to the Apache Attic |
 | Learning curve | Steep | Gentle: Docker CLI and Compose files | Steep (plus a framework like Marathon) |
 | Managed offerings | EKS, GKE, AKS and many more | Few | None |
-| Data ecosystem | Spark, Flink, Kafka (Strimzi), Airflow, Trino operators and Helm charts | Minimal | Historical (Spark on Mesos is deprecated) |
+| Data ecosystem | Spark, Flink, Kafka (Strimzi), Airflow, Trino operators and Helm charts | Minimal | Historical (Spark 4.0 removed Mesos support) |
 | Choose it when | Almost always, for new platforms | Small teams, a few hosts, simple services | Only to maintain an existing legacy cluster |
 
 For data platforms the answer is almost always Kubernetes, often a managed one. Serverless container services (AWS Fargate, Google Cloud Run, Azure Container Apps) are a reasonable alternative when you do not want to run a cluster at all.

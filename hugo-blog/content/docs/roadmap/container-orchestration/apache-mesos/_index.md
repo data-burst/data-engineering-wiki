@@ -32,7 +32,7 @@ Kubernetes took the opposite approach: **one central scheduler** plus extensible
 
 - Mesosphere, the main commercial backer, renamed itself D2iQ in 2019, shifted to Kubernetes and ended DC/OS; **Marathon** was archived.
 - Twitter, Apple and others migrated their Mesos fleets to Kubernetes.
-- Spark's Mesos support was deprecated in Spark 3.2 in favour of Kubernetes and YARN.
+- Spark deprecated its Mesos support in 3.2 and removed it in Spark 4.0, in favour of Kubernetes, YARN and standalone mode.
 
 | | Apache Mesos | Kubernetes |
 |---|---|---|
@@ -45,7 +45,7 @@ Kubernetes took the opposite approach: **one central scheduler** plus extensible
 
 The **resource-offer** model and the paper behind it shaped later systems. Kubernetes' multi-scheduler support, YARN's application masters and Spark's dynamic allocation all solve the same problem Mesos named: many frameworks sharing one cluster fairly. Its **Dominant Resource Fairness (DRF)** allocation algorithm is still taught and used.
 
-If you inherit a Mesos cluster today, plan a migration to [Kubernetes]({{< relref "../kubernetes" >}}); the community fork of Aurora at `aurora-scheduler` on GitHub is the only notable framework still maintained.
+If you inherit a Mesos cluster today, plan a migration to [Kubernetes]({{< relref "../kubernetes" >}}); the frameworks around it (Marathon, Chronos, Apache Aurora) are archived or retired too.
 
 ## Learning Resources
 

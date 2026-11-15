@@ -99,7 +99,7 @@ The **control plane** (API server, etcd, scheduler, controller manager) stores t
   <li>You apply a <b>Deployment</b> asking for 3 replicas. Its controller creates a <b>ReplicaSet</b> for this version of the image.</li>
   <li>The ReplicaSet creates <b>3 Pods</b>. They are <b>Pending</b>: they exist in etcd but have no node yet.</li>
   <li>The <b>scheduler</b> filters nodes that fit the Pods' CPU and memory requests, scores them, and <b>binds</b> one Pod per node. Kubelets start the containers.</li>
-  <li><b>Node 3 dies</b>. After missed heartbeats it is marked NotReady and pod-c is gone. Actual state (2) no longer matches desired state (3).</li>
+  <li><b>Node 3 dies</b>. After missed heartbeats it is marked NotReady, and after a grace period (5 minutes by default) pod-c is evicted. Actual state (2) no longer matches desired state (3).</li>
   <li>Nobody gets paged: the ReplicaSet creates <b>pod-d</b> and the scheduler places it on Node 1. This is <b>self-healing</b>: the same reconcile loop as the first deploy.</li>
 </ol>
 {{< /fig >}}

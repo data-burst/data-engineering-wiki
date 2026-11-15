@@ -55,7 +55,7 @@ A **firewall** checks each network packet or connection against a list of rules 
 </ol>
 {{< /fig >}}
 
-The same rules written for Linux `nftables`:
+Similar rules on a single Linux host with `nftables` (inbound side only; an `output` chain with its own policy would add the egress rule):
 
 ```text
 table inet filter {

@@ -45,7 +45,7 @@ A **VPN** (Virtual Private Network) builds an encrypted **tunnel** across an unt
     <text x="302" y="197" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">IP 192.0.2.44 → 198.51.100.1</text>
     <rect x="421" y="178" width="90" height="30" rx="6" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4"/>
     <text x="466" y="197" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">UDP 51820</text>
-    <rect x="517" y="178" width="190" height="30" rx="6" fill="#260246"/>
+    <rect x="517" y="178" width="190" height="30" rx="6" fill="#531A8A"/>
     <text x="612" y="197" text-anchor="middle" class="m" font-size="11.5" fill="#fff">encrypted inner packet</text>
   </g>
   <g class="f" data-step="3">

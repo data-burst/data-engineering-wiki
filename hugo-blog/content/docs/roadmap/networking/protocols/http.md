@@ -37,7 +37,7 @@ bookToC: false
 <tr class="f" data-step="1"><td>1</td><td>01</td><td>client</td><td>server</td><td class="tag">CONNECT</td><td>TCP 3-way handshake + TLS 1.3 (port 443)</td></tr>
 <tr class="f" data-step="2"><td>2</td><td>02</td><td>client</td><td>server</td><td class="tag">REQUEST</td><td>GET /orders/42 HTTP/1.1 · Host: api.shop.com · Accept: application/json · Authorization: Bearer …</td></tr>
 <tr class="f" data-step="4"><td>3</td><td>04</td><td>server</td><td>client</td><td class="tag">RESPONSE</td><td>HTTP/1.1 200 OK · Content-Type: application/json · Content-Length: 312 · Cache-Control: private, max-age=0 · ETag: "v7"</td></tr>
-<tr class="f" data-step="4"><td>4</td><td>04</td><td>server</td><td>client</td><td class="tag">BODY</td><td>{"id":42,"user":"sara","status":"shipped","total":120.0}</td></tr>
+<tr class="f" data-step="4"><td>4</td><td>04</td><td>server</td><td>client</td><td class="tag">BODY</td><td>{"id":42,"user":"sam","status":"shipped","total":120.0}</td></tr>
 <tr class="f" data-step="5"><td>5</td><td>05</td><td>client</td><td>server</td><td class="tag">REQUEST</td><td>GET /orders/42 · If-None-Match: "v7"</td></tr>
 <tr class="f" data-step="5"><td>6</td><td>05</td><td>server</td><td>client</td><td class="tag">RESPONSE</td><td>HTTP/1.1 304 Not Modified (client reuses its cached copy)</td></tr>
 </table>

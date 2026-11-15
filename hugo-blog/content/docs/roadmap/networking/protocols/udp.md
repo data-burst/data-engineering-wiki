@@ -41,7 +41,7 @@ bookToC: false
 <g class="f" data-step="3"><line x1="79" y1="201" x2="301" y2="201" stroke="#531A8A" stroke-width="1.6" marker-end="url(#udp-a)"/><text x="190" y="194" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">seg 1</text></g>
 <g class="f" data-step="3"><line x1="79" y1="235" x2="190" y2="235" stroke="#C2382F" stroke-width="1.6" marker-end="url(#udp-r)"/><text x="200" y="240" text-anchor="middle" font-size="15" font-weight="700" fill="#C2382F">✕</text><text x="142" y="228" text-anchor="middle" class="m" font-size="11.5" fill="#C2382F">seg 2</text></g>
 <g class="f" data-step="3"><line x1="79" y1="269" x2="301" y2="269" stroke="#531A8A" stroke-width="1.6" marker-end="url(#udp-a)"/><text x="190" y="262" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">seg 3</text></g>
-<g class="f" data-step="4"><line x1="301" y1="303" x2="79" y2="303" stroke="#531A8A" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#udp-a)"/><text x="190" y="296" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">dup ACK: still need 2</text></g>
+<g class="f" data-step="4"><line x1="301" y1="303" x2="79" y2="303" stroke="#531A8A" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#udp-a)"/><text x="190" y="296" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">ACK: still waiting for seg 2</text></g>
 <g class="f" data-step="4"><line x1="79" y1="337" x2="301" y2="337" stroke="#531A8A" stroke-width="1.6" marker-end="url(#udp-a)"/><text x="190" y="330" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">retransmit seg 2</text></g>
 <g class="f" data-step="5"><rect x="240" y="356" width="130" height="22" rx="5" fill="#F4EEFA" stroke="#DCC9EE"/><text x="305" y="371" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">1, 2, 3 in order</text></g>
 <g class="f" data-step="5"><rect x="603" y="254" width="151" height="22" rx="5" fill="#fff" stroke="#C2382F"/><text x="678" y="269" text-anchor="middle" class="m" font-size="11.5" fill="#C2382F">#2 is gone for good</text></g>
@@ -51,7 +51,7 @@ bookToC: false
   <li>TCP spends a round trip on the <b>handshake</b> before any data. UDP just sends: three <b>datagrams</b>, and #2 is lost.</li>
   <li>UDP is already finished. The receiver got <b>#1 and #3</b>. Nothing tells either side that #2 is missing.</li>
   <li>TCP sends its three segments. Segment 2 is lost too.</li>
-  <li>The receiver <b>ACKs</b> only what arrived in order, so the sender <b>retransmits</b> segment 2. Segment 3 waits in a buffer meanwhile.</li>
+  <li>The receiver keeps <b>ACKing</b> only up to the gap (a duplicate ACK), so after a timeout or repeated duplicate ACKs the sender <b>retransmits</b> segment 2. Segment 3 waits in a buffer meanwhile.</li>
   <li>TCP delivers <b>all three, in order</b>, but later. UDP delivered <b>two, immediately</b>. Which is better depends on the app.</li>
 </ol>
 {{< /fig >}}
@@ -80,7 +80,7 @@ Compare that with TCP's 20 to 60 bytes of sequence numbers, ACKs, windows and fl
 
 ## When UDP is the right choice
 
-- **Small request, small reply.** A DNS lookup fits in one datagram each way. A TCP handshake would triple the latency.
+- **Small request, small reply.** A DNS lookup fits in one datagram each way. Over TCP, the handshake alone would double the latency.
 - **Fresh beats complete.** In a voice call, a packet that arrives 300 ms late is useless. Skip it and play the next one.
 - **You want to build your own reliability.** **QUIC**, the transport under **HTTP/3**, runs over UDP and implements streams, retransmission and TLS 1.3 itself. Losing one stream's packet no longer blocks the others, and it can be updated in user space instead of the OS kernel.
 - **Fire-and-forget telemetry.** StatsD and many syslog setups send metrics over UDP so a slow collector never slows the app.

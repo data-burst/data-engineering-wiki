@@ -60,14 +60,14 @@ The OSI model has seven layers. TCP/IP merges OSI's top three into "application"
 <tr class="f" data-step="3"><td>3</td><td>03</td><td>client</td><td>server</td><td class="tag">ACK</td><td>ack=5001 → connection established</td></tr>
 <tr class="f" data-step="4"><td>4</td><td>04</td><td>client</td><td>server</td><td class="tag">PSH,ACK</td><td>seq=1001, len=100 (query bytes)</td></tr>
 <tr class="f" data-step="4"><td>5</td><td>04</td><td>server</td><td>client</td><td class="tag">ACK</td><td>ack=1101 (got bytes 1001–1100)</td></tr>
-<tr class="f" data-step="5"><td>6</td><td>05</td><td>client</td><td>server</td><td class="tag">FIN</td><td>seq=1101</td></tr>
+<tr class="f" data-step="5"><td>6</td><td>05</td><td>client</td><td>server</td><td class="tag">FIN,ACK</td><td>seq=1101, ack=5001</td></tr>
 <tr class="f" data-step="5"><td>7</td><td>05</td><td>server</td><td>client</td><td class="tag">ACK</td><td>ack=1102</td></tr>
-<tr class="f" data-step="5"><td>8</td><td>05</td><td>server</td><td>client</td><td class="tag">FIN</td><td>seq=5001</td></tr>
+<tr class="f" data-step="5"><td>8</td><td>05</td><td>server</td><td>client</td><td class="tag">FIN,ACK</td><td>seq=5001, ack=1102</td></tr>
 <tr class="f" data-step="5"><td>9</td><td>05</td><td>client</td><td>server</td><td class="tag">ACK</td><td>ack=5002 → client in TIME_WAIT</td></tr>
 </table>
 <ol class="lx-caps">
   <li>A client (say, a Python app) wants to talk to PostgreSQL on port 5432. No connection exists yet.</li>
-  <li>The client sends <b>SYN</b> with a random starting <b>sequence number</b>.</li>
+  <li>The client sends <b>SYN</b> with its initial <b>sequence number</b> (1000 here for readability; real ones are random 32-bit values).</li>
   <li>The server replies <b>SYN-ACK</b>: its own sequence number, and an acknowledgment of the client's (1000 + 1).</li>
   <li>The client sends <b>ACK</b>. Both sides are <b>ESTABLISHED</b>. That cost one full round trip before any data.</li>
   <li>Data flows. Every byte is numbered, and the receiver <b>acknowledges</b> what it got. Missing bytes are resent.</li>
@@ -80,7 +80,7 @@ The OSI model has seven layers. TCP/IP merges OSI's top three into "application"
 - **Reliability.** Every byte has a sequence number. Unacknowledged data is retransmitted after a timeout or after duplicate ACKs.
 - **Ordering.** The receiver reassembles bytes in order before handing them to the app.
 - **Flow control.** The receiver advertises a **window**: how much it can buffer. A slow consumer slows the sender.
-- **Congestion control.** The sender probes the network's capacity (slow start, then CUBIC or BBR) and backs off on loss.
+- **Congestion control.** The sender probes the network's capacity with an algorithm such as CUBIC (the Linux default) or BBR, starting with slow start and backs off on loss.
 
 The costs: one round trip for the handshake before any data, and **head-of-line blocking**: if one segment is lost, everything after it waits, even if it already arrived. That second cost is why HTTP/3 moved to QUIC over UDP.
 

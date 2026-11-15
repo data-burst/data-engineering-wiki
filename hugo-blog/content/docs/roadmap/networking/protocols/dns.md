@@ -85,7 +85,7 @@ Four roles take part:
 | MX | domain → mail servers | `shop.com MX 10 mail.shop.com` |
 | TXT | name → text | domain verification, SPF, DKIM |
 | NS | zone → its name servers | `shop.com NS ns1.provider.net` |
-| SRV | service → host + port | service discovery, e.g. Kafka or LDAP |
+| SRV | service → host + port | service discovery, e.g. LDAP, Kerberos, SIP |
 
 ## DNS in data platforms
 

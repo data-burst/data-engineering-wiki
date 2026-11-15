@@ -29,7 +29,7 @@ bookToC: false
 <g class="f" data-step="2"><line x1="556" y1="133" x2="204" y2="133" stroke="#531A8A" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#tls-a)"/><text x="380" y="126" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">ServerHello  key_share</text></g>
 <g class="f" data-step="2"><rect x="132" y="152" width="95" height="22" rx="5" fill="#F4EEFA" stroke="#DCC9EE"/><text x="180" y="167" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">derive keys</text></g>
 <g class="f" data-step="2"><rect x="532" y="152" width="95" height="22" rx="5" fill="#F4EEFA" stroke="#DCC9EE"/><text x="580" y="167" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">derive keys</text></g>
-<g class="f" data-step="3"><line x1="556" y1="201" x2="204" y2="201" stroke="#531A8A" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#tls-a)"/><text x="380" y="194" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">{Certificate, CertVerify, Finished}</text></g>
+<g class="f" data-step="3"><line x1="556" y1="201" x2="204" y2="201" stroke="#531A8A" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#tls-a)"/><text x="380" y="194" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">{EncExt, Certificate, CertVerify, Finished}</text></g>
 <g class="f" data-step="4"><rect x="114" y="220" width="172" height="22" rx="5" fill="#F4EEFA" stroke="#DCC9EE"/><text x="200" y="235" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">check chain + hostname</text></g>
 <g class="f" data-step="4"><line x1="204" y1="269" x2="556" y2="269" stroke="#531A8A" stroke-width="1.6" marker-end="url(#tls-a)"/><text x="380" y="262" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">{Finished}</text></g>
 <g class="f" data-step="5"><line x1="204" y1="303" x2="556" y2="303" stroke="#531A8A" stroke-width="1.6" marker-end="url(#tls-a)"/><text x="380" y="296" text-anchor="middle" class="m" font-size="11.5" fill="#17151F">{GET / HTTP/1.1}</text></g>
@@ -48,7 +48,7 @@ bookToC: false
   <li>A TCP connection to port 443 is open. Nothing is encrypted yet.</li>
   <li><b>ClientHello</b>: supported versions and ciphers, the server name (<b>SNI</b>), and a <b>key share</b>: the client's half of a key exchange.</li>
   <li><b>ServerHello</b> carries the server's key share. Both sides now compute the same <b>shared secret</b> without ever sending it.</li>
-  <li>Everything from here is encrypted ({ } = encrypted). The server sends its <b>certificate</b> and signs the handshake with its private key to prove it owns it.</li>
+  <li>Everything from here is encrypted ({ } = encrypted). The server sends its remaining settings and its <b>certificate</b>, then signs the handshake with its private key to prove it owns it.</li>
   <li>The client checks the certificate chain up to a <b>trusted CA</b>, the expiry and that the name matches shop.com, then sends <b>Finished</b>.</li>
   <li>Application data flows encrypted. The whole handshake took <b>one round trip</b> (TLS 1.2 needed two).</li>
 </ol>
@@ -69,7 +69,7 @@ After the handshake, data is encrypted with a fast symmetric cipher such as AES-
 | Intermediate CA | Root CA | Sent by the server |
 | Root CA | Itself | Your trust store (OS, browser, JVM `cacerts`, Python `certifi`) |
 
-Let's Encrypt and other ACME CAs issue free certificates automatically. Lifetimes are shrinking: the CA/Browser Forum has voted to cut maximum validity from 398 days to 47 days by 2029, so certificate renewal must be automated.
+Let's Encrypt and other ACME CAs issue free certificates automatically. Lifetimes are shrinking: the CA/Browser Forum has voted to cut maximum validity from 398 days to 200 days (March 2026), 100 days (2027) and 47 days (2029), so certificate renewal must be automated.
 
 ## Common mistakes
 

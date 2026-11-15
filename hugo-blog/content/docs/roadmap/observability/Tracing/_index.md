@@ -37,7 +37,7 @@ bookToC: false
   <li>The <b>postgres INSERT</b> takes 45 ms. Not our problem.</li>
   <li><b>payment-svc charge</b> takes 335 ms, most of the request. Drill into its children.</li>
   <li>The first call to the bank API <b>timed out after 200 ms</b>; a retry then succeeded in 105 ms. The trace shows the cause directly: a <b>timeout plus retry</b>, not a slow database.</li>
-  <li>Finally the order event is <b>produced to Kafka</b>. Fix: lower the bank timeout or call it asynchronously, and this request drops to under 300 ms.</li>
+  <li>Finally the order event is <b>produced to Kafka</b>. Without the hung first bank call, this request would have taken about 270 ms.</li>
 </ol>
 {{< /fig >}}
 
@@ -47,7 +47,10 @@ A trace only connects across services if each hop **passes the trace context alo
 
 ```text
 traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01
-             ver  trace-id (same for the whole trace) parent span-id   sampled
+             │  │                                │                └ flags (01 = sampled)
+             │  │                                └ parent span-id
+             │  └ trace-id (same for the whole trace)
+             └ version
 ```
 
 Instrumentation libraries read this header on incoming requests, create child spans, and inject it into outgoing HTTP calls, gRPC metadata or **Kafka message headers**. When any service in the chain drops the header, the trace breaks into pieces.

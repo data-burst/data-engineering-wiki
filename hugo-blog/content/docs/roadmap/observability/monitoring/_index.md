@@ -20,7 +20,7 @@ Each metric has **labels** (dimensions) such as `table="orders"` or `env="prod"`
 
 ## Prometheus
 
-**Prometheus** is the de facto open-source monitoring system and a CNCF graduated project (version 3 was released in late 2024). It **pulls** metrics: every 15–30 seconds it **scrapes** an HTTP `/metrics` endpoint on each target, stores samples in its time-series database, evaluates rules and sends alerts to **Alertmanager**, which deduplicates, groups and routes them to Slack, email or PagerDuty.
+**Prometheus** is the de facto open-source monitoring system and a CNCF graduated project (version 3 was released in late 2024). It **pulls** metrics: at a fixed interval (commonly 15–60 seconds) it **scrapes** an HTTP `/metrics` endpoint on each target, stores samples in its time-series database, evaluates rules and sends alerts to **Alertmanager**, which deduplicates, groups and routes them to Slack, email or PagerDuty.
 
 ```text
 # HELP rows_written_total Rows written by the loader
@@ -37,7 +37,8 @@ sum by (table) (rate(rows_written_total[5m]))
 # p99 job duration from a histogram
 histogram_quantile(0.99, sum by (le) (rate(job_duration_seconds_bucket[1h])))
 
-# Alert condition: consumer more than 100k messages behind for 10 minutes
+# Alert condition: consumer more than 100k messages behind
+# (add `for: 10m` in the alerting rule so it must hold for 10 minutes)
 max by (group) (kafka_consumergroup_lag) > 100000
 ```
 

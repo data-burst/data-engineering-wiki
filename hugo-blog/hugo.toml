@@ -3,3 +3,9 @@ languageCode = "en-us"
 title = "Databurst Data Engineering Wiki"
 theme = "hugo-book"
 googleAnalytics = "G-5TB3E0SGK4"
+
+[params]
+BookTheme = "light"
+
+[markup.goldmark.renderer]
+unsafe = true

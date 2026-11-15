@@ -1,14 +1,21 @@
-FROM golang:alpine3.19
+FROM alpine:3.20
 
-RUN apk add --no-cache hugo git
+ARG HUGO_VERSION=0.163.0
+ARG HUGO_BOOK_COMMIT=7875ae6
+
+RUN apk add --no-cache git curl ca-certificates \
+ && curl -fsSL "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_${HUGO_VERSION}_linux-amd64.tar.gz" | tar -xz -C /usr/local/bin hugo
 
 WORKDIR /site
 
 COPY hugo-blog .
 
-RUN git config --global init.defaultBranch master && git init &&  git submodule add https://github.com/alex-shpak/hugo-book themes/hugo-book
+# Theme is a git submodule; fetch it at the pinned commit so the build doesn't depend on the checkout.
+RUN rm -rf themes/hugo-book \
+ && git clone -q https://github.com/alex-shpak/hugo-book themes/hugo-book \
+ && git -C themes/hugo-book checkout -q ${HUGO_BOOK_COMMIT}
 
-# Resolve hugo-book inconsistent version
-RUN cd themes/hugo-book/ && git checkout da22a41f609c74b9720b6d7b5eda334882da0d28 && cd ../..
+EXPOSE 1313
 
-ENTRYPOINT hugo server -D --bind "0.0.0.0"
+# --baseURL/--appendPort keep canonical, Open Graph and sitemap URLs pointing at the real domain.
+ENTRYPOINT ["hugo", "server", "--bind", "0.0.0.0", "--baseURL", "https://wiki.databurst.tech/", "--appendPort=false", "--disableLiveReload", "--environment", "production"]

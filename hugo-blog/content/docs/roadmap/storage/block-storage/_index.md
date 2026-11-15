@@ -1,69 +1,105 @@
 ---
 title: "Block Storage"
+description: "How block storage works, animated: a write travels from the app through the file system to numbered blocks on a network volume. EBS, Ceph RBD and NVMe compared."
 weight: 1
+bookToC: false
 ---
+<div class="lx-kicker-line">$ lsblk -o NAME,SIZE,TYPE,MOUNTPOINT</div>
 
-# Block Storages
+# Block Storage
 
-## Introduction
-Block storage is a fundamental approach to storing data in fixed-size blocks, each uniquely identified by a logical address. Unlike file storage, which stores data in a hierarchical structure of files and directories, block storage organizes data into discrete blocks, allowing for low-level access and manipulation.
+**Block storage** presents a disk as a long array of fixed-size **blocks** (usually 4 KiB), each addressed by a number called a **logical block address (LBA)**. The device knows nothing about files, folders or owners; it only answers "read block 1,040" and "write these bytes to block 1,040". The operating system puts a **file system** (ext4, XFS, NTFS) on top to turn those blocks into files. A laptop SSD, an Amazon EBS volume, a Ceph RBD image and a SAN LUN are all block storage; they differ in where the blocks physically live.
 
-### Key Characteristics:
-- **Low-Level Access**: Block storage offers direct access to individual blocks of data, enabling efficient read and write operations at the block level. This makes it ideal for applications requiring high performance and low latency.
-- **High Performance**: Due to its low-level access and optimized data handling, block storage provides high throughput and low latency, making it suitable for performance-sensitive applications such as databases, virtual machines, and enterprise applications.
-- **Flexibility**: Block storage volumes can be attached to different systems and servers, providing flexibility in deployment and management. They can also be resized and reconfigured dynamically to accommodate changing storage needs.
-- **Scalability**: Modern block storage systems often incorporate features for horizontal scaling across multiple nodes or devices, ensuring scalability as data requirements grow.
-- **Data Integrity**: Block storage systems typically include mechanisms for ensuring data integrity and reliability, such as checksums, error correction codes, and redundancy schemes.
+## The path of one write
 
-### Advantages of Block Storage
-Block storage offers several advantages over other storage architectures, including:
+{{< fig kicker="$ pg_ctl start   # PostgreSQL on an EBS volume" title="From write() to replicated blocks" >}}
+<svg class="lx-svg lx-canvas" viewBox="0 0 760 330">
+  <g>
+    <rect x="20" y="20" width="320" height="52" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="36" y="42" class="m" font-size="12" font-weight="700" fill="#17151F">APPLICATION</text>
+    <text x="36" y="60" font-size="11" fill="#5C5869">PostgreSQL, writing an 8 KiB page</text>
+    <rect x="20" y="100" width="320" height="52" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="36" y="122" class="m" font-size="12" font-weight="700" fill="#17151F">FILE SYSTEM</text>
+    <text x="36" y="140" font-size="11" fill="#5C5869">ext4 / XFS: names, folders, permissions</text>
+    <rect x="20" y="180" width="320" height="52" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="36" y="202" class="m" font-size="12" font-weight="700" fill="#17151F">BLOCK DEVICE</text>
+    <text x="36" y="220" font-size="11" fill="#5C5869">/dev/nvme1n1: numbered 4 KiB blocks</text>
+    <rect x="20" y="260" width="320" height="52" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="36" y="282" class="m" font-size="12" font-weight="700" fill="#17151F">NETWORK VOLUME</text>
+    <text x="36" y="300" font-size="11" fill="#5C5869">EBS / Ceph RBD, on storage servers</text>
+  </g>
+  <g class="f" data-step="1">
+    <rect x="370" y="26" width="370" height="40" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/>
+    <text x="386" y="51" class="m" font-size="12" fill="#17151F">write(orders_file, 8 KiB, offset 57344)</text>
+  </g>
+  <g class="f" data-step="2">
+    <line x1="180" y1="72" x2="180" y2="100" stroke="#531A8A" stroke-width="2"/>
+    <rect x="370" y="106" width="370" height="40" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/>
+    <text x="386" y="131" class="m" font-size="12" fill="#17151F">file offset 57344 → blocks 1040–1041</text>
+  </g>
+  <g class="f" data-step="3">
+    <line x1="180" y1="152" x2="180" y2="180" stroke="#531A8A" stroke-width="2"/>
+    <rect x="370" y="186" width="370" height="40" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/>
+    <text x="386" y="211" class="m" font-size="12" fill="#17151F">WRITE LBA 1040, 2 blocks</text>
+    <g fill="#F7F7FB" stroke="#E7E7EF"><rect x="232" y="192" width="14" height="14"/><rect x="248" y="192" width="14" height="14"/><rect x="296" y="192" width="14" height="14"/><rect x="312" y="192" width="14" height="14"/></g>
+    <g fill="#531A8A"><rect x="264" y="192" width="14" height="14"/><rect x="280" y="192" width="14" height="14"/></g>
+  </g>
+  <g class="f" data-step="4">
+    <line x1="180" y1="232" x2="180" y2="260" stroke="#531A8A" stroke-width="2"/>
+    <text x="370" y="290" class="m" font-size="12" fill="#17151F">copies in the zone → ack</text>
+    <rect x="566" y="262" width="80" height="48" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="606" y="291" text-anchor="middle" class="m" font-size="11" fill="#17151F">SERVER A</text>
+    <rect x="660" y="262" width="80" height="48" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="700" y="291" text-anchor="middle" class="m" font-size="11" fill="#17151F">SERVER B</text>
+    <text x="324" y="42" text-anchor="end" class="m" font-size="11" font-weight="700" fill="#531A8A">fsync ✓</text>
+  </g>
+</svg>
+<ol class="lx-caps">
+  <li>Four layers sit between a database and the physical media. Only the top two know what a <b>file</b> is.</li>
+  <li>PostgreSQL asks to overwrite <b>8 KiB at offset 57344</b> of a data file. It changes just that page, not the whole file.</li>
+  <li>The <b>file system</b> looks up which blocks hold that part of the file: <b>blocks 1040 and 1041</b>.</li>
+  <li>The <b>block device</b> receives a plain "write 2 blocks at LBA 1040". No names, no folders, just addresses.</li>
+  <li>On a cloud volume the blocks travel over the network and are <b>replicated</b> to several servers in the same zone before the write is acknowledged. Now <b>fsync</b> returns and the commit is durable.</li>
+</ol>
+{{< /fig >}}
 
-1. **Performance**: With low-level access and optimized data handling, block storage delivers high performance and low latency, making it ideal for performance-sensitive applications.
-2. **Flexibility**: Block storage volumes can be attached to different systems and resized dynamically, providing flexibility in deployment and management.
-3. **Scalability**: Modern block storage systems support horizontal scaling across multiple nodes or devices, ensuring scalability as data requirements grow.
-4. **Data Integrity**: Block storage systems include mechanisms for ensuring data integrity and reliability, such as checksums, error correction codes, and redundancy schemes.
+This is why databases want block storage: they need **small, in-place, low-latency** writes and a guarantee (`fsync`) that a write survived. Object storage cannot overwrite 8 KiB in the middle of an object.
 
+## Kinds of block storage
 
-### Examples of Block Storage
+| Kind | Examples | Latency | Survives instance loss? | Notes |
+|---|---|---|---|---|
+| **Local NVMe SSD** | EC2 instance store, bare-metal disks | ~0.1 ms | No | Fastest, but data dies with the machine. Good for caches, scratch space, replicated systems like Kafka or ClickHouse. |
+| **Cloud network volume** | Amazon EBS (gp3, io2), Google Persistent Disk / Hyperdisk, Azure Managed Disks | ~0.5–1 ms | Yes | Replicated inside one availability zone. Pay for provisioned size, IOPS and throughput. Snapshots go to object storage. |
+| **Software-defined** | Ceph RBD, Longhorn, OpenEBS | ~1 ms | Yes | Self-hosted replicated volumes, common for Kubernetes and OpenStack. |
+| **SAN** | iSCSI, Fibre Channel, NVMe over Fabrics arrays | sub-ms | Yes | Traditional enterprise data centers. |
 
-#### 1. Ceph as Block Storage
-Ceph, known primarily for its distributed object storage capabilities, also provides robust block storage functionality through its RADOS Block Device (RBD) subsystem. Here's how Ceph functions as block storage:
+In Kubernetes, block volumes appear as **PersistentVolumes** with access mode `ReadWriteOnce`: one node mounts them at a time.
 
-- **Block Storage Model**: Ceph's RBD allows users to create virtual block devices within a Ceph cluster, which can be mounted and accessed by client applications. Data is organized into fixed-size blocks, providing high-performance block-level access to storage.
+## Performance terms
 
-- **High Performance**: Ceph's block storage offers high performance and low-latency access, making it suitable for performance-sensitive applications such as databases, virtual machines, and enterprise applications.
+- **IOPS**: operations per second. Matters for databases doing many small random reads and writes.
+- **Throughput**: MB/s. Matters for sequential scans, backups, Kafka segments.
+- **Latency**: time per operation. Network volumes add roughly half a millisecond over local NVMe.
+- On EBS **gp3** you set IOPS and throughput independently of size; **io2 Block Express** targets consistent sub-millisecond latency for large databases.
 
-- **Scalability**: Similar to its object storage functionality, Ceph's block storage scales horizontally across multiple nodes in a cluster, enabling seamless expansion of storage capacity as data volumes grow.
+## What block storage is not
 
-- **Use Cases**: Ceph's block storage is commonly used in virtualized environments, providing storage for virtual machines, containers, and other applications requiring block-level access to storage. Its high performance and scalability make it well-suited for demanding workloads.
+- **Not shareable by default.** Two machines mounting the same ext4 volume at once will corrupt it. Shared access needs a cluster file system or a file/object service. (EBS Multi-Attach exists for io1/io2 but requires a cluster-aware file system.)
+- **Not cross-zone.** An EBS volume lives in one availability zone. Zone-level durability comes from snapshots or database replication.
+- **Not HDFS.** HDFS splits files into 128 MB "blocks", but it is a distributed **file system** accessed through its own API, not block storage.
 
+## Common mistakes
 
-#### 2. Hadoop Distributed File System (HDFS)
-Hadoop Distributed File System (HDFS) is a distributed file system designed for storing and processing large datasets in parallel across a cluster of commodity hardware. While primarily associated with big data processing, HDFS also functions as a block storage system. Key features of HDFS include:
-- **Distributed Storage**: Divides large files into blocks distributed across multiple nodes in a cluster, facilitating parallel processing and fault tolerance.
-- **High Throughput**: Optimized for streaming data access, making it suitable for processing large volumes of data efficiently.
-- **Fault Tolerance**: Provides built-in redundancy and replication to ensure data durability and availability even in the event of node failures.
-- **Integration with Hadoop Ecosystem**: Seamlessly integrates with other Hadoop components for data processing, analysis, and management.
-
-#### 3. Amazon Elastic Block Store (EBS)
-Amazon Elastic Block Store (EBS) is a block storage service provided by Amazon Web Services (AWS) designed for use with EC2 instances in the cloud. It offers persistent block storage volumes that can be attached to EC2 instances, providing scalable and reliable storage solutions. Key features of EBS include:
-- **Persistent Storage**: Offers durable block storage volumes that persist independently of EC2 instance lifecycles, ensuring data persistence and availability.
-- **Scalability**: Provides on-demand scalability, allowing users to increase or decrease storage capacity as needed without downtime.
-- **Performance Tiers**: Offers multiple volume types with varying performance characteristics, including SSD-backed volumes for high-performance applications and HDD-backed volumes for cost-effective storage.
-- **Data Management Features**: Supports features such as snapshots for data backup, cloning for volume replication, and encryption for data security.
-
-Block storage is a versatile and essential component of modern storage infrastructure, offering high performance, flexibility, and scalability for a wide range of applications. Examples like Ceph, HDFS, and EBS demonstrate the diverse use cases and deployment scenarios of block storage, catering to various storage needs in different environments.
-
-For more detailed information and documentation about each specific block storage solution, refer to their respective official websites and documentation resources.
+- Running a production database on instance-store NVMe without replication, then losing the data when the instance stops.
+- Sizing a volume for capacity only and hitting the IOPS or throughput limit under load.
+- Forgetting that a snapshot of a running database is only crash-consistent; use the database's own backup tooling or freeze I/O first.
 
 ## Learning Resources
 
-### Books
-- [Block storage A Complete Guide Paperback – November 21, 2021](https://www.amazon.com/Block-Storage-Complete-Gerardus-Blokdyk/dp/0655192700)
-
-### Courses
-- [Amazon Elastic Block Store (EBS) Overview](https://www.youtube.com/watch?v=77qLAl-lRpo)
-
-### Miscellaneous
-- [What is block storage? amazon](https://aws.amazon.com/what-is/block-storage/)
-- [What is block storage? cloudflare](https://www.cloudflare.com/learning/cloud/what-is-block-storage/)
+- [What is block storage? (AWS)](https://aws.amazon.com/what-is/block-storage/)
+- [Amazon EBS volume types](https://docs.aws.amazon.com/ebs/latest/userguide/ebs-volume-types.html)
+- [Ceph documentation: block devices (RBD)](https://docs.ceph.com/en/latest/rbd/)
+- [Kubernetes: Persistent Volumes](https://kubernetes.io/docs/concepts/storage/persistent-volumes/)
+- [Operating Systems: Three Easy Pieces](https://pages.cs.wisc.edu/~remzi/OSTEP/): free book; the persistence chapters cover disks and file systems
+- [Amazon Elastic Block Store (EBS) Overview](https://www.youtube.com/watch?v=77qLAl-lRpo): video

@@ -1,58 +1,47 @@
 ---
+title: "Storage"
+description: "Block, file and object storage compared: how each addresses data, typical latency and cost, and why data lakes are built on object storage like S3."
 bookCollapseSection: true
 weight: 15
 ---
 
-# Storages
+# Storage
 
-## Introduction
+Every database, file and data lake ends up on some kind of **storage**, and there are three ways to address it. **Block storage** exposes a raw disk of numbered blocks that the operating system formats with a file system. **File storage** exposes named files in folders over a network protocol (NFS, SMB). **Object storage** exposes whole objects (a file plus metadata) by key over HTTP, as Amazon S3 does. The interface decides what each one is good at.
 
-Understanding the different types of storage solutions is essential for selecting the right technology for your needs. The three main types are block storage, object storage, and file storage. Each has its unique characteristics, use cases, and advantages.
+<div class="lx-cards">
+  <div class="lx-card"><div class="lab">Block · EBS, Ceph RBD, SAN</div><h4>"Write 4 KB at block 1,040"</h4><p>A raw disk attached to one machine. Lowest latency, in-place updates. Where databases and VM disks live.</p></div>
+  <div class="lx-card"><div class="lab">File · NFS, SMB, EFS</div><h4>"Open /reports/q3.csv"</h4><p>A shared file system with folders, permissions and locks, mounted by many machines at once.</p></div>
+  <div class="lx-card"><div class="lab">Object · S3, GCS, Azure Blob</div><h4>"GET bucket/key"</h4><p>Whole objects over HTTP in a flat namespace. Practically unlimited scale and the cheapest per GB. The base of every data lake.</p></div>
+</div>
 
-### Block Storage
+## Side by side
 
-Block storage organizes data into fixed-size blocks, each with a unique identifier. These blocks are managed individually, allowing for efficient read/write operations and low-latency access. Block storage is commonly used in scenarios requiring high performance, such as databases, virtual machines, and enterprise applications. Its key characteristics include:
+| | Block | File | Object |
+|---|---|---|---|
+| Unit | Fixed-size block (4 KiB typical) | File in a directory tree | Object (bytes + metadata) under a key |
+| Access | OS block device (NVMe, iSCSI) plus a local file system | NFS / SMB mount | HTTP API (`PUT`, `GET`, `LIST`, `DELETE`) |
+| Update | In place, any byte range | In place | Replace the whole object (no partial overwrite) |
+| Shared by | Usually one machine at a time | Many machines | Any number of clients, anywhere |
+| Latency | Sub-millisecond | Around a millisecond and up | Tens of milliseconds to first byte |
+| Scale | One volume up to tens of TB | Up to petabytes, with care | Exabytes; no capacity planning |
+| Cost (cloud, rough) | Higher; you pay for provisioned size | Highest per GB | Lowest per GB; pay for what you store plus requests |
+| Typical use | Databases, VM boot disks, Kafka logs | Shared home dirs, legacy apps, ML training data | Data lakes, backups, logs, media, Parquet/Iceberg tables |
 
-- **Performance**: High-speed data access makes it ideal for transactional databases and enterprise applications.
-- **Flexibility**: Can be attached to different systems and resized as needed.
-- **Scalability**: Suitable for environments that require scaling storage resources while maintaining performance.
+## What this means for data engineers
 
+- **Operational databases** (PostgreSQL, Kafka brokers) run on **block storage**, because they update pages in place and fsync often.
+- **Analytical data** lives on **object storage** as Parquet or ORC files, organized by table formats such as Iceberg or Delta Lake. Compute engines (Spark, Trino, Snowflake) read it over the network; storage and compute scale and bill separately. See [Data Lake]({{< relref "/docs/roadmap/data-management-architecture/data-lake" >}}) and [Data Lakehouse]({{< relref "/docs/roadmap/data-management-architecture/data-lakehouse" >}}).
+- **HDFS**, the Hadoop Distributed File System, is a distributed file system that most new platforms have replaced with object storage.
 
-### Object Storage
+## Pages in this section
 
-Object storage manages data as objects, each containing the data itself, metadata, and a unique identifier. This storage type is designed for scalability and is ideal for storing unstructured data such as multimedia files, backups, and logs. Object storage excels in environments requiring large-scale data storage with less frequent access patterns. Its key characteristics include:
-
-- **Scalability**: Easily handles large volumes of data, making it suitable for cloud storage solutions.
-- **Metadata**: Rich metadata support allows for better data management and retrieval.
-- **Access**: Typically accessed via APIs, facilitating integration with various applications and services.
-- **Cost** Efficiency: Often more cost-effective for storing vast amounts of data compared to block storage.
-
-
-### File Storage
-
-File storage organizes data into a hierarchical structure of files and directories, which is intuitive and user-friendly, especially for end-users. It is widely used for general-purpose storage needs, such as home directories and small-scale file sharing. However, file storage lacks the scalability and performance advantages offered by block and object storage. Its key characteristics include:
-
-- **Usability**: Easy to use and manage for end-users.
-- **Compatibility**: Works well with traditional file systems and applications.
-- **Limitations**: Less efficient for large-scale or performance-critical applications, which is why it is not discussed in detail here.
-
-![Storages](storage.jpg)
-
-Each type of storage—block, object, and file—serves different needs in the data management ecosystem. Block storage, with its high performance and low latency, is perfect for demanding applications like databases and virtual machines. Object storage offers unparalleled scalability and is ideal for managing unstructured data at a large scale. While file storage is intuitive and suitable for general-purpose needs, its limitations in scalability and performance make it less suitable for large-scale enterprise solutions, highlighting the importance of block and object storage in more demanding environments.
-
+- [Block Storage]({{< relref "block-storage" >}}): how a write travels from your application through the file system to a network volume, and when to use EBS, Ceph RBD or local NVMe.
+- [Object Storage]({{< relref "object-storage" >}}): what happens on a `PUT` and a `GET` to S3, consistency, multipart uploads, and why object stores fit data lakes.
 
 ## Learning Resources
 
-### Books
-- [Designing Data-Intensive Applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
-- [Distributed systems: Principles and Paradigms](https://vowi.fsinf.at/images/b/bc/TU_Wien-Verteilte_Systeme_VO_%28G%C3%B6schka%29_-_Tannenbaum-distributed_systems_principles_and_paradigms_2nd_edition.pdf)
-  
-### Courses
-- [AWS Storage: EBS vs. S3 vs. EFS](https://www.youtube.com/watch?v=_CN7KqC3y3s)
-- [Data Storage Types: File, Block, & Object](https://www.youtube.com/watch?v=KhHr4chx_ZM)
-- [Block vs Object vs File Storage | Cloud Storage Types Explained](https://www.youtube.com/watch?v=sswLpKeAoxs)
-- [File vs. Object vs. Block Storage](https://www.youtube.com/watch?v=EqC2-lB5Xck)
-
-### Miscellaneous
-- [Distributed Storage Systems](https://www.geeksforgeeks.org/distributed-storage-systems/)
-- [What is Distributed Storage? Types and Examples](https://hostkey.com/blog/53-what-is-distributed-storage/)
+- *Designing Data-Intensive Applications* (2nd ed.), Martin Kleppmann and Chris Riccomini: storage and retrieval chapter
+- [AWS: Block vs file vs object storage](https://aws.amazon.com/compare/the-difference-between-block-file-object-storage/)
+- [Data Storage Types: File, Block and Object](https://www.youtube.com/watch?v=KhHr4chx_ZM): video
+- [AWS Storage: EBS vs. S3 vs. EFS](https://www.youtube.com/watch?v=_CN7KqC3y3s): video

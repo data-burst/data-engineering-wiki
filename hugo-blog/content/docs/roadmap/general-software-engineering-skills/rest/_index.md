@@ -1,48 +1,68 @@
 ---
 title: "REST"
 weight: 4
+description: "REST API design explained: resources and URLs, HTTP methods and idempotency, status codes, pagination, versioning, OpenAPI, and REST vs GraphQL vs gRPC."
 ---
-# Enhancing Web Development with RESTful Architectures
+# REST
 
-## Introduction
+**REST** (Representational State Transfer) is an architectural style for APIs over HTTP. You model your domain as **resources** with stable URLs (`/orders/42`), and act on them with the standard HTTP **methods** (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`). Each request is **stateless**, carrying everything the server needs, and responses can be **cached**. Most public APIs you will ingest from (Stripe, GitHub, Salesforce, Shopify) are REST APIs returning JSON.
 
-**Representational State Transfer (REST)** is an architectural style for designing networked applications. It relies on a stateless, client-server communication protocol, virtually always HTTP.
+The term comes from Roy Fielding's 2000 PhD thesis. In practice, "RESTful" usually means "resource-oriented JSON over HTTP", not every constraint Fielding described.
 
-## Principles of REST
+## Resources and methods
 
-RESTful applications use HTTP methods to map CRUD (create, retrieve, update, delete) operations to endpoints, which are typically resources or collections of resources. Here are some key principles:
+| Request | Meaning | Success | Idempotent |
+|---|---|---|---|
+| `GET /orders?status=shipped&limit=50` | List orders, filtered | 200 | yes |
+| `GET /orders/42` | Read one order | 200, or 404 | yes |
+| `POST /orders` | Create an order | 201 + `Location: /orders/43` | no |
+| `PUT /orders/42` | Replace order 42 | 200 or 204 | yes |
+| `PATCH /orders/42` | Change some fields | 200 | not necessarily |
+| `DELETE /orders/42` | Delete it | 204 | yes |
+| `GET /users/7/orders` | Orders belonging to user 7 | 200 | yes |
 
-1. **Client-Server Architecture**: The client and server are separate entities communicating over a network. This separation allows each to be developed and scaled independently.
+URLs are **nouns**. The verb is the HTTP method. `/getOrder?id=42` or `POST /deleteOrder` are RPC in disguise.
 
-2. **Stateless**: Each HTTP request from the client to server must contain all the information needed to understand and process the request. The server should not store anything about the latest HTTP request the client made.
+## Design rules that age well
 
-3. **Cacheable**: Responses from the server can be cached by the client to improve performance.
+- **Use status codes properly.** 400 for bad input with a JSON error body, 401 vs 403, 404, 409 for conflicts, 429 with `Retry-After` for rate limits. A consistent error format such as RFC 9457 "Problem Details" helps clients.
+- **Paginate every list.** Prefer **cursor** pagination (`?after=ord_123`) over `?page=7`: offsets skip or repeat rows when data changes between requests, which is exactly what happens during an incremental sync.
+- **Support incremental reads.** A filter like `?updated_since=2026-01-01T00:00:00Z` lets pipelines fetch only what changed.
+- **Make retries safe.** Accept an `Idempotency-Key` header on `POST` so a retried payment isn't charged twice.
+- **Version deliberately.** `/v1/...` in the path or a header. Add fields freely; never rename or remove them without a new version.
+- **Describe it with OpenAPI.** An OpenAPI 3.1 document gives you docs, client generation, mocks and request validation for free.
 
-4. **Uniform Interface**: The method of communication between the client and server is uniform, simplifying the architecture overall.
+## REST vs GraphQL vs gRPC
 
-## HTTP Methods in REST
+| | REST | [GraphQL]({{< relref "../graphql" >}}) | [gRPC]({{< relref "../grpc" >}}) |
+|---|---|---|---|
+| Shape | Many resource URLs | One endpoint, client writes a query | Service methods defined in `.proto` |
+| Payload | JSON (usually) | JSON | Protobuf (binary) |
+| Transport | HTTP/1.1, 2 or 3 | HTTP | HTTP/2 |
+| HTTP caching | Natural (GET + ETag) | Hard (mostly POST) | No |
+| Streaming | SSE, webhooks | Subscriptions | Built in, both directions |
+| Best for | Public APIs, CRUD, integrations | Front-ends with varied data needs | Internal service-to-service, low latency |
 
-RESTful APIs use standard HTTP methods, each of which typically corresponds to a specific CRUD operation:
+## Common mistakes
 
-- **GET**: Retrieve a resource or list of resources.
-- **POST**: Create a new resource.
-- **PUT**: Update an existing resource.
-- **DELETE**: Remove a resource.
+- **Returning 200 with `{"error": ...}` in the body.** Clients and monitoring can't tell it failed.
+- **Unbounded list endpoints** that return 2 million rows in one response.
+- **Chatty APIs** that need 20 calls to render one screen. Offer an `?expand=` option, a dedicated endpoint, or consider GraphQL.
+- **Breaking changes without a version**, which silently breaks every downstream pipeline.
 
 ## Learning Resources
 
-Here are some suggestions for learning REST, which will help you become more proficient in designing and implementing RESTful services:
-
 ### Books
 
-- [RESTful Web Services by Leonard Richardson & Sam Ruby](https://amazon.com/RESTful-Web-Services-Leonard-Richardson/dp/0596529260) - This book provides a deep dive into REST principles and practices, with practical examples.
-- [Designing Web APIs: Building APIs That Developers Love by Brenda Jin, Saurabh Sahni, and Amir Shevat](https://www.amazon.com/Designing-Web-APIs-Building-Developers/dp/1492026921) - Offers insights into creating user-friendly APIs using REST.
+- [Designing Web APIs](https://www.oreilly.com/library/view/designing-web-apis/9781492026914/): Jin, Sahni, Shevat
+- [API Design Patterns](https://www.manning.com/books/api-design-patterns): JJ Geewax, based on Google's API design rules
 
-### Courses
+### Articles and references
 
-- [Building RESTful APIs with Flask (Coursera)](https://www.coursera.org/lecture/applications-development-microservices-serverless-openshift/creating-rest-apis-E0Ob5?utm_medium=sem&utm_source=gg&utm_campaign=B2C_EMEA__coursera_FTCOF_career-academy_pmax-multiple-audiences-country-multi&campaignid=20858198824&adgroupid=&device=c&keyword=&matchtype=&network=x&devicemodel=&adposition=&creativeid=&hide_mobile_promo&gad_source=1&gclid=Cj0KCQjw2uiwBhCXARIsACMvIU2zj-dxdyRrV353qdipqmzXkodO2LbKMY1sgr1nj23CPSnMYmTzt48aAj0REALw_wcB) - Learn how to build RESTful APIs using Python and Flask.
+- [Fielding's dissertation, chapter 5: REST](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm)
+- [Microsoft REST API Guidelines](https://github.com/microsoft/api-guidelines) and [Google API Improvement Proposals](https://google.aip.dev/)
+- [Zalando RESTful API Guidelines](https://opensource.zalando.com/restful-api-guidelines/)
+- [OpenAPI Specification](https://spec.openapis.org/oas/latest.html)
+- [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457)
 
-### Miscellaneous
-
-- [Postman](https://quickstarts.postman.com/): A tool that simplifies the development and testing of RESTful services.
-
+See also: [HTTP]({{< relref "/docs/roadmap/networking/protocols/http" >}}), [Web frameworks]({{< relref "/docs/roadmap/web-frameworks-and-api-development" >}}).

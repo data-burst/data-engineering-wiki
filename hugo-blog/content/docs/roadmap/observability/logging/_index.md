@@ -1,67 +1,80 @@
 ---
 title: "Logging"
+description: "Logging done right: structured JSON logs, levels, correlation IDs, the collect-ship-store pipeline, and how Loki, Elasticsearch, OpenSearch and Splunk compare."
 weight: 1
 ---
 
-## Introduction
+# Logging
 
-In today's complex and dynamic software environments, maintaining observability is crucial for ensuring the reliability and performance of applications. Observability refers to the ability to measure the internal states of a system based on the outputs it produces. Logging plays a critical role in observability, as it provides detailed records of events that occur within a system. This blog post explores the concept of logging within the scope of observability and discusses some popular tools that aid in achieving comprehensive observability.
+A **log** is a timestamped record of something that happened inside a program: a job started, a file was loaded, a connection failed. Logs are the most detailed observability signal, and usually the first place you look when a pipeline fails at 3 a.m. Good logging is about making those records **searchable and connectable**, not just printing more text.
 
-## Observability and Logging
+## Structured logs
 
-Observability consists of three main pillars: logging, metrics, and traces. Logging captures discrete events and provides detailed context about what happens within a system. This data is invaluable for debugging and monitoring applications, as it helps engineers understand system behavior and diagnose issues.
+Plain text is easy to write and hard to query:
 
-### Why Logging Matters
+```text
+2026-11-16 03:12:09 ERROR failed to load orders batch 8812 after 3 retries
+```
 
-- **Debugging**: Logs offer detailed insights into application behavior, helping developers pinpoint and resolve issues quickly.
-- **Monitoring**: Continuous logging allows for real-time monitoring of applications, ensuring that any anomalies or performance bottlenecks are promptly identified.
-- **Auditing and Compliance**: Logs provide an immutable record of events, which is essential for auditing and meeting regulatory compliance requirements.
+A **structured** log is a set of key-value fields, usually JSON. Every field becomes filterable, and machines no longer need regexes to parse it:
 
-### Best Practices for Logging
+```json
+{"ts":"2026-11-16T03:12:09Z","level":"error","service":"orders-loader",
+ "event":"load_failed","table":"orders","batch_id":8812,"retries":3,
+ "trace_id":"4bf92f3577b34da6a3ce929d0e0e4736","error":"connection reset by peer"}
+```
 
-- **Consistency**: Use a consistent logging format across your applications to simplify analysis.
-- **Granularity**: Log at appropriate levels (e.g., error, warning, info, debug) to balance between verbosity and usability.
-- **Contextual Information**: Include relevant context in logs, such as user IDs, request IDs, and timestamps, to facilitate deeper insights.
+In Python, `structlog` or `python-json-logger` produce this; in Java, Logback or Log4j 2 with a JSON encoder; in Go, the standard library's `log/slog`.
 
-## Related Tools
+## Log levels
 
-Several tools are available to help manage and analyze logs effectively. Here are some of the most popular ones:
+| Level | Use it for | Example |
+|---|---|---|
+| `ERROR` | Something failed and needs attention | Load failed after retries |
+| `WARN` | Unexpected but handled | Retrying after a timeout; 3% of rows rejected |
+| `INFO` | Normal milestones | Job started, 1,204,331 rows written |
+| `DEBUG` | Details for developers, off in production | The generated SQL statement |
 
-### ELK Stack
+## How logs flow
 
-The ELK Stack consists of Elasticsearch, Logstash, and Kibana. Elasticsearch is a search and analytics engine, Logstash is a server-side data processing pipeline that ingests data from multiple sources, and Kibana is a visualization tool. Together, they form a powerful suite for searching, analyzing, and visualizing log data.
+1. **Emit**: the application writes to stdout/stderr (the container convention) or to a file.
+2. **Collect**: an agent on each node tails the output and adds metadata (pod, namespace, host). Common agents are **Fluent Bit**, **Vector**, **Grafana Alloy** and the **OpenTelemetry Collector**.
+3. **Process**: parse, drop noisy lines, mask personal data, sample.
+4. **Store and index**: a log backend.
+5. **Query and alert**: search, dashboards, alerts on error patterns.
 
-### Splunk
+## Storage backends
 
-Splunk is a leading platform for operational intelligence, providing powerful search, monitoring, and analysis capabilities. It allows you to collect, index, and correlate real-time data in a searchable repository, making it easier to generate insights and dashboards.
+| Backend | Indexing approach | Strength | Watch out for |
+|---|---|---|---|
+| **Grafana Loki** | Indexes only labels; stores compressed chunks in object storage | Cheap at volume, pairs with Grafana | Full-text search over huge ranges is slower; keep labels low-cardinality |
+| **Elasticsearch** / **OpenSearch** | Full-text inverted index on every field | Fast, flexible search and analytics | Expensive storage and memory at scale |
+| **Splunk** | Proprietary index, SPL query language | Powerful search, security use cases | License cost tied to ingest volume |
+| **ClickHouse**-based (SigNoz, HyperDX, ClickStack) | Columnar tables | Fast aggregation over structured logs | Needs schema discipline |
+| Cloud native (CloudWatch, Cloud Logging, Azure Monitor) | Managed | No operations | Cost and vendor lock-in |
 
-### EFK Stack
+Historic note: the "ELK stack" is Elasticsearch, Logstash and Kibana; swap Logstash for Fluentd and it is "EFK". Elastic changed Elasticsearch's license in 2021, AWS forked it as **OpenSearch**, and Elastic added AGPL as an open-source option again in 2024. **Sentry** is a related but different tool: it groups application errors and stack traces rather than storing all logs.
 
-Similar to the ELK Stack, the EFK Stack consists of Elasticsearch, Fluentd, and Kibana. Fluentd is a data collector that unifies the data collection and consumption process. The EFK Stack is known for its flexibility and scalability in handling large volumes of log data.
+## Logging in data pipelines
 
-### Loki
+- Log **counts** at each stage (read, rejected, written) so you can reconcile them later.
+- Include **run identifiers**: Airflow `dag_id`, `run_id`, `task_id`, or the Spark application ID, so all lines of one run can be pulled together.
+- Log **what** was processed (table, partition, file, offset range) but **not** the row contents; data in logs is a privacy and compliance risk.
+- Add the OpenTelemetry `trace_id` so logs link to [traces]({{< relref "../Tracing" >}}).
 
-Loki, developed by Grafana Labs, is a log aggregation system designed to store and query logs from various sources. It is highly efficient and integrates seamlessly with Grafana, providing a streamlined solution for log visualization and analysis.
+## Common mistakes
 
-### Sentry
-
-Sentry is an open-source error tracking tool that helps developers monitor and fix crashes in real-time. It provides detailed crash reports, helping you identify the root cause of issues quickly and efficiently.
-
-### Graylog
-
-Graylog is an open-source log management platform that provides real-time analysis and visualization of log data. It offers a range of features, including powerful search capabilities, alerting, and dashboards, making it a popular choice for log management.
+- **Logging personal data.** Emails, tokens and full payloads in logs spread sensitive data to a system with weak access control and long retention.
+- **Logging inside tight loops.** A log line per row turns a 10-minute job into a 2-hour one and a large bill.
+- **Using logs as metrics.** Counting log lines to draw a throughput graph is slow and costly; emit a [metric]({{< relref "../monitoring" >}}) instead.
+- **No retention policy.** Keep hot, searchable logs for days or weeks and archive the rest to cheap object storage.
 
 ## Learning Resources
 
-### Books
-- [Observability Engineering: Achieving Production Excellence](https://amazon.com/Observability-Engineering-Achieving-Production-Excellence/dp/1492076449) by Charity Majors, Liz Fong-Jones, and George Miranda.
-- [The Authoritative Guide to Understanding the Concepts Surrounding Logging and Log Management](https://www.amazon.com/Logging-Log-Management-Authoritative-Understanding/dp/1597496359) by Anton Chuvakin, Kevin Schmidt, and Chris Phillips.
-
-### Courses
-- [Elastic Observability](https://www.elastic.co/videos/training-how-to-series-observability) by Elastic includes a quick start guide and fundamentals training, perfect for beginners looking to understand Elastic’s approach to observability
-
-### Miscellaneous
-- [What Is Observability?](https://www.youtube.com/watch?v=bvVgP4tw_Hc)
-- [Introduction to the ELK Stack](https://www.youtube.com/playlist?list=PLS1QulWo1RIYkDHcPXUtH4sqvQQMH3_TN)
-- [Getting Started with Graylog](https://docs.graylog.org/en/4.0/pages/getting_started.html)
-- [Understanding Loki and Grafana for Log Aggregation](https://grafana.com/docs/loki/latest/)
+- [The Twelve-Factor App: Logs](https://12factor.net/logs)
+- [OpenTelemetry logs data model](https://opentelemetry.io/docs/specs/otel/logs/data-model/)
+- [Grafana Loki documentation](https://grafana.com/docs/loki/latest/)
+- [OpenSearch documentation](https://docs.opensearch.org/latest/) and [Elastic observability docs](https://www.elastic.co/docs/solutions/observability)
+- [Fluent Bit documentation](https://docs.fluentbit.io/) and [Vector documentation](https://vector.dev/docs/)
+- *Observability Engineering*, Charity Majors, Liz Fong-Jones and George Miranda (O'Reilly)
+- *Logging and Log Management*, Anton Chuvakin, Kevin Schmidt and Chris Phillips (Syngress)

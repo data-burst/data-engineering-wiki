@@ -22,6 +22,10 @@ service OrderService {
 
 message GetOrderRequest { int64 id = 1; }
 message Order { int64 id = 1; string user = 2; double total = 3; string status = 4; }
+message WatchRequest { string status = 1; }
+message Event { string type = 1; bytes payload = 2; }
+message UploadSummary { int64 accepted = 1; }
+message ChatMessage { string text = 1; }
 ```
 
 `protoc` (or `buf generate`) turns this into typed stubs. A Python client then calls `stub.GetOrder(GetOrderRequest(id=42), timeout=2.0)` and a Go server implements `GetOrder(ctx, req)`. The field **numbers**, not names, go on the wire, which is what makes old and new versions compatible. See [Protobuf]({{< relref "/docs/roadmap/file-formats-and-serialization/serialization/protobuf" >}}).

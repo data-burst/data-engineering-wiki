@@ -30,7 +30,7 @@ URLs are **nouns**. The verb is the HTTP method. `/getOrder?id=42` or `POST /del
 - **Support incremental reads.** A filter like `?updated_since=2026-01-01T00:00:00Z` lets pipelines fetch only what changed.
 - **Make retries safe.** Accept an `Idempotency-Key` header on `POST` so a retried payment isn't charged twice.
 - **Version deliberately.** `/v1/...` in the path or a header. Add fields freely; never rename or remove them without a new version.
-- **Describe it with OpenAPI.** An OpenAPI 3.1 document gives you docs, client generation, mocks and request validation for free.
+- **Describe it with OpenAPI.** An OpenAPI 3.1 (or 3.2, released 2025) document gives you docs, client generation, mocks and request validation for free.
 
 ## REST vs GraphQL vs gRPC
 

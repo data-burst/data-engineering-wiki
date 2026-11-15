@@ -52,7 +52,7 @@ The price is that a cache can be **stale**: the copy may no longer match the sou
 <tr class="f" data-step="1"><td>1</td><td>01</td><td>app</td><td>cache</td><td class="tag">MISS</td><td>GET user:42 → (nil)</td></tr>
 <tr class="f" data-step="2"><td>2</td><td>02</td><td>app</td><td>db</td><td class="tag">QUERY</td><td>SELECT * FROM users WHERE id = 42 · 8 ms</td></tr>
 <tr class="f" data-step="2"><td>3</td><td>02</td><td>app</td><td>cache</td><td class="tag">SET</td><td>SET user:42 '{…}' EX 300</td></tr>
-<tr class="f" data-step="3"><td>4</td><td>03</td><td>app</td><td>cache</td><td class="tag">HIT</td><td>GET user:42 → '{"id":42,"name":"sara"}' · 0.3 ms</td></tr>
+<tr class="f" data-step="3"><td>4</td><td>03</td><td>app</td><td>cache</td><td class="tag">HIT</td><td>GET user:42 → '{"id":42,"name":"sam"}' · 0.3 ms</td></tr>
 <tr class="f" data-step="4"><td>5</td><td>04</td><td>cache</td><td>cache</td><td class="tag">EVICT</td><td>maxmemory reached · allkeys-lru drops user:42</td></tr>
 <tr class="f" data-step="5"><td>6</td><td>05</td><td>app</td><td>cache</td><td class="err">MISS</td><td>GET user:42 → (nil) · back to the database</td></tr>
 </table>
@@ -61,7 +61,7 @@ The price is that a cache can be **stale**: the copy may no longer match the sou
   <li>A request for user 42 checks the cache first. Nothing there: a <b>cache miss</b>.</li>
   <li>The app reads the row from the database, then <b>writes it into the cache</b> with a TTL of 300 seconds.</li>
   <li>The next request for user 42 is a <b>cache hit</b>: served from memory, about 25 times faster, and the database is not touched.</li>
-  <li>The cache is full. Writing user 99 forces an <b>eviction</b>: the <b>least recently used</b> key, user:42, is dropped.</li>
+  <li>Other users have since been read and the cache is full. Writing user 99 forces an <b>eviction</b>: the <b>least recently used</b> key, now user:42, is dropped.</li>
   <li>The next read of user 42 is a miss again and goes to the database. <b>Hit ratio</b> depends on cache size, TTL and access pattern.</li>
 </ol>
 {{< /fig >}}
@@ -99,7 +99,7 @@ When memory is full, the cache must drop something:
 
 ## Where caching shows up in data engineering
 
-- **Query result caches** in Snowflake, BigQuery and Trino return repeated identical queries for free.
+- **Query result caches** in Snowflake and BigQuery return repeated identical queries without re-running them, at no compute cost.
 - **Dashboard caches** in Superset or Metabase stop BI tools from re-running the same expensive query every page load.
 - **Spark `cache()` / `persist()`** keeps a DataFrame in memory when several actions reuse it.
 - **Lookup caches** in stream processing hold dimension tables (user → country) next to a Flink job instead of querying a database per event.

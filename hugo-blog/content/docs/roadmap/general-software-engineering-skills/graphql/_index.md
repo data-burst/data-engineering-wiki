@@ -48,7 +48,7 @@ bookToC: false
   <li>REST: the user resource returns <b>every field</b> of the user, whether the screen needs it or not.</li>
   <li>A second round trip fetches the orders. The client receives far more than it shows: <b>over-fetching</b> and <b>under-fetching</b> at once.</li>
   <li>GraphQL: one request describes the exact shape. The server's <b>resolvers</b> fill it in and the response mirrors the query.</li>
-  <li>The cost moves to the server: naive resolvers run one DB query per order (<b>N+1</b>). Batching with a DataLoader fixes it.</li>
+  <li>The cost moves to the server: naive resolvers run one DB query per parent item, so a list of 100 users means 1 + 100 order queries (<b>N+1</b>). Batching with a DataLoader fixes it.</li>
 </ol>
 {{< /fig >}}
 

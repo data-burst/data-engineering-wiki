@@ -84,7 +84,7 @@ This is the flow to use for web apps, single-page apps, mobile and CLI tools. **
 |---|---|---|
 | **Authorization code + PKCE** | Any app acting for a user | The default |
 | **Client credentials** | Service to service, no user (an Airflow DAG calling an internal API) | Current |
-| **Device authorization** | TVs, CLIs without a browser (`gh auth login`, `az login`) | Current |
+| **Device authorization** | TVs, CLIs without a browser (`gh auth login`, `az login --use-device-code`) | Current |
 | **Refresh token** | Getting a new access token without asking the user again | Current; rotate them |
 | Implicit | Old SPAs: token returned in the URL | **Removed** in OAuth 2.1, don't use |
 | Resource owner password | App collects your password directly | **Removed** in OAuth 2.1, don't use |

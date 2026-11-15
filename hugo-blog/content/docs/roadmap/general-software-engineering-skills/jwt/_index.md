@@ -45,7 +45,7 @@ A **JSON Web Token** (JWT, pronounced "jot") is a compact, signed string that ca
   <li>The <b>header</b> says how it was signed (<b>alg</b>) and which key was used (<b>kid</b>). Decoding needs no secret.</li>
   <li>The <b>payload</b> holds the claims: who (<b>sub</b>), issued by whom (<b>iss</b>), for which API (<b>aud</b>), until when (<b>exp</b>), with what permissions. It is readable by anyone, so no secrets here.</li>
   <li>The <b>signature</b> covers the first two parts. Only the auth server holds the private key that made it.</li>
-  <li>The API fetches the matching <b>public key</b> from the issuer's JWKS endpoint, checks the signature, then the claims. No database or network call per request.</li>
+  <li>The API fetches the matching <b>public key</b> from the issuer's JWKS endpoint, checks the signature, then the claims. Keys are cached, so there is no database or network call per request.</li>
   <li>Change a single character of the payload and the signature no longer matches. The token is <b>rejected</b>.</li>
 </ol>
 {{< /fig >}}

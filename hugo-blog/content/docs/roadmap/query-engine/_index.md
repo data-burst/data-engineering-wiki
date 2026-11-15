@@ -46,7 +46,7 @@ Every engine in this section follows the same shape: one node plans, many nodes 
     <line x1="140" y1="158" x2="180" y2="158"/><line x1="140" y1="248" x2="180" y2="248"/><line x1="140" y1="338" x2="180" y2="338"/>
   </g>
   <g class="f" data-step="3">
-    <g class="m" font-size="11" font-weight="700" fill="#531A8A"><text class="m" x="190" y="163">TEH 370·SHZ 600</text><text class="m" x="190" y="253">TEH 450·ISF 1200</text><text class="m" x="190" y="343">SHZ 980·ISF 300·TEH 100</text></g>
+    <g class="m" font-size="11" font-weight="700" fill="#531A8A"><text class="m" x="190" y="163">NYC 370·TOR 600</text><text class="m" x="190" y="253">NYC 450·CHI 1200</text><text class="m" x="190" y="343">TOR 980·CHI 300·NYC 100</text></g>
   </g>
   <g class="f" data-step="4">
     <g stroke="#531A8A" stroke-width="1.3" fill="none">
@@ -58,7 +58,7 @@ Every engine in this section follows the same shape: one node plans, many nodes 
     <rect x="450" y="105" width="150" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <rect x="450" y="195" width="150" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <rect x="450" y="285" width="150" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
-    <g class="m" font-size="12" font-weight="700" fill="#17151F"><text class="m" x="466" y="125">TEH</text><text class="m" x="466" y="215">SHZ</text><text class="m" x="466" y="305">ISF</text></g>
+    <g class="m" font-size="12" font-weight="700" fill="#17151F"><text class="m" x="466" y="125">NYC</text><text class="m" x="466" y="215">TOR</text><text class="m" x="466" y="305">CHI</text></g>
     <g class="m" font-size="11" fill="#5C5869"><text class="m" x="466" y="145">370+450+100</text><text class="m" x="466" y="235">600+980</text><text class="m" x="466" y="325">1200+300</text></g>
   </g>
   <g class="f" data-step="5">
@@ -66,18 +66,18 @@ Every engine in this section follows the same shape: one node plans, many nodes 
     <g stroke="#531A8A" stroke-width="1.4"><line x1="600" y1="140" x2="630" y2="184"/><line x1="600" y1="230" x2="630" y2="230"/><line x1="600" y1="320" x2="630" y2="276"/></g>
     <rect x="630" y="160" width="110" height="140" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/>
     <g class="m" font-size="12" fill="#17151F"><text class="m" x="644" y="184" font-weight="700" fill="#8C8899">RESULT</text>
-      <text class="m" x="644" y="214">TEH</text><text class="m" x="726" y="214" text-anchor="end">920</text>
-      <text class="m" x="644" y="244">SHZ</text><text class="m" x="726" y="244" text-anchor="end">1580</text>
-      <text class="m" x="644" y="274">ISF</text><text class="m" x="726" y="274" text-anchor="end">1500</text></g>
+      <text class="m" x="644" y="214">NYC</text><text class="m" x="726" y="214" text-anchor="end">920</text>
+      <text class="m" x="644" y="244">TOR</text><text class="m" x="726" y="244" text-anchor="end">1580</text>
+      <text class="m" x="644" y="274">CHI</text><text class="m" x="726" y="274" text-anchor="end">1500</text></g>
     <line x1="685" y1="160" x2="685" y2="66" stroke="#531A8A" stroke-width="2"/><circle cx="685" cy="66" r="3" fill="#531A8A"/>
   </g>
 </svg>
 <ol class="lx-caps">
   <li>The client sends SQL to the <b>coordinator</b>. The table <b>orders</b> is three Parquet files on object storage.</li>
   <li>The coordinator parses and optimizes the query, asks the <b>catalog</b> which files make up the table, and hands each worker a <b>split</b> (a file or part of one).</li>
-  <li>Workers <b>scan their splits in parallel</b>, reading only the <b>city</b> and <b>amount</b> columns and skipping row groups the filters rule out.</li>
+  <li>Workers <b>scan their splits in parallel</b>, reading only the <b>city</b> and <b>amount</b> columns (with a <code>WHERE</code> clause they would also skip row groups the filter rules out).</li>
   <li>Each worker computes a <b>partial aggregate</b> over its own rows. Three rows become two or three small sums, so far less data moves next.</li>
-  <li><b>Exchange</b>: partial results are routed by <b>hash(city)</b>, so every TEH row lands on the same task, every SHZ row on another. This is the shuffle.</li>
+  <li><b>Exchange</b>: partial results are routed by <b>hash(city)</b>, so every NYC row lands on the same task, every TOR row on another. This is the shuffle.</li>
   <li>Each task adds up its partial sums into the <b>final aggregate</b>, and the result streams back to the client.</li>
 </ol>
 {{< /fig >}}
@@ -89,7 +89,7 @@ The steps hide the hard parts: a **cost-based optimizer** picks join order and j
 | Engine | Execution model | Strength | Status in 2026 |
 |---|---|---|---|
 | [Apache Hive]({{< relref "hive" >}}) | Compiles SQL to Tez DAGs (MapReduce is deprecated) | Batch ETL on Hadoop; the **Hive Metastore** catalog | Hive 4.x is the maintained line. The engine is legacy for new projects; the Metastore is still everywhere. |
-| [Spark SQL]({{< relref "sparksql" >}}) | Stages separated by shuffle files; tasks retried on failure | Large ETL, mixing SQL with Python/Scala, ML | Spark 4.0 (2025) is current; the default batch engine of the lakehouse. |
+| [Spark SQL]({{< relref "sparksql" >}}) | Stages separated by shuffle files; tasks retried on failure | Large ETL, mixing SQL with Python/Scala, ML | Spark 4.x (4.0 released in 2025) is current; the default batch engine of the lakehouse. |
 | [Trino]({{< relref "trino" >}}) | MPP, pipelined in memory; optional fault-tolerant mode | Interactive analytics and federation across many sources | Very active; powers Amazon Athena and Starburst. |
 | [Presto]({{< relref "presto" >}}) | MPP, pipelined in memory; C++ native workers (Velox) | Interactive analytics at Meta-scale | Active under the Linux Foundation, led by Meta, IBM and Uber. |
 

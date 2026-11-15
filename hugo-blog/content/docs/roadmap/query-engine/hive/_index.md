@@ -44,8 +44,8 @@ LOCATION 's3://lake/orders/';
     <text x="150" y="162" class="m" font-size="11" fill="#531A8A">lookup</text>
   </g>
   <g class="f" data-step="2">
-    <rect x="320" y="52" width="420" height="56" rx="6" fill="#FCFCFD" fill-opacity=".85"/>
-    <rect x="320" y="120" width="420" height="56" rx="6" fill="#FCFCFD" fill-opacity=".85"/>
+    <rect x="320" y="52" width="420" height="56" rx="6" fill="#fff" fill-opacity=".85"/>
+    <rect x="320" y="120" width="420" height="56" rx="6" fill="#fff" fill-opacity=".85"/>
     <g class="m" font-size="12" font-weight="700" fill="#8C8899" text-anchor="end"><text class="m" x="726" y="85">pruned</text><text class="m" x="726" y="153">pruned</text></g>
   </g>
   <g class="f" data-step="3">

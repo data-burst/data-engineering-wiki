@@ -62,7 +62,7 @@ bookToC: false
   <li>SQL text and DataFrame calls enter the <b>same</b> pipeline. There is no performance difference between them.</li>
   <li>The parser builds an <b>unresolved logical plan</b>: a tree of operators whose table and column names are not yet checked.</li>
   <li>The <b>analyzer</b> looks names up in the <b>catalog</b> (Hive Metastore, Unity, Glue, an Iceberg catalog) and fills in types. Typos fail here.</li>
-  <li>The <b>optimizer</b> applies rules: push filters into the Parquet scan, prune unused columns, fold constants, reorder joins using statistics.</li>
+  <li>The <b>optimizer</b> applies rules: push filters into the Parquet scan, prune unused columns, fold constants, and (with the cost-based optimizer and table statistics enabled) reorder joins.</li>
   <li>The <b>physical planner</b> picks operators, such as a <b>broadcast hash join</b> when one side is small. <b>Whole-stage codegen</b> fuses each stage into tight generated code.</li>
   <li>Stages run on executors, separated by <b>shuffles</b>. <b>Adaptive Query Execution</b> uses the real sizes seen at each shuffle to merge small partitions, switch to broadcast joins and split skewed ones.</li>
 </ol>

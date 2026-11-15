@@ -57,7 +57,7 @@ Since then the two projects have diverged; see [Presto]({{< relref "../presto" >
 
 ## Common mistakes
 
-- **Undersized memory.** Joins and aggregations happen in memory; set `query.max-memory-per-node` deliberately and enable spill-to-disk or fault-tolerant mode for big queries.
+- **Undersized memory.** Joins and aggregations happen in memory; set `query.max-memory-per-node` deliberately and use fault-tolerant execution for big queries (the older spill-to-disk feature is documented as legacy).
 - **Letting the coordinator also act as a worker** in production clusters. It slows planning for everyone.
 - **Over-relying on federation.** Pulling a 500 GB PostgreSQL table through JDBC on every query will hurt both Trino and the database.
 - **Ignoring table statistics.** Without `ANALYZE` (or Iceberg/Delta stats), the cost-based optimizer guesses join order and can pick a terrible plan.

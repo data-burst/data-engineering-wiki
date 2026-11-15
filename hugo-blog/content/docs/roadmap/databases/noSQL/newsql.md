@@ -1,34 +1,49 @@
 ---
 title: "NewSQL"
+description: "What NewSQL (distributed SQL) databases are: sharded, Raft-replicated relational systems with ACID transactions, like Spanner, CockroachDB, TiDB and YugabyteDB."
 weight: 7
 ---
 
-# NewSQL 
+# NewSQL (Distributed SQL)
 
-## Introduction
+**NewSQL**, now usually called **distributed SQL**, describes relational databases that keep SQL and ACID transactions but spread data across many machines like NoSQL systems do. You talk to it like PostgreSQL or MySQL, while underneath the tables are split into ranges, every range is replicated with a consensus protocol (Paxos or Raft), and a node or even a whole datacenter can fail without losing committed data. The trade-off is latency: a write must reach a majority of replicas before it commits.
 
-NewSQL databases represent a new generation of relational databases that aim to combine the best of both worlds: the scalability of NoSQL databases and the ACID properties of traditional SQL databases. In this blog post, we'll explore what NewSQL databases are, their advantages, and some popular tools in this space.
+## How it works
 
-## What are NewSQL Databases?
+1. **Split.** Each table (and index) is cut into ranges by primary key, typically tens to hundreds of MB each. Ranges split and move automatically as data grows. See [Sharding]({{< relref "/docs/roadmap/distributed-systems-concepts/sharding" >}}).
+2. **Replicate with consensus.** Each range has 3 or 5 replicas forming a Raft or Paxos group. A write commits when a majority acknowledges it, so there is no data loss when a minority fails. See [Replication]({{< relref "/docs/roadmap/distributed-systems-concepts/replication" >}}).
+3. **Transactions across ranges.** A transaction touching rows in different ranges uses a two-phase commit coordinated across the consensus groups.
+4. **Ordering with clocks.** To give a global order to transactions, Spanner uses **TrueTime** (GPS and atomic clocks with bounded uncertainty); CockroachDB and YugabyteDB use hybrid logical clocks; TiDB uses a central timestamp oracle. See [Clock]({{< relref "/docs/roadmap/distributed-systems-concepts/clock" >}}).
 
-NewSQL databases are designed to address the limitations of traditional relational databases when it comes to scalability. They provide horizontal scalability by distributing data across multiple nodes while maintaining strong consistency and transaction support. Unlike NoSQL databases, NewSQL databases adhere to the relational data model and SQL query language.
+In [CAP]({{< relref "/docs/roadmap/distributed-systems-concepts/cap" >}}) terms these systems are **CP**: a minority side of a partition stops accepting writes rather than diverge.
 
-## Google Spanner
+## Popular systems
 
-**[Google Spanner](https://cloud.google.com/spanner)** is a globally distributed NewSQL database developed by Google. It combines the scalability of NoSQL databases with the consistency guarantees of traditional SQL databases. Spanner uses a combination of TrueTime (a synchronized global clock) and two-phase commit to achieve strong consistency across data centers. It's an excellent choice for applications that require high availability and global scalability.
+| Database | Compatible with | License / delivery | Notes |
+|---|---|---|---|
+| **[Google Spanner](https://cloud.google.com/spanner)** | GoogleSQL, PostgreSQL dialect | Managed (Google Cloud) | The original (2012 paper). External consistency via TrueTime. |
+| **[CockroachDB](https://www.cockroachlabs.com/)** | PostgreSQL wire protocol | Source-available; since late 2024 one Enterprise license, free for small companies | Inspired by Spanner; multi-region tables with data placement rules. |
+| **[TiDB](https://www.pingcap.com/)** | MySQL | Apache 2.0 | Row store (TiKV) plus a columnar replica (TiFlash) for analytics on the same data. |
+| **[YugabyteDB](https://www.yugabyte.com/)** | PostgreSQL (reuses Postgres query layer) | Apache 2.0 | Also offers a Cassandra-compatible API. |
+| **[Amazon Aurora DSQL](https://aws.amazon.com/rds/aurora/dsql/)** | PostgreSQL | Managed (AWS), GA 2025 | Serverless, multi-region active-active; some Postgres features unsupported. |
 
-## CockroachDB
+Note that **Amazon Aurora** (non-DSQL) and **Neon** separate storage from compute but still have a single writer; they scale reads and storage, not write throughput.
 
-**[CockroachDB](https://www.cockroachlabs.com/)** is an open-source NewSQL database inspired by Google Spanner. It provides distributed SQL capabilities, automatic sharding, and strong consistency. CockroachDB is designed to be resilient to failures, and it can automatically rebalance data across nodes. Developers can use familiar SQL queries to interact with CockroachDB, making it an attractive option for modern applications.
+## When to use one
+
+- **Good fit:** you need relational data and strong consistency, but more write throughput, data size or regional resilience than one primary can give: global payments, inventory, user accounts across regions.
+- **Probably not needed:** a single PostgreSQL with replicas handles the load. Distributed SQL adds per-write latency, cost and operational complexity, and some features (certain extensions, triggers, sequences) behave differently or are missing.
+
+## Common mistakes
+
+- **Sequential primary keys** (auto-increment ids, timestamps) send every insert to the last range, creating a hotspot. Use UUIDs or hash-sharded indexes.
+- **Expecting single-node latency.** Each commit waits for a quorum, and multi-region quorums add tens of milliseconds.
+- **Long, wide transactions** that touch many ranges retry more often under contention.
 
 ## Learning Resources
 
-### Courses
-
-- [Coursera: "Databases and SQL for Data Science"](https://www.coursera.org/learn/sql-data-science%29): This free course introduces SQL and relational databases, including NewSQL concepts.
-
-### Miscellaneous
-- [Introduction of NewSQL](https://www.geeksforgeeks.org/introduction-of-newsql-set-2/)
-- [CockroachDB Docs](https://www.cockroachlabs.com/docs/stable/)
-- [Spanner documentation](https://cloud.google.com/spanner/docs)
-- [Introduction to CockroachDB](https://www.youtube.com/playlist?list=PL_QaflmEF2e9TOGdLzU388Kt77HyW0as5)
+- [Spanner: Google's Globally-Distributed Database](https://research.google/pubs/spanner-googles-globally-distributed-database-2/) (OSDI 2012)
+- [CockroachDB: The Resilient Geo-Distributed SQL Database](https://dl.acm.org/doi/10.1145/3318464.3386134) (SIGMOD 2020)
+- [In Search of an Understandable Consensus Algorithm (Raft)](https://raft.github.io/raft.pdf) and the [Raft visualization](https://raft.github.io/)
+- [CockroachDB docs](https://www.cockroachlabs.com/docs/stable/), [TiDB docs](https://docs.pingcap.com/tidb/stable/), [YugabyteDB docs](https://docs.yugabyte.com/)
+- [What's Really New with NewSQL?](https://db.cs.cmu.edu/papers/2016/pavlo-newsql-sigmodrec2016.pdf): Pavlo and Aslett, 2016

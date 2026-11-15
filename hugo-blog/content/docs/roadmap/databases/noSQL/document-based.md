@@ -1,60 +1,73 @@
 ---
 title: "Document Based"
+description: "How document databases like MongoDB store JSON documents, when to embed vs reference, how they scale, and what to watch for when pipelines read them."
 weight: 2
 ---
 
-# Document Based 
+# Document Databases
 
-## Introduction
+A **document database** stores each record as a self-contained **document**, usually JSON or a binary form of it (MongoDB's BSON), grouped into **collections**. A document can nest objects and arrays, and two documents in the same collection may have different fields. The idea: data that the application reads together is **stored together**, so one lookup returns a whole order with its items and shipping address, without joins.
 
-In the ever-evolving landscape of data storage and retrieval, **document-based databases** have emerged as a powerful alternative to traditional relational databases. These databases are designed to handle semi-structured data, where each record is stored as a document (usually in JSON or BSON format). Let's delve into the key aspects of document-based databases and explore some popular tools in this domain.
+## How it looks
 
-## What Are Document-Based Databases?
+The same order, modeled relationally, needs three tables (`orders`, `order_items`, `addresses`) and two joins. As a document it is one object:
 
-Document-based databases, also known as **NoSQL databases**, provide a flexible schema that allows developers to store and query data without rigid constraints. Here are some defining characteristics:
+```json
+{
+  "_id": "order-9812",
+  "customer_id": "u-42",
+  "created_at": "2026-11-16T09:30:00Z",
+  "status": "paid",
+  "shipping": { "city": "Tehran", "zip": "1411713114" },
+  "items": [
+    { "sku": "MUG-01", "qty": 2, "price": 9.5 },
+    { "sku": "TEE-07", "qty": 1, "price": 19.0 }
+  ]
+}
+```
 
-- **Schema Flexibility**: Unlike relational databases, which enforce a fixed schema, document-based databases allow you to store heterogeneous data within a single collection. Each document can have different fields, making them ideal for scenarios where data structures evolve over time.
+Queries filter and index on fields inside the document, including nested ones (`items.sku`), and an aggregation pipeline handles grouping and reshaping.
 
-- **Document-Centric**: Data is organized into documents, typically represented in JSON (JavaScript Object Notation) or BSON (Binary JSON) format. These documents can be nested, allowing complex data structures.
+## Embed or reference?
 
-- **Scalability**: Document-based databases scale horizontally by distributing data across multiple nodes. This makes them suitable for handling large datasets and high read/write loads.
+The central modeling decision:
 
-## Popular Document-Based Databases
+| Embed (nest inside the document) | Reference (store an id, look up separately) |
+|---|---|
+| Data is read together with the parent (order items) | Data is shared by many parents (a product, a customer) |
+| Child list is bounded (a few hundred items) | Child list grows without limit (all events of a user) |
+| Updated together with the parent | Updated independently and often |
 
-Let's explore three widely used document-based databases:
+MongoDB documents are capped at 16 MB, so unbounded arrays eventually break. "Model for your queries" is the rule, much like wide-column stores.
 
-### MongoDB
+## Scaling and consistency
 
-- **Description**: **[MongoDB](https://www.mongodb.com/)** is a popular open-source NoSQL database that stores data in BSON format. It offers rich querying capabilities, automatic sharding, and horizontal scalability.
-- **Use Cases**: Web applications, content management systems, real-time analytics.
+Document stores scale out by **sharding** collections on a shard key and keep copies with **replica sets** (one primary, several secondaries). MongoDB has supported multi-document ACID transactions since 4.0 (2018), but they cost more than single-document writes, which are always atomic. See [Sharding]({{< relref "/docs/roadmap/distributed-systems-concepts/sharding" >}}) and [Replication]({{< relref "/docs/roadmap/distributed-systems-concepts/replication" >}}).
 
-### Elasticsearch
+## Popular document databases
 
-- **Description**: Although primarily known as a search engine, **[Elasticsearch](https://www.elastic.co/)** also serves as a powerful document-based database. It excels at full-text search, real-time analytics, and log analysis.
-- **Use Cases**: Log management, e-commerce search, monitoring.
+- **[MongoDB](https://www.mongodb.com/)**: the most widely used document database. Server Side Public License (source-available) since 2018; managed as MongoDB Atlas.
+- **[Couchbase](https://www.couchbase.com/)**: documents plus a built-in memory cache and a SQL-like language (SQL++). Strong in mobile sync.
+- **[Amazon DocumentDB](https://aws.amazon.com/documentdb/)** and **Azure Cosmos DB**: managed services with MongoDB-compatible APIs.
+- **PostgreSQL `jsonb`**: JSON columns with GIN indexes inside a relational database. Often enough when only part of the data is flexible.
+- **[Elasticsearch](https://www.elastic.co/elasticsearch) / [OpenSearch](https://opensearch.org/)**: store JSON documents, but they are **search engines** first (inverted indexes, full-text relevance). Use them as a search or log index fed from a primary database, not as the source of truth. Elasticsearch added an AGPL license option in 2024; OpenSearch is the Apache-2.0 fork, now under the Linux Foundation.
 
-### Couchbase
+## For data engineers: reading documents downstream
 
-- **Description**: **[Couchbase](https://www.couchbase.com/)** combines the flexibility of a document store with the performance of an in-memory database. It supports ACID transactions and provides robust caching.
-- **Use Cases**: Mobile applications, gaming, caching layers.
+- **Schema drift.** A new field appears, or `price` is a string in old documents and a number in new ones. Validate with JSON Schema in the database (MongoDB supports `$jsonSchema` validators) or in the pipeline.
+- **Flattening.** Warehouses want columns. Decide how to unnest arrays (one row per item?) and where to keep the raw document (a `VARIANT`/`JSON` column is common).
+- **Change streams.** Use MongoDB change streams or a CDC tool such as Debezium instead of repeated full exports. See [CDC]({{< relref "/docs/roadmap/data-integration/cdc" >}}).
 
+## Common mistakes
+
+- Choosing a document store "because there's no schema", then rebuilding joins in application code.
+- Unbounded arrays inside a document (comments, events), which grow until they hit the size limit.
+- Indexing nothing and letting every query scan the collection.
 
 ## Learning Resources
 
-### Books
-
-- [MongoDB: The Definitive Guide](https://www.amazon.com/MongoDB-Definitive-Powerful-Scalable-Storage/dp/1491954469): A comprehensive guide to MongoDB, covering installation, data modeling, and advanced querying.
-- [Elasticsearch: The Definitive Guide](https://www.amazon.com/Elasticsearch-Definitive-Distributed-Real-Time-Analytics/dp/1449358543): Dive into Elasticsearch's features, indexing, and search capabilities.
-- [Couchbase Essentials](https://www.amazon.com/Couchbase-Essentials-John-Zablocki/dp/1784394491): Learn about Couchbase's architecture and best practices.
-
-### Courses
-
-- [Introduction to MongoDB](https://www.coursera.org/learn/introduction-to-mongodb): A beginner-friendly course on MongoDB basics.
-- [edX Elasticsearch Fundamentals](https://www.edx.org/learn/nosql/the-university-of-michigan-database-architecture-scale-and-nosql-with-elasticsearch) Explore Elasticsearch's core concepts.
-
-### Miscellaneous
-
-- [Document Database in NOSQL](https://www.tutorialspoint.com/document-database-in-nosql)
-- [Elastic Docs](https://www.elastic.co/guide/en/elasticsearch/reference/current/getting-started.html)
-- [Getting Started with MongoDB](https://www.mongodb.com/docs/manual/tutorial/getting-started/)
-- [Learn with Couchbase Tutorials](https://developer.couchbase.com/tutorials/)
+- [MongoDB manual: data modeling](https://www.mongodb.com/docs/manual/data-modeling/)
+- [MongoDB University](https://learn.mongodb.com/): free courses
+- *MongoDB: The Definitive Guide* (3rd ed.), Shannon Bradshaw, Eoin Brazil and Kristina Chodorow
+- [Couchbase tutorials](https://developer.couchbase.com/tutorials/)
+- [PostgreSQL: JSON types](https://www.postgresql.org/docs/current/datatype-json.html)

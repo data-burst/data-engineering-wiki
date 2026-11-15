@@ -1,34 +1,67 @@
 ---
 title: "Graph"
+description: "How graph databases model nodes and relationships, why multi-hop queries are fast, Cypher and the GQL standard, and when Neo4j beats SQL joins."
 weight: 6
 ---
-# Graph
 
-## Introduction
+# Graph Databases
 
-Graph databases represent a paradigm shift in database technology, as they are designed around the principle of storing interconnected information. This type of database is especially adept at managing complex relationships and dynamic schemas, making it an invaluable tool for applications in social networking, recommendation systems, and fraud detection, among others. Unlike traditional relational databases, which require complex queries and joins to establish relationships, graph databases are built to naturally express connectivity and relationships.
+A **graph database** stores data as **nodes** (people, accounts, products) and **relationships** between them (`FOLLOWS`, `PAID`, `BOUGHT`), and both can carry properties. Its strength is queries that walk many hops: "friends of friends who bought this", "accounts within 4 transfers of a known fraudster", "which services break if this one goes down". In a relational database each hop is another join; in a native graph database each node points directly at its neighbours, so a hop costs roughly the same no matter how big the whole graph is.
 
-The core strength of graph databases lies in their ability to efficiently manage and query highly connected data. This allows for more intuitive data modeling and access, reflecting the interconnectedness of real-world systems. As such, understanding graph databases and how to interact with them through tools like Neo4j and Microsoft Azure Cosmos DB is crucial for developers and data architects working with complex, relationship-rich data.
+## A query, two ways
 
-## Neo4j
-**[Neo4j](https://neo4j.com/)** is one of the most popular graph database management systems. It is open-source and designed for storing and querying interconnected data with its graph processing engine. Neo4j uses a query language called Cypher, which is declarative and designed to be easily readable and expressive for managing graph data.
+Find people within two `FOLLOWS` hops of Sara.
 
-## Microsoft Azure Cosmos DB
-**[Microsoft Azure Cosmos DB](https://azure.microsoft.com/en-us/products/cosmos-db)** is a globally distributed, multi-model database service that offers graph processing capabilities through the Gremlin API. It provides turnkey global distribution, elastic scaling of throughput and storage, and multi-model support, all backed by SLAs covering throughput, latency, availability, and consistency.
+```sql
+-- SQL: one self-join per hop
+SELECT DISTINCT f2.followee
+FROM follows f1
+JOIN follows f2 ON f2.follower = f1.followee
+WHERE f1.follower = 'sara';
+```
+
+```cypher
+// Cypher (Neo4j): the pattern is the query
+MATCH (:Person {name: 'sara'})-[:FOLLOWS*1..2]->(p:Person)
+RETURN DISTINCT p.name;
+```
+
+Changing "2 hops" to "up to 6 hops" is a one-character edit in Cypher and a rewrite (or a recursive CTE) in SQL.
+
+## Two kinds of graph model
+
+| | Property graph | RDF (triple store) |
+|---|---|---|
+| Unit | Nodes and edges with properties | Subject, predicate, object triples |
+| Query language | Cypher, GQL, Gremlin | SPARQL |
+| Typical use | Applications: fraud, recommendations, network analysis | Knowledge graphs, linked open data, ontologies |
+| Examples | Neo4j, Memgraph, Amazon Neptune, TigerGraph | GraphDB, Stardog, Amazon Neptune |
+
+**GQL** (ISO/IEC 39075), published in 2024, is the first ISO standard graph query language and is largely based on Cypher. **SQL/PGQ** (part of SQL:2023) adds graph pattern matching on top of ordinary relational tables.
+
+## Popular graph databases
+
+- **[Neo4j](https://neo4j.com/)**: the best-known native graph database; Cypher, a large ecosystem and a graph data science library.
+- **[Amazon Neptune](https://aws.amazon.com/neptune/)**: managed; supports property graphs (openCypher, Gremlin) and RDF (SPARQL).
+- **[Memgraph](https://memgraph.com/)**: in-memory, Cypher-compatible, aimed at streaming and real-time analysis.
+- **[Azure Cosmos DB for Apache Gremlin](https://learn.microsoft.com/en-us/azure/cosmos-db/gremlin/)**: graph API on a multi-model, globally distributed service.
+- **Graph analytics without a graph database:** for one-off analysis on a lake, libraries like Spark GraphFrames or NetworkX are often enough.
+
+## When to use one
+
+- **Good fit:** fraud and anti-money-laundering rings, recommendation by shared behaviour, identity resolution, network and IT dependency maps, knowledge graphs for search and LLM grounding (GraphRAG).
+- **Poor fit:** mostly tabular data with one or two joins, large aggregations over all rows (a columnar warehouse is far faster), or very high write throughput of simple records.
+
+## Common mistakes
+
+- Using a graph database because the data "has relationships". All data does. Use one when queries **traverse** several hops of variable depth.
+- **Supernodes:** a node with millions of edges (a celebrity, a default "unknown" category) makes every traversal through it slow. Model around it.
+- Forgetting that graph databases are usually harder to shard than key-value stores; plan for one large machine or a carefully partitioned graph.
 
 ## Learning Resources
 
-To effectively leverage the power of graph databases, it is important to explore a range of educational resources, from books and courses to hands-on tutorials.
-
-### Books
-
-- [Graph Databases: New Opportunities for Connected Data](https://www.amazon.com/Graph-Databases-Opportunities-Connected-Data/dp/1491930896) by Ian Robinson, Jim Webber, and Emil Eifrem – This book provides a comprehensive introduction to graph databases and their practical applications, written by experts involved in the development of Neo4j.
-
-### Courses
-
-- [Microsoft Azure Cosmos DB](https://www.coursera.org/learn/microsoft-azure-cosmos-db?utm_medium=sem&utm_source=gg&utm_campaign=b2c_emea_meta-back-end-developer_meta_ftcof_professional-certificates_arte_feb_24_dr_geo-multi_pmax_gads_lg-all&campaignid=21041939978&adgroupid=&device=c&keyword=&matchtype=&network=x&devicemodel=&adposition=&creativeid=&hide_mobile_promo&gad_source=1&gclid=CjwKCAjwxLKxBhA7EiwAXO0R0ELtywmf573B7pv4qL_KKfa6WhuTMmNZNaj_5hM-VhdegghKmfrJtxoC494QAvD_BwE)
-
-### Miscellaneous
-
-- [Neo4j documentation](https://neo4j.com/docs/)
-- [Neo4j (Graph Database) Crash Course](https://www.youtube.com/watch?v=8jNPelugC2s)
+- [Neo4j documentation](https://neo4j.com/docs/) and [Neo4j GraphAcademy](https://graphacademy.neo4j.com/): free courses
+- *Graph Databases* (2nd ed.), Ian Robinson, Jim Webber and Emil Eifrem (free from Neo4j)
+- [GQL standard overview](https://www.gqlstandards.org/)
+- [Amazon Neptune documentation](https://docs.aws.amazon.com/neptune/)
+- [Neo4j (Graph Database) Crash Course](https://www.youtube.com/watch?v=8jNPelugC2s): video

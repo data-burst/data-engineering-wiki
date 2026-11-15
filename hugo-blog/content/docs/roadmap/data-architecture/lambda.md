@@ -47,9 +47,9 @@ The **Lambda architecture** processes the same events along two paths: a **batch
     <text class="m" x="380" y="303" text-anchor="middle" fill="#3D3A49">orders today = 1,200 (batch) + 85 (speed) = 1,285</text>
   </g>
   <g class="f m" data-step="4" font-size="11.5">
-    <rect x="180" y="20" width="190" height="260" rx="10" fill="none" stroke="#C2382F" stroke-width="1.4" stroke-dasharray="5 4"/>
-    <text class="m" x="275" y="146" text-anchor="middle" font-weight="700" fill="#C2382F">same logic,</text>
-    <text class="m" x="275" y="162" text-anchor="middle" font-weight="700" fill="#C2382F">two codebases</text>
+    <rect x="180" y="20" width="190" height="260" rx="10" fill="none" stroke="#531A8A" stroke-width="1.4" stroke-dasharray="5 4"/>
+    <text class="m" x="275" y="146" text-anchor="middle" font-weight="700" fill="#531A8A">same logic,</text>
+    <text class="m" x="275" y="162" text-anchor="middle" font-weight="700" fill="#531A8A">two codebases</text>
   </g>
 </svg>
 <ol class="lx-caps">

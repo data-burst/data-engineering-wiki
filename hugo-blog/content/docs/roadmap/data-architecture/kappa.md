@@ -10,7 +10,7 @@ The **Kappa architecture** handles both real-time and historical processing with
 
 ## Reprocessing without a batch layer
 
-{{< fig kicker="$ flink run orders_by_city_v2.jar --from earliest" title="One log, one code path, replay to fix history" >}}
+{{< fig kicker="$ flink run orders_by_city_v2.jar   # source starts at earliest offset" title="One log, one code path, replay to fix history" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 310">
   <g class="m" font-size="11.5" fill="#17151F">
     <text class="m" x="60" y="28" font-size="11" font-weight="700" fill="#8C8899">KAFKA TOPIC · orders · offsets 0 → 13 · long retention</text>

@@ -31,6 +31,8 @@ So: learn Scala if you work on an existing Scala Spark codebase, contribute to S
 | DataFrame/SQL performance | Same | Same |
 
 ```scala
+import spark.implicits._                 // encoders for case classes
+
 case class Order(id: Long, city: String, amount: Double)
 
 val revenueByCity = spark.read.parquet("s3://acme-lake/orders/")
@@ -66,7 +68,7 @@ Build tools: **sbt** is the traditional one; **Mill** and **scala-cli** are simp
 
 - *Programming in Scala*, 5th ed., Martin Odersky, Lex Spoon, Bill Venners and Frank Sommers (Artima)
 - [Programming Scala, 3rd ed., Dean Wampler](https://deanwampler.github.io/books/programmingscala.html)
-- [Scala for the Impatient, 2nd ed., Cay Horstmann](https://horstmann.com/scala/)
+- [Scala for the Impatient, 3rd ed., Cay Horstmann](https://horstmann.com/scala/)
 - *Spark: The Definitive Guide*, Bill Chambers and Matei Zaharia (O'Reilly)
 
 ### Courses

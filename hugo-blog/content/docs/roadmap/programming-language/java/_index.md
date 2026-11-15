@@ -31,11 +31,11 @@ Features worth knowing:
 - The **Foreign Function & Memory API** (Java 22): fast off-heap memory and native calls, used by engines for columnar data.
 
 ```java
-record Order(long id, String city, double amount) {}
+record Order(long id, String city, long amountCents) {}   // integer cents, not double
 
 var revenueByCity = orders.stream()
-    .filter(o -> o.amount() > 0)
-    .collect(Collectors.groupingBy(Order::city, Collectors.summingDouble(Order::amount)));
+    .filter(o -> o.amountCents() > 0)
+    .collect(Collectors.groupingBy(Order::city, Collectors.summingLong(Order::amountCents)));
 ```
 
 ## The JVM operator's checklist

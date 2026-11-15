@@ -23,7 +23,8 @@ code,kbd,pre,samp{font-family:var(--mono)}
 /* ---------- markdown ---------- */
 .markdown{font-size:1rem;line-height:1.7;color:var(--ink)}
 .markdown p,.markdown li{color:#2B3446}
-.markdown h1{font-size:2rem;font-weight:700;letter-spacing:-.6px;line-height:1.2;margin:.3rem 0 1rem}
+.markdown p{margin:0 0 1.1rem}
+.markdown h1{font-size:2rem;font-weight:700;letter-spacing:-.5px;line-height:1.25;margin:0 0 1.25rem}
 .markdown h2{font-size:1.4rem;font-weight:700;letter-spacing:-.3px;margin-top:2.5rem;padding-top:1.2rem;border-top:1px solid var(--line2)}
 .markdown h3{font-weight:650;font-size:1.125rem}
 .markdown strong,.markdown b{font-weight:650;color:var(--ink)}
@@ -32,14 +33,15 @@ code,kbd,pre,samp{font-family:var(--mono)}
 .markdown code{background:var(--panel);color:var(--ink);border:1px solid var(--line2);border-radius:4px;padding:.05em .35em;font-size:.86em}
 .markdown pre{background:#0E1525!important;color:#E6E9F0;border-radius:8px;padding:.9rem 1.1rem;font-size:.84rem}
 .markdown pre code{background:none;border:none;color:inherit;padding:0}
-.markdown blockquote{background:var(--acc-l);border:none;border-left:3px solid var(--acc);border-radius:0 6px 6px 0;padding:.7rem 1.1rem;margin:1.4rem 0}
+.markdown blockquote{background:var(--acc-l);border:none;border-radius:6px;padding:.9rem 1.2rem .9rem 1.4rem;margin:1.75rem 0}
+.markdown blockquote::before{background:var(--acc);width:3px;border-radius:6px 0 0 6px}
 .markdown blockquote p{color:var(--ink);margin:.25rem 0}
 .markdown table{border-collapse:collapse;border:none;display:table;width:100%;font-size:.9rem}
 .markdown table th{background:none;font:600 .72rem var(--mono);text-transform:uppercase;letter-spacing:.6px;color:var(--faint);text-align:left;border-bottom:1.5px solid var(--line)}
 .markdown table th,.markdown table td{border:none;border-bottom:1px solid var(--line2);padding:.6rem .8rem}
 .markdown table tr:nth-child(2n){background:transparent}
 .lx-kicker-line,.lx-kicker{font:500 .78rem var(--mono);color:var(--faint);letter-spacing:.2px}
-.lx-kicker-line{margin-bottom:-.8rem}
+.lx-kicker-line{margin-bottom:.5rem}
 
 /* ---------- lesson figure ---------- */
 .lx-fig{margin:1.75rem 0;border:1px solid var(--line);border-radius:10px;background:var(--bg);outline:none;overflow:hidden}
@@ -90,11 +92,11 @@ code,kbd,pre,samp{font-family:var(--mono)}
 .lx-fig[data-mode=CP] .ap-only,.lx-fig[data-mode=AP] .cp-only{display:none!important}
 
 /* shared bits */
-.lx-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.8rem;margin:1.4rem 0}
-.lx-card{border:1px solid var(--line);border-radius:8px;padding:.8rem .9rem;background:var(--bg)}
+.lx-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin:1.75rem 0 2rem}
+.lx-card{border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.2rem;background:var(--bg)}
 .lx-card .lab{font:600 .7rem var(--mono);color:var(--acc);letter-spacing:.6px;text-transform:uppercase}
-.lx-card h4{margin:.2rem 0 .25rem;font-size:.95rem;font-weight:700}
-.lx-card p{margin:0;font-size:.85rem;color:var(--muted);line-height:1.6}
+.lx-card h4{margin:.5rem 0 .5rem;font-size:1rem;line-height:1.35;font-weight:700}
+.lx-card p{margin:0;font-size:.875rem;color:var(--muted);line-height:1.55}
 .lx-svg{width:100%;height:auto;display:block}
 .lx-svg text{font-family:var(--sans)}
 .lx-svg .m{font-family:var(--mono)}

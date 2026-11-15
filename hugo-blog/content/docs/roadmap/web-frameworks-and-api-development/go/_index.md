@@ -32,7 +32,7 @@ func getOrder(w http.ResponseWriter, r *http.Request) {
         http.Error(w, "invalid id", http.StatusBadRequest)
         return
     }
-    order := Order{ID: id, User: "sara", Total: 120} // look up in the DB here
+    order := Order{ID: id, User: "sam", Total: 120} // look up in the DB here
     w.Header().Set("Content-Type", "application/json")
     json.NewEncoder(w).Encode(order)
 }
@@ -60,7 +60,7 @@ func main() {
 | **chi** | net/http | A small router with route groups, sub-routers and a middleware collection. Handlers stay plain `http.Handler`, so everything in the ecosystem works. |
 | **Gin** | net/http | The most popular Go framework. Its own `gin.Context`, fast routing, binding and validation of JSON and query parameters, lots of middleware. |
 | **Echo** | net/http | Similar to Gin: its own context, binding, validation, and well-organized docs. |
-| **Fiber** | fasthttp | Express-style API and very high raw throughput, but **not** compatible with `net/http` handlers, middleware or HTTP/2. |
+| **Fiber** | fasthttp | Express-style API and very high raw throughput, but **not** natively compatible with `net/http` handlers and middleware (only through adapters), and no HTTP/2. |
 
 ## How to choose
 

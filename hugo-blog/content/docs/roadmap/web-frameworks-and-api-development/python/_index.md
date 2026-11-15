@@ -28,7 +28,8 @@ class Order(BaseModel):
 
 @app.get("/orders/{order_id}")
 async def get_order(order_id: int) -> Order:     # "abc" → 422 automatically
-    row = await db.fetch_one("SELECT id, user, total FROM orders WHERE id = $1", order_id)
+    # db: an asyncpg pool created at startup; "user" is quoted because it is a reserved word
+    row = await db.fetchrow('SELECT id, "user", total FROM orders WHERE id = $1', order_id)
     if row is None:
         raise HTTPException(status_code=404, detail="order not found")
     return Order(**row)

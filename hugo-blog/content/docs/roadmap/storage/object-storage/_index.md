@@ -55,7 +55,7 @@ bookToC: false
   <g class="f" data-step="5">
     <rect x="20" y="268" width="380" height="54" rx="6" fill="#260246"/>
     <text x="36" y="290" class="m" font-size="12" fill="#EEEAF5">change 1 row → PUT a whole new object</text>
-    <text x="36" y="310" font-size="11" fill="#DCC9EE">no append, no in-place edit; versioning keeps the old one</text>
+    <text x="36" y="310" font-size="11" fill="#DCC9EE">no in-place edit; versioning keeps the old one</text>
   </g>
 </svg>
 <ol class="lx-caps">

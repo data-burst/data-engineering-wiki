@@ -1,4 +1,5 @@
 ---
+description: "Step-by-step data engineering roadmap: fundamentals, storage, databases, distributed systems, pipelines and architecture, each with animated lessons."
 weight: 1
 bookFlatSection: true
 title: "Roadmap Step-by-Step"

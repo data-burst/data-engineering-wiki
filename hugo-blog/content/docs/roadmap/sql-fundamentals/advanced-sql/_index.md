@@ -55,17 +55,17 @@ A window function computes a value for each row using a **window** of related ro
     <rect x="20" y="40" width="410" height="26" rx="4" fill="#F7F7FB"/>
     <g fill="#8C8899" font-size="11" font-weight="700"><text class="m" x="36" y="58">CITY</text><text class="m" x="126" y="58">DAY</text><text class="m" x="290" y="58" text-anchor="end">REVENUE</text><text class="m" x="414" y="58" text-anchor="end">AVG_3D</text><text class="m" x="470" y="30">FRAME FOR EACH ROW</text></g>
     <rect x="20" y="72" width="410" height="26" rx="4" fill="#fff" stroke="#E7E7EF"/>
-    <text class="m" x="36" y="90" fill="#17151F">Tehran</text><text class="m" x="126" y="90" fill="#5C5869">11-01</text><text class="m" x="290" y="90" text-anchor="end" fill="#17151F">100</text>
+    <text class="m" x="36" y="90" fill="#17151F">New York</text><text class="m" x="126" y="90" fill="#5C5869">11-01</text><text class="m" x="290" y="90" text-anchor="end" fill="#17151F">100</text>
     <rect x="20" y="102" width="410" height="26" rx="4" fill="#fff" stroke="#E7E7EF"/>
-    <text class="m" x="36" y="120" fill="#17151F">Tehran</text><text class="m" x="126" y="120" fill="#5C5869">11-02</text><text class="m" x="290" y="120" text-anchor="end" fill="#17151F">140</text>
+    <text class="m" x="36" y="120" fill="#17151F">New York</text><text class="m" x="126" y="120" fill="#5C5869">11-02</text><text class="m" x="290" y="120" text-anchor="end" fill="#17151F">140</text>
     <rect x="20" y="132" width="410" height="26" rx="4" fill="#fff" stroke="#E7E7EF"/>
-    <text class="m" x="36" y="150" fill="#17151F">Tehran</text><text class="m" x="126" y="150" fill="#5C5869">11-03</text><text class="m" x="290" y="150" text-anchor="end" fill="#17151F">90</text>
+    <text class="m" x="36" y="150" fill="#17151F">New York</text><text class="m" x="126" y="150" fill="#5C5869">11-03</text><text class="m" x="290" y="150" text-anchor="end" fill="#17151F">90</text>
     <rect x="20" y="162" width="410" height="26" rx="4" fill="#fff" stroke="#E7E7EF"/>
-    <text class="m" x="36" y="180" fill="#17151F">Tehran</text><text class="m" x="126" y="180" fill="#5C5869">11-04</text><text class="m" x="290" y="180" text-anchor="end" fill="#17151F">130</text>
+    <text class="m" x="36" y="180" fill="#17151F">New York</text><text class="m" x="126" y="180" fill="#5C5869">11-04</text><text class="m" x="290" y="180" text-anchor="end" fill="#17151F">130</text>
     <rect x="20" y="192" width="410" height="26" rx="4" fill="#F7F7FB" stroke="#E7E7EF"/>
-    <text class="m" x="36" y="210" fill="#17151F">Shiraz</text><text class="m" x="126" y="210" fill="#5C5869">11-01</text><text class="m" x="290" y="210" text-anchor="end" fill="#17151F">60</text>
+    <text class="m" x="36" y="210" fill="#17151F">Toronto</text><text class="m" x="126" y="210" fill="#5C5869">11-01</text><text class="m" x="290" y="210" text-anchor="end" fill="#17151F">60</text>
     <rect x="20" y="222" width="410" height="26" rx="4" fill="#F7F7FB" stroke="#E7E7EF"/>
-    <text class="m" x="36" y="240" fill="#17151F">Shiraz</text><text class="m" x="126" y="240" fill="#5C5869">11-02</text><text class="m" x="290" y="240" text-anchor="end" fill="#17151F">80</text>
+    <text class="m" x="36" y="240" fill="#17151F">Toronto</text><text class="m" x="126" y="240" fill="#5C5869">11-02</text><text class="m" x="290" y="240" text-anchor="end" fill="#17151F">80</text>
     <line x1="20" y1="190" x2="740" y2="190" stroke="#531A8A" stroke-width="1.4" stroke-dasharray="5 4"/>
     <rect x="20" y="272" width="720" height="66" rx="6" fill="#260246"/>
     <text class="m" x="36" y="298" fill="#EEEAF5"><tspan fill="#E2B6FB">AVG</tspan>(revenue) <tspan fill="#E2B6FB">OVER</tspan> (<tspan fill="#E2B6FB">PARTITION BY</tspan> city <tspan fill="#E2B6FB">ORDER BY</tspan> day</text>
@@ -104,11 +104,11 @@ A window function computes a value for each row using a **window** of related ro
 </svg>
 <ol class="lx-caps">
   <li>Daily revenue for two cities. We want a <b>3-day moving average</b> that restarts for each city.</li>
-  <li>Row 1 (Tehran, Nov 1): no preceding rows yet, so the frame holds only itself. avg = 100.</li>
+  <li>Row 1 (New York, Nov 1): no preceding rows yet, so the frame holds only itself. avg = 100.</li>
   <li>Row 2: the frame is rows 1–2, because only one preceding row exists. avg = 120.</li>
   <li>Row 3: the full frame, <b>2 preceding + current</b>. avg = (100 + 140 + 90) / 3 = 110.</li>
   <li>Row 4: the frame <b>slides</b> down one row and Nov 1 drops out. avg = (140 + 90 + 130) / 3 = 120.</li>
-  <li>Shiraz is a new <b>partition</b>: the frame resets and never reaches into Tehran's rows. avg = 60.</li>
+  <li>Toronto is a new <b>partition</b>: the frame resets and never reaches into New York's rows. avg = 60.</li>
   <li>All six input rows are still in the output. Window functions <b>add a column</b>; GROUP BY would have collapsed the rows.</li>
 </ol>
 {{< /fig >}}
@@ -153,7 +153,7 @@ FROM orders
 GROUP BY ROLLUP (city, status);   -- per (city, status), per city, and grand total
 ```
 
-`CUBE (city, status)` adds every combination; `GROUPING SETS ((city), (status), ())` lists exactly the levels you want. `FILTER (WHERE ...)` computes conditional aggregates: `COUNT(*) FILTER (WHERE status = 'paid')`.
+`CUBE (city, status)` adds every combination; `GROUPING SETS ((city), (status), ())` lists exactly the levels you want. `FILTER (WHERE ...)` computes conditional aggregates: `COUNT(*) FILTER (WHERE status = 'paid')` (PostgreSQL, DuckDB, Trino, Spark SQL); engines without it use `COUNT(CASE WHEN status = 'paid' THEN 1 END)`.
 
 ## Upserts with MERGE
 
@@ -169,12 +169,12 @@ WHEN NOT MATCHED THEN
   INSERT (customer_id, city, updated_at) VALUES (s.customer_id, s.city, s.updated_at);
 ```
 
-PostgreSQL also has `INSERT ... ON CONFLICT (customer_id) DO UPDATE`. Make sure the source has **one row per key**, or the merge fails or behaves unpredictably.
+PostgreSQL supports `MERGE` since version 15 and also has `INSERT ... ON CONFLICT (customer_id) DO UPDATE`. Make sure the source has **one row per key**, or the merge fails or behaves unpredictably.
 
 ## Views and materialized views
 
 - A **view** is a saved query. It always shows current data and costs a full query each time it is read.
-- A **materialized view** stores the result. Reads are fast; the data is as fresh as the last refresh. PostgreSQL refreshes manually (`REFRESH MATERIALIZED VIEW CONCURRENTLY sales_summary;`); Snowflake, BigQuery and ClickHouse can maintain some materialized views incrementally and automatically.
+- A **materialized view** stores the result. Reads are fast; the data is as fresh as the last refresh. PostgreSQL refreshes manually (`REFRESH MATERIALIZED VIEW sales_summary;`, or `... CONCURRENTLY` to keep it readable during the refresh, which requires a unique index on the view); Snowflake, BigQuery and ClickHouse can maintain some materialized views incrementally and automatically.
 
 ```sql
 CREATE MATERIALIZED VIEW sales_summary AS
@@ -192,7 +192,7 @@ In dbt, the same choice is the model's materialization: `view`, `table`, `increm
 
 ## Common mistakes
 
-- **Default frame surprise**: with `ORDER BY` and no frame, the default is `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`. Ties are treated as one peer group, so a running total jumps by several rows at once, and `LAST_VALUE` returns the current row, not the last. Spell out `ROWS BETWEEN ...` when it matters.
+- **Default frame surprise**: with `ORDER BY` and no frame, the default is `RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW`. Ties are treated as one peer group, so a running total jumps by several rows at once, and `LAST_VALUE` returns the current row (or its last tie), not the last row of the partition. Spell out `ROWS BETWEEN ...` when it matters.
 - Using `ROW_NUMBER` for dedup without a deterministic `ORDER BY`, so reruns keep different rows.
 - `ROWS BETWEEN 6 PRECEDING` as a "7-day average" when some days have no rows. Fill gaps with a calendar table or use `RANGE` with an interval.
 - `MERGE` from a source with duplicate keys.

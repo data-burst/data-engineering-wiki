@@ -32,7 +32,7 @@ ORDER BY amount DESC                   -- sort
 LIMIT 10;                              -- how many
 ```
 
-Useful filters: `IN ('Tehran', 'Shiraz')`, `BETWEEN 100 AND 500`, `LIKE 'Teh%'`, `IS NULL`. Use `SELECT DISTINCT city` to remove duplicate rows, and `CASE WHEN amount > 500 THEN 'large' ELSE 'small' END` for conditional values.
+Useful filters: `IN ('New York', 'Toronto')`, `BETWEEN 100 AND 500`, `LIKE 'New%'`, `IS NULL`. Use `SELECT DISTINCT city` to remove duplicate rows, and `CASE WHEN amount > 500 THEN 'large' ELSE 'small' END` for conditional values.
 
 ## The order SQL actually runs in
 
@@ -79,16 +79,16 @@ You write `SELECT` first, but the database evaluates it almost last. Knowing the
     <circle cx="375" cy="202" r="11" fill="#F4EEFA"/><text class="m" x="375" y="206" text-anchor="middle" font-weight="700" fill="#531A8A">6</text>
     <circle cx="375" cy="232" r="11" fill="#F4EEFA"/><text class="m" x="375" y="236" text-anchor="middle" font-weight="700" fill="#531A8A">7</text>
     <rect x="430" y="222" width="310" height="32" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
-    <text class="m" x="444" y="243" fill="#17151F" font-weight="700">6–7 · ORDER BY, LIMIT 1</text><text class="m" x="726" y="243" text-anchor="end" fill="#531A8A" font-weight="700">Tehran · 3</text>
+    <text class="m" x="444" y="243" fill="#17151F" font-weight="700">6–7 · ORDER BY, LIMIT 1</text><text class="m" x="726" y="243" text-anchor="end" fill="#531A8A" font-weight="700">New York · 3</text>
   </g>
 </svg>
 <ol class="lx-caps">
   <li><b>FROM</b> (and any joins) runs first: it builds the full set of input rows. Here, 8 orders.</li>
   <li><b>WHERE</b> filters individual rows. 2 cancelled orders drop out. It cannot use aggregates or <code>SELECT</code> aliases: they don't exist yet.</li>
-  <li><b>GROUP BY</b> collapses rows into one row per city: Tehran 3, Shiraz 2, Isfahan 1.</li>
-  <li><b>HAVING</b> filters <b>groups</b>, so it can use aggregates. Isfahan, with one paid order, is removed.</li>
+  <li><b>GROUP BY</b> collapses rows into one row per city: New York 3, Toronto 2, Chicago 1.</li>
+  <li><b>HAVING</b> filters <b>groups</b>, so it can use aggregates. Chicago, with one paid order, is removed.</li>
   <li><b>SELECT</b> computes the output columns. Only now does the alias <code>orders</code> exist.</li>
-  <li><b>ORDER BY</b> runs after SELECT, so it <b>can</b> use the alias. <b>LIMIT</b> keeps the first row: Tehran with 3 paid orders.</li>
+  <li><b>ORDER BY</b> runs after SELECT, so it <b>can</b> use the alias. <b>LIMIT</b> keeps the first row: New York with 3 paid orders.</li>
 </ol>
 {{< /fig >}}
 
@@ -101,21 +101,21 @@ A join combines rows from two tables where a condition matches, usually a foreig
 {{< fig kicker="$ SELECT c.name, o.order_id FROM customers c ? JOIN orders o ON o.customer_id = c.id" title="INNER, LEFT and FULL OUTER JOIN on the same two tables" >}}
 <div class="rc-top">
 <table class="rc-tbl"><tr><th>customers.id</th><th>name</th></tr>
-<tr><td>1</td><td>Ali</td></tr><tr><td>2</td><td>Sara</td></tr><tr><td>3</td><td>Reza</td></tr></table>
+<tr><td>1</td><td>Alice</td></tr><tr><td>2</td><td>Sam</td></tr><tr><td>3</td><td>Ryan</td></tr></table>
 <table class="rc-tbl"><tr><th>order_id</th><th>customer_id</th></tr>
 <tr><td>o1</td><td>1</td></tr><tr><td>o2</td><td>1</td></tr><tr><td>o3</td><td>2</td></tr><tr><td>o4</td><td>9</td></tr></table>
 </div>
 <table class="lx-log"><tr><th>name</th><th>order_id</th><th>returned by</th></tr>
-<tr class="f" data-step="1"><td>Ali</td><td>o1</td><td><span class="tag">INNER</span> · LEFT · FULL</td></tr>
-<tr class="f" data-step="1"><td>Ali</td><td>o2</td><td><span class="tag">INNER</span> · LEFT · FULL</td></tr>
-<tr class="f" data-step="1"><td>Sara</td><td>o3</td><td><span class="tag">INNER</span> · LEFT · FULL</td></tr>
-<tr class="f" data-step="2"><td>Reza</td><td>NULL</td><td><span class="tag">LEFT</span> · FULL: customer with no orders</td></tr>
+<tr class="f" data-step="1"><td>Alice</td><td>o1</td><td><span class="tag">INNER</span> · LEFT · FULL</td></tr>
+<tr class="f" data-step="1"><td>Alice</td><td>o2</td><td><span class="tag">INNER</span> · LEFT · FULL</td></tr>
+<tr class="f" data-step="1"><td>Sam</td><td>o3</td><td><span class="tag">INNER</span> · LEFT · FULL</td></tr>
+<tr class="f" data-step="2"><td>Ryan</td><td>NULL</td><td><span class="tag">LEFT</span> · FULL: customer with no orders</td></tr>
 <tr class="f" data-step="3"><td>NULL</td><td>o4</td><td><span class="tag">FULL</span> (and RIGHT): order whose customer 9 does not exist</td></tr>
 </table>
 <ol class="lx-caps">
-  <li>Three customers, four orders. Ali has two orders, Reza has none, and order o4 points to a customer id that doesn't exist.</li>
-  <li><b>INNER JOIN</b> returns only matching pairs. Ali appears twice because he has two orders: joins can <b>multiply</b> rows.</li>
-  <li><b>LEFT JOIN</b> keeps every customer. Reza has no match, so the order columns are <b>NULL</b>.</li>
+  <li>Three customers, four orders. Alice has two orders, Ryan has none, and order o4 points to a customer id that doesn't exist.</li>
+  <li><b>INNER JOIN</b> returns only matching pairs. Alice appears twice because she has two orders: joins can <b>multiply</b> rows.</li>
+  <li><b>LEFT JOIN</b> keeps every customer. Ryan has no match, so the order columns are <b>NULL</b>.</li>
   <li><b>FULL OUTER JOIN</b> also keeps unmatched rows from the right side: o4 appears with a NULL customer. <b>RIGHT JOIN</b> is a LEFT JOIN with the tables swapped.</li>
 </ol>
 {{< /fig >}}
@@ -152,7 +152,7 @@ Every column in `SELECT` must either be in `GROUP BY` or wrapped in an aggregate
 
 ```sql
 INSERT INTO orders (order_id, customer_id, city, status, amount, ordered_at)
-VALUES (9001, 42, 'Tehran', 'paid', 80.00, '2026-01-15 10:30');
+VALUES (9001, 42, 'New York', 'paid', 80.00, '2026-01-15 10:30');
 
 UPDATE orders SET status = 'cancelled' WHERE order_id = 9001;
 

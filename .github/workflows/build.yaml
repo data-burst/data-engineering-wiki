@@ -9,6 +9,7 @@ on:
       - 'Dockerfile'
       - 'hugo-blog/**'
       - '.github/workflows/**'
+  workflow_dispatch:
 jobs:
   build:
     runs-on: ubuntu-latest

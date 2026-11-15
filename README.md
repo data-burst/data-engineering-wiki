@@ -1,60 +1,20 @@
-# Hugo
+# DataBurst Data Engineering Wiki
 
-Hugo is a static site generator written in Go, optimized for speed and designed for flexibility.
+Source of [wiki.databurst.tech](https://wiki.databurst.tech): a free, open data engineering wiki built with [Hugo](https://gohugo.io) and the [hugo-book](https://github.com/alex-shpak/hugo-book) theme, with step-by-step animated figures.
 
-## Prerequisites
+```bash
+git clone --recurse-submodules https://github.com/data-burst/data-engineering-wiki
+cd data-engineering-wiki/hugo-blog && hugo server
+```
 
-- [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-- [Go](https://go.dev/doc/install)
-- [Dart Sass](https://gohugo.io/hugo-pipes/transpile-sass-to-css/#dart-sass)
+Or with Docker: `docker compose up --build`, then open http://localhost:1313.
 
-## Installation
+| Path | What lives there |
+|---|---|
+| `hugo-blog/content/docs/` | Pages (Markdown) |
+| `hugo-blog/layouts/_shortcodes/fig.html` | Animated figure shortcode |
+| `hugo-blog/assets/lesson/` | Site styles and the figure engine |
+| `hugo-blog/layouts/_partials/seo.html` | JSON-LD, Twitter cards |
+| `hugo-blog/layouts/home.llms.txt`, `robots.txt` | `llms.txt` and crawler rules |
 
-Install the [Hugo](https://gohugo.io/installation/) with respect to your Operating System (OS).
-
-## Setup
-
-Follow the instruction below:
-
-1. Create a new project:
-
-    ```bash
-    hugo new site hugo-blog
-    ```
-
-2. Navigate to Hugo project root:
-
-   ```bash
-   cd hugo-blog
-   ```
-
-3. Install the `book` theme:
-
-   ```bash
-   git submodule add https://github.com/alex-shpak/hugo-book themes/hugo-book
-   ```
-
-4. Modify the configuration and add the `book` theme to `hugo.toml`:
-
-    ```toml
-    baseURL = 'https://wiki.databurst.tech'
-    languageCode = 'en-us'
-    title = 'Databurst Data Engineering Wiki'
-    theme = "hugo-book"
-    ```
-
-5. [optional] Copy the sample content from existing examples:
-
-    ```bash
-    cp -R themes/hugo-book/exampleSite/content.en/* ./content
-    ```
-
-6. Start the **development** server:
-
-    ```bash
-    hugo server
-    ```
-
-## Useful Links
-
-- [Book theme documentation](https://themes.gohugo.io/themes/hugo-book/)
+See [CONTRIBUTING.md](CONTRIBUTING.md) to add or improve a page.

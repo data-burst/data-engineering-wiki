@@ -1,62 +1,124 @@
 ---
 weight: 19
 title: "Data Processing"
+description: "How distributed data processing works, animated: split, map, shuffle and reduce, plus how Spark, Flink, Beam, dbt and DuckDB fit batch and streaming workloads."
+bookToC: false
 ---
+<div class="lx-kicker-line">$ spark-submit count_orders_by_city.py</div>
 
 # Data Processing
 
-## Introduction
+**Data processing** is the step where raw data becomes something useful: filtered, cleaned, joined, aggregated and written somewhere else. When the data fits on one machine, a SQL query or a Python script is enough. When it doesn't, or when it never stops arriving, you need an engine that splits the work across many cores or machines and survives one of them dying halfway through.
 
-Data processing in the field of data engineering refers to the collection and manipulation of raw data to produce meaningful information. It involves the conversion of raw data into machine-readable form, flow of data through the CPU and memory, construction of output, and the interpretation of the output. Data processing functions include validation, sorting, summarization, aggregation, analysis, reporting, and classification.
+Almost every distributed engine, from Hadoop MapReduce (2004) to Apache Spark and Flink today, follows the same shape: **split the input, process the pieces in parallel, shuffle by key, combine the results.**
 
-Data processing frameworks, such as Apache Spark, Apache Kafka, Amazon Kinesis, Apache NiFi, and MapReduce, are designed to handle large volumes of data, perform complex transformations, and facilitate quick insights. These frameworks are capable of processing data in real-time (streaming), in batches, or a hybrid of both. They are designed to be highly scalable, reliable, and distributed, meaning they can process data across many machines in parallel, increasing the speed of data processing tasks.
+## Split, map, shuffle, reduce
 
-MapReduce is a programming model and an associated implementation for processing and generating big data sets with a parallel, distributed algorithm on a cluster. It’s a key component of the Apache Hadoop software framework. In a MapReduce computation, input data is broken down into chunks for processing by different nodes in a distributed system. Intermediate results are then combined (or “reduced”) to solve the problem at hand.
+{{< fig kicker="$ SELECT city, COUNT(*) FROM orders GROUP BY city" title="Counting orders per city on three machines" >}}
+<svg class="lx-svg lx-canvas" viewBox="0 0 760 330">
+  <defs><marker id="dp-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#531A8A"/></marker></defs>
+  <g class="m" font-size="11" fill="#8C8899"><text x="20" y="26">INPUT</text><text x="200" y="26">MAP</text><text x="390" y="26" text-anchor="middle">SHUFFLE</text><text x="452" y="26">REDUCE</text><text x="636" y="26">OUTPUT</text></g>
+  <g class="m">
+    <rect x="20" y="40" width="140" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="34" y="64" font-size="12" font-weight="600" fill="#17151F">SPLIT 1</text><text x="34" y="90" font-size="11.5" fill="#3D3A49">TEH TEH SHZ</text>
+    <rect x="20" y="130" width="140" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="34" y="154" font-size="12" font-weight="600" fill="#17151F">SPLIT 2</text><text x="34" y="180" font-size="11.5" fill="#3D3A49">TEH ISF SHZ</text>
+    <rect x="20" y="220" width="140" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="34" y="244" font-size="12" font-weight="600" fill="#17151F">SPLIT 3</text><text x="34" y="270" font-size="11.5" fill="#3D3A49">TEH TEH SHZ</text>
+  </g>
+  <g class="f m" data-step="1">
+    <line x1="160" y1="75" x2="194" y2="75" stroke="#531A8A" stroke-width="1.4" marker-end="url(#dp-ar)"/>
+    <line x1="160" y1="165" x2="194" y2="165" stroke="#531A8A" stroke-width="1.4" marker-end="url(#dp-ar)"/>
+    <line x1="160" y1="255" x2="194" y2="255" stroke="#531A8A" stroke-width="1.4" marker-end="url(#dp-ar)"/>
+    <rect x="200" y="40" width="150" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="214" y="64" font-size="12" font-weight="600" fill="#17151F">MAP 1</text><text x="214" y="90" font-size="11.5" fill="#531A8A">TEH:2 SHZ:1</text>
+    <rect x="200" y="130" width="150" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="214" y="154" font-size="12" font-weight="600" fill="#17151F">MAP 2</text><text x="214" y="180" font-size="11.5" fill="#531A8A">TEH:1 ISF:1 SHZ:1</text>
+    <rect x="200" y="220" width="150" height="70" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="214" y="244" font-size="12" font-weight="600" fill="#17151F">MAP 3</text><text x="214" y="270" font-size="11.5" fill="#531A8A">TEH:2 SHZ:1</text>
+  </g>
+  <g class="f m" data-step="2">
+    <g stroke="#531A8A" stroke-width="1.2" fill="none" marker-end="url(#dp-ar)">
+      <line x1="350" y1="70" x2="446" y2="90"/><line x1="350" y1="160" x2="446" y2="100"/><line x1="350" y1="250" x2="446" y2="110"/>
+    </g>
+    <g stroke="#8C8899" stroke-width="1.2" fill="none" stroke-dasharray="4 3" marker-end="url(#dp-ar)">
+      <line x1="350" y1="84" x2="446" y2="216"/><line x1="350" y1="174" x2="446" y2="226"/><line x1="350" y1="264" x2="446" y2="236"/>
+    </g>
+    <rect x="452" y="60" width="150" height="80" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="466" y="84" font-size="12" font-weight="600" fill="#17151F">REDUCE 1</text><text x="466" y="104" font-size="11" fill="#5C5869">key TEH</text>
+    <rect x="452" y="186" width="150" height="80" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="466" y="210" font-size="12" font-weight="600" fill="#17151F">REDUCE 2</text><text x="466" y="230" font-size="11" fill="#5C5869">keys SHZ, ISF</text>
+  </g>
+  <g class="f m" data-step="3">
+    <text x="466" y="128" font-size="11.5" fill="#531A8A">2+1+2 = 5</text>
+    <text x="466" y="254" font-size="11.5" fill="#531A8A">SHZ 3 · ISF 1</text>
+    <line x1="602" y1="100" x2="630" y2="150" stroke="#531A8A" stroke-width="1.4" marker-end="url(#dp-ar)"/>
+    <line x1="602" y1="226" x2="630" y2="190" stroke="#531A8A" stroke-width="1.4" marker-end="url(#dp-ar)"/>
+    <rect x="636" y="120" width="104" height="96" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/>
+    <g font-size="12" fill="#17151F"><text x="650" y="148">TEH  5</text><text x="650" y="172">SHZ  3</text><text x="650" y="196">ISF  1</text></g>
+  </g>
+  <g class="f m" data-step="4">
+    <rect x="196" y="126" width="158" height="78" rx="8" fill="#fff" stroke="#C2382F" stroke-width="1.6" stroke-dasharray="5 4"/>
+    <text x="275" y="160" text-anchor="middle" font-size="12" font-weight="600" fill="#C2382F">MAP 2 · NODE DIED</text>
+    <text x="275" y="180" text-anchor="middle" font-size="11" fill="#3D3A49">re-run split 2 only</text>
+    <text x="20" y="316" font-size="11" fill="#5C5869">Other tasks keep their results. Only the lost task is re-run on another node.</text>
+  </g>
+</svg>
+<ol class="lx-caps">
+  <li>The input (a folder of Parquet files, a Kafka topic) is cut into <b>splits</b>, and each machine gets some of them.</li>
+  <li><b>Map</b>: each task reads its split and emits <b>(city, count)</b> pairs. It pre-aggregates locally, so it sends TEH:2, not TEH:1 twice.</li>
+  <li><b>Shuffle</b>: pairs are routed by <b>hash of the key</b>, so every TEH goes to reducer 1. This is the expensive step: data crosses the network and often hits disk.</li>
+  <li><b>Reduce</b>: each reducer combines the values for its keys and writes the result.</li>
+  <li>A machine dies. The engine knows which split that task read, so it <b>re-runs only that task</b> elsewhere. This is how a 1,000-node job survives failures.</li>
+</ol>
+{{< /fig >}}
 
-These frameworks are platform-independent and can run on various operating systems, including but not limited to Linux, Windows, and MacOS. This makes them versatile tools for data processing in diverse environments.
+Spark calls the parts between shuffles **stages** and plans them from your SQL or DataFrame code. Flink does the same continuously: a keyed stream is a never-ending shuffle, and reducers keep running totals in **state**.
 
-The choice of data processing tool depends on the specific requirements of the task, such as the volume of data, the speed at which the data needs to be processed, and the complexity of the data processing operations. Each tool has its strengths and is suited to different types of tasks. For example, Apache Kafka is well-suited for real-time data streaming applications, while Apache Spark is excellent for complex data processing tasks that require in-memory computation.
+## Batch, streaming and in between
 
-## Tools
+- **Batch**: process a bounded dataset (yesterday's orders) and finish. Simple, cheap, easy to re-run.
+- **Streaming**: process an unbounded stream event by event and keep results up to date. Fresh, but needs state, checkpoints and handling of late data.
+- **Micro-batch**: small batches every few seconds (Spark Structured Streaming).
 
-Data processing tools in data engineering can be categorized into three types: Batch, Hybrid, and Stream.
+See [Batch and Stream Processing]({{< relref "/docs/roadmap/distributed-systems-concepts/batch-and-stream-processing" >}}) for a side-by-side simulation.
 
-### Batch
+## Engines in 2026
 
-Batch processing is a method where data is collected, processed in bulk, and then the results are produced. The tools used for batch processing include:
+| Engine | Type | Best at |
+|---|---|---|
+| [Apache Spark](https://spark.apache.org/) | Batch + micro-batch streaming | Large ETL, lakehouse jobs, ML prep. SQL, Python, Scala. Spark 4 (2025) added a VARIANT type for semi-structured data and a native XML reader. |
+| [Apache Flink](https://flink.apache.org/) | Streaming first (batch too) | Low-latency stateful streaming, event time, exactly-once state |
+| [Apache Beam](https://beam.apache.org/) | Unified API | Write once, run on Dataflow, Flink or Spark |
+| [Kafka Streams](https://kafka.apache.org/documentation/streams/) | Streaming library | Stream processing inside a Java service, no separate cluster |
+| Warehouse SQL + [dbt](https://docs.getdbt.com/) | Batch (ELT) | Transformations where the data already lives: Snowflake, BigQuery, Databricks SQL, ClickHouse |
+| [DuckDB](https://duckdb.org/), [Polars](https://pola.rs/) | Single-node, vectorized | Anything up to hundreds of GB on one machine, fast and cheap |
+| [Ray](https://www.ray.io/), [Dask](https://www.dask.org/) | Python-native distributed | ML pipelines and Python workloads that outgrow one machine |
+| RisingWave, Materialize | Streaming SQL databases | Continuously updated SQL views over streams |
 
-- [**Apache Arrow**](https://arrow.apache.org/): A cross-language development platform for in-memory data.
-- [**Data Build Tool (dbt)**](https://getdbt.com/): A command-line tool that enables data analysts and engineers to transform data in their warehouses more effectively.
+What this table leaves out on purpose: **Kafka** itself moves data but doesn't process it (see [Messaging and Streaming Platforms]({{< relref "/docs/roadmap/messaging-and-streaming-platform" >}})); **Apache Arrow** is an in-memory columnar format that many of these engines use internally; **Hadoop MapReduce, Storm and Samza** are legacy and rarely chosen for new work.
 
-### Hybrid
+## How to choose
 
-Hybrid processing combines both batch and stream processing methods. The tools used for hybrid processing include:
+1. **Does it fit on one machine?** Data under a few hundred GB: try DuckDB or Polars first. It's often faster than a cluster and costs nothing to run.
+2. **Is the data already in a warehouse?** Transform it there with SQL and dbt.
+3. **Does it need results in seconds?** Use Flink, Kafka Streams or a streaming database.
+4. **Otherwise**, large-scale batch on files: Spark.
 
-- [**Apache Spark**](https://spark.apache.org/): An open-source, distributed computing system used for big data processing and analytics.
-- [**Apache Beam**](https://beam.apache.org/): A model and set of language-specific SDKs for defining and executing data processing workflows.
-- [**Apache Flink**](https://flink.apache.org/): An open-source stream processing framework for high-performance, reliable, and real-time data streaming applications.
-- [**Apache Nifi**](https://nifi.apache.org/): A software project from the Apache Software Foundation designed to automate the flow of data between software systems.
+## Common mistakes
 
-### Stream
+- **Data skew.** One key (a huge customer, `city = NULL`) sends most rows to one reducer, and the whole job waits for it. Salt the key or handle the hot key separately.
+- **Too many shuffles.** Every `JOIN`, `GROUP BY` and `DISTINCT` on a new key is a shuffle. Filter and project early; broadcast small tables in joins.
+- **The small-files problem.** Thousands of tiny output files make every later read slow. Compact or repartition before writing.
+- **Row-by-row Python UDFs** in Spark. Use built-in functions or vectorized (Arrow-based) UDFs.
+- **Reaching for a cluster too early.** Distributed systems add cost and failure modes. Scale out when one machine really isn't enough.
 
-Stream processing is a method where data is continuously processed, with new data affecting the computation as it arrives. The tools used for stream processing include:
+## Learning Resources
 
-- [**Apache Kafka**](https://kafka.apache.org/): A distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications.
-- [**Apache Storm**](https://strom.apache.org/): A free and open-source distributed real-time computation system.
-- [**Apache Samza**](https://samza.apache.org/): A distributed stream processing framework that uses Apache Kafka for messaging, and Apache Hadoop YARN to provide fault tolerance, processor isolation, security, and resource management.
-- [**Amazon Kinesis**](https://aws.amazon.com/kinesis/): A fully managed service for real-time processing of streaming data at a massive scale provided by Amazon Web Services (AWS).
-
-## Learning resources
+### Papers
+- [MapReduce: Simplified Data Processing on Large Clusters](https://research.google/pubs/mapreduce-simplified-data-processing-on-large-clusters/): Dean and Ghemawat, 2004
+- [Resilient Distributed Datasets](https://www.usenix.org/conference/nsdi12/technical-sessions/presentation/zaharia): the paper behind Spark
+- [The Dataflow Model](https://research.google/pubs/the-dataflow-model-a-practical-approach-to-balancing-correctness-latency-and-cost-in-massive-scale-unbounded-out-of-order-data-processing/): the ideas behind Beam and Flink
 
 ### Books
+- [Designing Data-Intensive Applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/), Chapters 10 and 11: Martin Kleppmann
+- [Learning Spark, 2nd Edition](https://www.oreilly.com/library/view/learning-spark-2nd/9781492050032/)
+- [Streaming Systems](https://www.oreilly.com/library/view/streaming-systems/9781491983867/): Akidau, Chernyak and Lax
 
-- [Spark in Action](https://www.manning.com/books/spark-in-action-second-edition)
-- [Kafka: The Definitive Guide, 2nd Edition](https://www.oreilly.com/library/view/kafka-the-definitive/9781492043072/)
-- [Event Streams in Action](https://www.amazon.com/dp/1617292346?linkCode=gs2&tag=uuid0a-21)
-
-### Courses
-
-- [dbt (data-build-tool)](https://www.youtube.com/watch?v=5rNquRnNb4E&list=PLy4OcwImJzBLJzLYxpxaPUmCWp8j1esvT)
-- [PySpark Tutorial](https://www.youtube.com/watch?v=_C8kWso4ne4&pp=ygUOc3BhcmsgdHV0b3JpYWw%3D)
-- [Apache Kafka Tutorial](https://www.youtube.com/watch?v=gg-VwXSRnmg&list=PLkz1SCf5iB4enAR00Z46JwY9GGkaS2NON)
-- [Introduction to Amazon Kinesis](https://www.youtube.com/watch?v=MbEfiX4sMXc)
+### Docs and courses
+- [Spark SQL, DataFrames and Datasets guide](https://spark.apache.org/docs/latest/sql-programming-guide.html)
+- [Flink: Learn Flink](https://nightlies.apache.org/flink/flink-docs-stable/docs/learn-flink/overview/)
+- [DuckDB documentation](https://duckdb.org/docs/)
+- [PySpark Tutorial](https://www.youtube.com/watch?v=_C8kWso4ne4)

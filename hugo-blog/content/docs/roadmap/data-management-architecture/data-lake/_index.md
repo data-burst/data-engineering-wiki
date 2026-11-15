@@ -62,7 +62,7 @@ A **data lake** is a central store that keeps data of any type (database extract
   <li>Everything lands in the <b>raw zone</b> exactly as received. Loading is cheap and never fails on schema, and you can always reprocess from here.</li>
   <li>A <b>catalog</b> records what each dataset is, its schema, location and owner. Without it, the lake becomes a <b>data swamp</b> nobody can navigate.</li>
   <li>Jobs (Spark, dbt, Flink) produce the <b>clean zone</b>: typed, deduplicated, columnar files.</li>
-  <li>The <b>curated zone</b> holds business-ready tables for BI, ML and SQL engines. Databricks calls these zones bronze, silver and gold.</li>
+  <li>The <b>curated zone</b> holds business-ready tables for BI, ML and SQL engines. Bronze, silver and gold is the "medallion" naming popularized by Databricks.</li>
 </ol>
 {{< /fig >}}
 

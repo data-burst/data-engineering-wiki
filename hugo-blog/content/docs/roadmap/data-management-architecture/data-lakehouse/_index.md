@@ -11,7 +11,7 @@ A **data lakehouse** stores data once, as open files on cheap object storage lik
 
 ## How a table format turns files into a table
 
-A table is a folder of immutable [Parquet]({{< relref "/docs/roadmap/file-formats-and-serialization/file-formats/parquet" >}}) data files plus metadata that says which files make up the table **right now**. Every write adds new files and then atomically commits a new metadata version. Step through the example (Delta Lake naming; Iceberg uses metadata files, manifest lists and manifests, but the idea is the same).
+A table is a folder of immutable [Parquet]({{< relref "/docs/roadmap/file-formats-and-serialization/file-formats/parquet" >}}) data files plus metadata that says which files make up the table **right now**. Every write adds new files and then atomically commits a new metadata version. Step through the example (Delta Lake naming, with the 20-digit log file names shortened; Iceberg uses metadata files, manifest lists and manifests, but the idea is the same).
 
 {{< fig kicker="$ INSERT · INSERT · UPDATE · time travel · concurrent MERGE" title="Commits, snapshots and time travel" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 330">
@@ -60,7 +60,7 @@ A table is a folder of immutable [Parquet]({{< relref "/docs/roadmap/file-format
 <ol class="lx-caps">
   <li>The first write adds files <b>f1</b> and <b>f2</b> and commits log entry <b>000</b>. The table version <b>v0</b> is exactly the set of files the log lists.</li>
   <li>An insert writes <b>f3</b>, then commits <b>001</b>. Readers see either v0 or v1, never half of a write: the commit is <b>atomic</b>.</li>
-  <li>An <b>UPDATE</b> never edits a Parquet file. It writes a new file <b>f4</b> with the changed rows and commits "remove f2, add f4". (Deletion vectors can mark rows deleted instead of rewriting the whole file.)</li>
+  <li>An <b>UPDATE</b> never edits a Parquet file. It rewrites the affected file: new file <b>f4</b> holds f2's rows with the change applied, and the commit says "remove f2, add f4". (Deletion vectors can mark rows deleted instead of rewriting the whole file.)</li>
   <li><b>Time travel</b>: old snapshots still point to existing files, so you can query or restore v1. Files leave disk only after <code>VACUUM</code> / snapshot expiry.</li>
   <li><b>Optimistic concurrency</b>: writer B also tried to commit 002 and lost the race. It checks whether v2 touched the same data, then retries as <b>003</b>.</li>
 </ol>

@@ -206,8 +206,8 @@
 
   /* ================= Row vs Column ================= */
   HOOKS.rowcol = function (fig) {
-    const rows = [[1, 'ali', 'TEH', 250], [2, 'sara', 'TEH', 120], [3, 'reza', 'TEH', 450],
-                  [4, 'mina', 'SHZ', 980], [5, 'omid', 'SHZ', 600], [6, 'nika', 'ISF', 1200]];
+    const rows = [[1, 'amy', 'NYC', 250], [2, 'sam', 'NYC', 120], [3, 'ray', 'NYC', 450],
+                  [4, 'max', 'TOR', 980], [5, 'eva', 'TOR', 600], [6, 'leo', 'CHI', 1200]];
     const R = $(fig, '.rc-strip.row'), C = $(fig, '.rc-strip.col');
     const mR = $(fig, '.rc-meter.row i'), mC = $(fig, '.rc-meter.col i');
     const tR = $(fig, '.rc-read.row'), tC = $(fig, '.rc-read.col');
@@ -220,7 +220,7 @@
       for (let c = 0; c < 4; c++) {
         if (c) h += '<span class="gap"></span>';
         if (rle && c === 2) {
-          const runs = [['TEH', 3], ['SHZ', 2], ['ISF', 1]];
+          const runs = [['NYC', 3], ['TOR', 2], ['CHI', 1]];
           h += runs.map(([v, n]) => `<span class="cell wide in">${v}×${n}</span>`).join('');
         } else h += rows.map(r => cell(r[c], c, i++, anim)).join('');
       }

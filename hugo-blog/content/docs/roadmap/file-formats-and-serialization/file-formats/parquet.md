@@ -16,9 +16,9 @@ Two ideas make it fast: **store columns, not rows**, and **write statistics so r
 {{< fig kicker="$ SELECT SUM(amount) FROM orders" title="Same table, two layouts on disk" hook="rowcol" >}}
 <div class="rc-top">
 <table class="rc-tbl"><tr><th>id</th><th>user</th><th>city</th><th class="hot">amount</th></tr>
-<tr><td>1</td><td>ali</td><td>TEH</td><td>250</td></tr><tr><td>2</td><td>sara</td><td>TEH</td><td>120</td></tr>
-<tr><td>3</td><td>reza</td><td>TEH</td><td>450</td></tr><tr><td>4</td><td>mina</td><td>SHZ</td><td>980</td></tr>
-<tr><td>5</td><td>omid</td><td>SHZ</td><td>600</td></tr><tr><td>6</td><td>nika</td><td>ISF</td><td>1200</td></tr></table>
+<tr><td>1</td><td>amy</td><td>NYC</td><td>250</td></tr><tr><td>2</td><td>sam</td><td>NYC</td><td>120</td></tr>
+<tr><td>3</td><td>ray</td><td>NYC</td><td>450</td></tr><tr><td>4</td><td>max</td><td>TOR</td><td>980</td></tr>
+<tr><td>5</td><td>eva</td><td>TOR</td><td>600</td></tr><tr><td>6</td><td>leo</td><td>CHI</td><td>1200</td></tr></table>
 <div>
 <div class="rc-q"><span class="k">SELECT</span> <span class="fn">SUM</span>(amount)
 <span class="k">FROM</span>   orders;</div>
@@ -33,13 +33,13 @@ Two ideas make it fast: **store columns, not rows**, and **write statistics so r
   <li><b>Columnar layout:</b> all ids, then all users, then all cities, then all amounts.</li>
   <li>The row store must read <b>everything</b>: amounts are interleaved with columns we don't need.</li>
   <li>The column store reads <b>only the amount block</b>: 4× less I/O here. A real table with 200 columns? Often <b>50–100×</b>.</li>
-  <li>Similar values now sit together, so they compress: <b>run-length encoding</b> turns TEH,TEH,TEH into TEH×3. Add dictionary encoding + zstd and files shrink 5–10× vs CSV.</li>
+  <li>Similar values now sit together, so they compress: <b>run-length encoding</b> turns NYC,NYC,NYC into NYC×3. Add dictionary encoding + zstd and files are often several times smaller than the same CSV.</li>
 </ol>
 {{< /fig >}}
 
 ## Idea 2: statistics let you skip data
 
-A Parquet file isn't one big blob. Rows are cut into **row groups** (typically ~128 MB). Inside each row group, every column is a **column chunk**, split into **pages**. The **footer** stores the schema plus **min / max / null-count** for every column chunk.
+A Parquet file isn't one big blob. Rows are cut into **row groups** (commonly 64–128 MB; Spark and parquet-java default to 128 MB, DuckDB to ~122k rows). Inside each row group, every column is a **column chunk**, split into **pages**. The **footer** stores the schema plus statistics (**min / max / null count**) for every column chunk, so a reader can decide what to skip before touching the data.
 
 {{< fig kicker="$ SELECT id, amount FROM orders WHERE amount > 500" title="Predicate pushdown with min/max stats" >}}
 <svg class="lx-svg" viewBox="0 0 760 300">

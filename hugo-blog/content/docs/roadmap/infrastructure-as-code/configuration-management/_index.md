@@ -1,85 +1,82 @@
 ---
+title: "Configuration Management"
+description: "Configuration management explained: idempotent desired state, push vs pull, agentless vs agent-based, and how Ansible, Puppet, Chef and Salt compare in 2026."
 weight: 1
 ---
 
 # Configuration Management
 
-## Introduction
+**Configuration management** tools make sure the software, files, users and services **on** your machines are in a known, declared state. Where [provisioning]({{< relref "../infrastructure-provisioning" >}}) creates a VM, configuration management turns it into a Kafka broker: installs Java, writes `server.properties`, creates the `kafka` user, opens the firewall and starts the service. Run it on one server or five hundred and you get the same result.
 
-Configuration management is a key component of IaC, focusing on maintaining 
-consistency of software and hardware resources. Tools such as Ansible, Puppet, 
-and Chef are used to automate the deployment, management, and monitoring of 
-configurations across multiple servers and environments. 
-By defining infrastructure configurations in code, organizations can version 
-control their environments, roll back changes when necessary, and ensure 
-that systems remain in a desired state. This approach not only improves 
-operational efficiency but also enhances security and compliance by providing 
-clear, auditable records of infrastructure changes. In essence, 
-IaC for configuration management transforms IT infrastructure 
-into a flexible, reliable, and manageable asset.
+## Core ideas
 
+- **Desired state.** You describe the end result ("package `openjdk-21` present, service `kafka` running"), not shell commands.
+- **Idempotence.** Running the same playbook twice changes nothing the second time. Each task checks the current state first and acts only if it differs. This makes re-runs safe and turns the tool into a drift detector.
+- **Push vs pull.** In **push** mode a control machine connects to targets and applies changes (Ansible). In **pull** mode an agent on each machine periodically fetches its configuration from a server and converges (Puppet, Chef).
+- **Inventory.** The list of machines, grouped by role (`brokers`, `airflow_workers`), with per-group variables.
 
-## Ansible
+```yaml
+# Ansible playbook: idempotent setup of Kafka brokers
+- hosts: brokers
+  become: true
+  tasks:
+    - name: Java runtime
+      ansible.builtin.package: { name: openjdk-21-jre-headless, state: present }
+    - name: Broker config
+      ansible.builtin.template: { src: server.properties.j2, dest: /opt/kafka/config/server.properties }
+      notify: restart kafka            # restart only if the file actually changed
+    - name: Kafka running
+      ansible.builtin.service: { name: kafka, state: started, enabled: true }
+  handlers:
+    - name: restart kafka
+      ansible.builtin.service: { name: kafka, state: restarted }
+```
 
-Ansible is a powerful open-source tool for automation, configuration management, 
-and orchestration. Known for its simplicity and agentless architecture, 
-Ansible uses SSH for communication, making it easy to set up and manage. 
-By utilizing playbooks written in YAML, Ansible allows users to define 
-infrastructure as code, automating the provisioning, configuration, and deployment 
-of resources across various environments. Its idempotent nature ensures that systems 
-reach and maintain the desired state without unintended changes, making it a 
-preferred choice for many organizations aiming for efficient and reliable IT operations.
+## The tools
 
+| | Ansible | Puppet | Chef | Salt |
+|---|---|---|---|---|
+| Model | Push over SSH | Pull, agent-based | Pull, agent-based | Push or pull, agent (minion) or SSH |
+| Language | YAML playbooks + Jinja2 | Puppet DSL (declarative) | Ruby DSL (recipes, cookbooks) | YAML + Jinja2 |
+| Agent needed | No | Yes | Yes | Usually |
+| Learning curve | Low | Medium | Higher (Ruby) | Medium |
+| Owner (2026) | Red Hat (IBM) | Perforce | Progress | Broadcom (via VMware) |
 
-## Puppet
+**Ansible** is the most common choice today: agentless, readable YAML, and a large collection ecosystem (including modules for Kubernetes, cloud services and databases). **Puppet** and **Chef** shine on very large fleets where agents continuously enforce state and report compliance. Note that since 2025 Perforce no longer publishes open-source Puppet builds publicly; the community fork **OpenVox** continues the open-source line.
 
-Puppet is a widely adopted configuration management tool that automates the 
-provisioning, configuration, and management of infrastructure. Utilizing a 
-declarative language to define system configurations, Puppet ensures 
-consistency across large-scale environments by maintaining the desired state 
-of resources. Puppet's agent-based architecture, where agents run on target 
-nodes and communicate with a central server, allows for robust and scalable 
-management of complex infrastructures. Its extensive library of modules and 
-integration capabilities with various platforms make Puppet a versatile 
-solution for automating repetitive tasks and enforcing compliance across 
-diverse IT landscapes.
+## Where it fits in 2026
 
+Containers and managed services moved a lot of configuration into **images** (a Dockerfile) and **Kubernetes manifests**. Configuration management still matters for:
 
-## Chef
+- **VMs and bare metal**: self-managed Kafka, Hadoop, ClickHouse or Postgres clusters.
+- **Base images**: building golden VM images with Packer plus Ansible.
+- **Day-2 operations**: rolling restarts, OS patching, certificate rotation across a fleet.
 
-Chef is a prominent configuration management tool designed to automate the 
-infrastructure by turning system administration tasks into reusable code. 
-Using a domain-specific language (DSL) based on Ruby, Chef allows users to 
-write "recipes" that specify how software and systems should be configured. 
-Chef follows a client-server architecture, where nodes use a Chef client to 
-pull configurations from a central Chef server. Its flexibility and powerful 
-abstraction capabilities make it suitable for managing both traditional and 
-cloud-native environments. Chef's extensive ecosystem and strong community 
-support provide a wealth of resources and integrations, helping organizations 
-streamline their infrastructure management and ensure consistent, repeatable 
-deployments.
+A common split: Terraform creates the machines, Ansible configures them, and everything runs from [CI/CD]({{< relref "../../cicd" >}}).
 
+## Common mistakes
+
+- **`shell:` everywhere.** Raw shell tasks are not idempotent and always report "changed". Use the proper module, or add `creates:` / `changed_when:`.
+- **Snowflake servers.** Fixing a machine by hand and not in code means the next run (or the next new server) loses the fix.
+- **Secrets in playbooks.** Use Ansible Vault or a secrets manager lookup, never plain text in Git.
+- **Never running in check mode.** `ansible-playbook --check --diff` shows what would change. Run it in CI and before every production run.
 
 ## Learning Resources
 
+### Official
+
+- [Ansible: getting started](https://docs.ansible.com/ansible/latest/getting_started/index.html)
+- [Puppet documentation](https://www.puppet.com/docs/puppet/8/puppet_index.html) and [OpenVox](https://voxpupuli.org/openvox/)
+- [Chef documentation](https://docs.chef.io/)
+- [Salt documentation](https://docs.saltproject.io/)
 
 ### Books
-- [Ansible for DevOps](https://www.amazon.ca/Ansible-DevOps-Server-configuration-management/dp/0986393428)
-- [Ansible: Up and Running](https://www.amazon.ca/Ansible-Automating-Configuration-Management-Deployment/dp/1098109155)
-- [Puppet: Mastering Infrastructure Automation](https://www.amazon.ca/Puppet-Infrastructure-Automation-Felix-Frank/dp/1788399706)
-- [Learning Chef: A Guide to Configuration Management and Automation](https://www.amazon.ca/Learning-Chef-Configuration-Management-Automation/dp/1491944935)
 
+- *Ansible for DevOps*, Jeff Geerling (Leanpub), plus his free Ansible 101 video series on YouTube
+- *Ansible: Up and Running*, 3rd ed. (O'Reilly)
+- *Puppet 8 for DevOps Engineers* (Packt)
 
 ### Courses
-- [Ansible Full Course](https://www.youtube.com/watch?v=9Ua2b06oAr4)
-- [Ansible Full Course 2024](https://www.youtube.com/watch?v=BS0GLQaSGPo)
-- [Ansible Full Course | Zero to Hero](https://www.youtube.com/watch?v=GROqwFFLl3s)
-- [Puppet Full Course](https://www.youtube.com/watch?v=F-NGOvYiV9g)
-- [Chef Tutorial For Beginners](https://www.youtube.com/watch?v=LTIjUJEehDA)
-- [Chef Fundamental](https://www.youtube.com/watch?v=zhMmCQ9y0OU)
 
-
-### Miscellaneous
-- [Getting Started with Ansible](https://docs.ansible.com/ansible/latest/getting_started/index.html)
-- [Puppet Overview](https://www.puppet.com/docs/puppet/8/puppet_overview.html)
-- [Chef Tutorials](https://www.chef.io/training/tutorials)
+- [Ansible Full Course (YouTube)](https://www.youtube.com/watch?v=9Ua2b06oAr4)
+- [Ansible Full Course | Zero to Hero (YouTube)](https://www.youtube.com/watch?v=GROqwFFLl3s)

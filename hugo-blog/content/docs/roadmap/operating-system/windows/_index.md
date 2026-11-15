@@ -4,7 +4,7 @@ description: "Data engineering from a Windows machine: WSL 2 for a real Linux en
 ---
 # Windows
 
-**Windows** is the most common desktop operating system in companies, so many data engineers write code on it, even though the pipelines they build run on Linux servers and containers. The goal on Windows is to get a development environment that behaves like production. Since 2019 the answer has been **WSL 2**: a real Linux kernel running in a lightweight VM, tightly integrated with Windows.
+**Windows** is the most common desktop operating system in companies, so many data engineers write code on it, even though the pipelines they build run on Linux servers and containers. The goal on Windows is to get a development environment that behaves like production. Since 2020 the answer has been **WSL 2**: a real Linux kernel running in a lightweight VM, tightly integrated with Windows.
 
 Windows Server also still runs in data platforms: SQL Server, SSIS packages, Power BI gateways and Active Directory are common in enterprise environments you will integrate with.
 
@@ -26,7 +26,7 @@ Windows Server also still runs in data platforms: SQL Server, SSIS packages, Pow
 - **Paths.** `C:\data\orders.csv` vs `/home/me/data/orders.csv`. In Python use `pathlib`, never string concatenation with `\`.
 - **Encoding.** Older Windows tools write CSVs in a legacy code page (Windows-1252) or UTF-8 with a BOM. Read with an explicit `encoding=` and write UTF-8.
 - **Case-insensitive filenames.** `Orders.csv` and `orders.csv` are the same file on Windows but not on Linux, which breaks code once it is deployed.
-- **Memory.** WSL 2 can grow to use much of your RAM. Cap it in `%UserProfile%\.wslconfig` if Docker plus Spark make Windows sluggish.
+- **Memory.** WSL 2 can use up to half your RAM by default. Cap it in `%UserProfile%\.wslconfig` if Docker plus Spark make Windows sluggish.
 
 ## Learning Resources
 

@@ -6,23 +6,25 @@ weight: 6
 
 # Graph Databases
 
-A **graph database** stores data as **nodes** (people, accounts, products) and **relationships** between them (`FOLLOWS`, `PAID`, `BOUGHT`), and both can carry properties. Its strength is queries that walk many hops: "friends of friends who bought this", "accounts within 4 transfers of a known fraudster", "which services break if this one goes down". In a relational database each hop is another join; in a native graph database each node points directly at its neighbours, so a hop costs roughly the same no matter how big the whole graph is.
+A **graph database** stores data as **nodes** (people, accounts, products) and **relationships** between them (`FOLLOWS`, `PAID`, `BOUGHT`), and both can carry properties. Its strength is queries that walk many hops: "friends of friends who bought this", "accounts within 4 transfers of a known fraudster", "which services break if this one goes down". In a relational database each hop is another join; in a native graph database each node points directly at its neighbours ("index-free adjacency"), so a hop costs roughly the same no matter how big the whole graph is.
 
 ## A query, two ways
 
-Find people within two `FOLLOWS` hops of Sara.
+Find people within two `FOLLOWS` hops of Sam.
 
 ```sql
--- SQL: one self-join per hop
-SELECT DISTINCT f2.followee
+-- SQL: one query per hop depth, one more self-join per hop
+SELECT followee FROM follows WHERE follower = 'sam'          -- 1 hop
+UNION
+SELECT f2.followee                                           -- 2 hops
 FROM follows f1
 JOIN follows f2 ON f2.follower = f1.followee
-WHERE f1.follower = 'sara';
+WHERE f1.follower = 'sam';
 ```
 
 ```cypher
 // Cypher (Neo4j): the pattern is the query
-MATCH (:Person {name: 'sara'})-[:FOLLOWS*1..2]->(p:Person)
+MATCH (:Person {name: 'sam'})-[:FOLLOWS*1..2]->(p:Person)
 RETURN DISTINCT p.name;
 ```
 

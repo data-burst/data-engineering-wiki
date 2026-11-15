@@ -15,11 +15,11 @@ A **vector database** stores **embeddings**, lists of numbers (typically 384 to 
 {{< fig kicker="$ search('waterproof trail shoe', k=3)" title="Nearest-neighbour search, exact and approximate" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 340">
   <text x="30" y="326" class="m" font-size="11" fill="#8C8899">EMBEDDING SPACE (2 of 768 dims)</text>
-  <g class="f" data-step="4" stroke="#B5B0C4" stroke-width="1" fill="none">
+  <g class="f" data-step="4" stroke="#8C8899" stroke-width="1" fill="none">
     <line x1="380" y1="60" x2="400" y2="130"/><line x1="380" y1="60" x2="260" y2="60"/><line x1="400" y1="130" x2="400" y2="200"/>
     <line x1="400" y1="200" x2="350" y2="250"/><line x1="350" y1="250" x2="300" y2="290"/><line x1="300" y1="290" x2="190" y2="150"/>
     <line x1="260" y1="60" x2="110" y2="80"/><line x1="110" y1="80" x2="90" y2="170"/><line x1="90" y1="170" x2="190" y2="150"/>
-    <line x1="110" y1="80" x2="190" y2="150"/><line x1="400" y1="200" x2="190" y2="150"/>
+    <line x1="110" y1="80" x2="190" y2="150"/><line x1="400" y1="200" x2="190" y2="150"/><line x1="260" y1="60" x2="190" y2="150"/>
   </g>
   <g class="f" data-step="2" stroke="#DCC9EE" stroke-width="1" stroke-dasharray="3 4">
     <line x1="160" y1="120" x2="110" y2="80"/><line x1="160" y1="120" x2="190" y2="150"/><line x1="160" y1="120" x2="90" y2="170"/>
@@ -73,7 +73,7 @@ A **vector database** stores **embeddings**, lists of numbers (typically 384 to 
 ## Key concepts
 
 - **Distance metric.** **Cosine** similarity (angle between vectors) is the default for text embeddings; **dot product** and **Euclidean (L2)** are also common. Use the metric your embedding model was trained for.
-- **Exact vs approximate (ANN).** Approximate nearest-neighbour indexes trade a little **recall** (say 95 to 99 % of the true top-k) for 100 to 1,000 times faster queries.
+- **Exact vs approximate (ANN).** Approximate nearest-neighbour indexes trade a little **recall** (say 95 to 99 % of the true top-k) for queries that are orders of magnitude faster.
 - **Index types.** **HNSW** (layered proximity graph; fast, memory-hungry), **IVF** (cluster vectors, search only the nearest clusters), **PQ / quantization** (compress vectors to save memory), **DiskANN** (graph index that lives on SSD).
 - **Filtering.** Real queries combine similarity with conditions: `category = 'shoes' AND in_stock`. How well an engine handles filtered search differs a lot between products.
 - **Hybrid search.** Combine vector similarity with keyword search (BM25) and merge the rankings. Usually beats either alone for search over documents.
@@ -87,7 +87,7 @@ A **vector database** stores **embeddings**, lists of numbers (typically 384 to 
 | **[Milvus](https://milvus.io/)** | Open-source, distributed | Built for billions of vectors; many index types; managed as Zilliz Cloud. |
 | **[Weaviate](https://weaviate.io/)** | Open-source server | Built-in embedding modules and hybrid search. |
 | **[Pinecone](https://www.pinecone.io/)** | Managed service | Serverless, no infrastructure to run. |
-| **Elasticsearch / OpenSearch, Cassandra 5, MongoDB Atlas, LanceDB** | Vector search added to existing systems | Useful when the data already lives there. |
+| **Elasticsearch / OpenSearch, Cassandra 5, MongoDB Atlas, Redis** | Vector search added to existing systems | Useful when the data already lives there. |
 
 ## For data engineers
 

@@ -18,7 +18,7 @@ The same order, modeled relationally, needs three tables (`orders`, `order_items
   "customer_id": "u-42",
   "created_at": "2026-11-16T09:30:00Z",
   "status": "paid",
-  "shipping": { "city": "Tehran", "zip": "1411713114" },
+  "shipping": { "city": "New York", "zip": "10001" },
   "items": [
     { "sku": "MUG-01", "qty": 2, "price": 9.5 },
     { "sku": "TEE-07", "qty": 1, "price": 19.0 }

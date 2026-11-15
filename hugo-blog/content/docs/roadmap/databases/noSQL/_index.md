@@ -8,7 +8,7 @@ weight: 2
 
 **NoSQL** ("not only SQL") is an umbrella term for databases that do not use the classic relational model of normalized tables and joins. Most appeared in the late 2000s, when companies like Amazon (Dynamo) and Google (Bigtable) needed to spread data over hundreds of cheap machines and traded some relational features, such as joins, a rigid schema or multi-row transactions, for **horizontal scale, availability, or a data model that fits one access pattern very well**.
 
-The term is fuzzy today. Many "NoSQL" systems now speak SQL (Cassandra's CQL, ClickHouse, InfluxDB 3), document stores support multi-document transactions, and PostgreSQL stores JSON. Think in **data models and access patterns**, not in SQL vs NoSQL.
+The term is fuzzy today. Many "NoSQL" systems now speak SQL or a SQL-like language (Cassandra's CQL, Couchbase's SQL++, InfluxDB 3), document stores support multi-document transactions, and PostgreSQL stores JSON. Think in **data models and access patterns**, not in SQL vs NoSQL.
 
 ## Pages in this section
 

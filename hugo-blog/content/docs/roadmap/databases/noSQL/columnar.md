@@ -8,7 +8,7 @@ bookToC: false
 
 # Columnar and Wide-Column Databases
 
-A **columnar (column-oriented) database** stores each column of a table separately on disk, so a query that needs 3 of 200 columns reads only those 3, and similar values packed together compress 5 to 10 times. This makes columnar engines such as **ClickHouse, Apache Druid, Apache Pinot, Snowflake and BigQuery** the standard for analytics: scans and aggregations over billions of rows.
+A **columnar (column-oriented) database** stores each column of a table separately on disk, so a query that needs 3 of 200 columns reads only those 3, and similar values packed together often compress 5 to 10 times. This makes columnar engines such as **ClickHouse, Apache Druid, Apache Pinot, Snowflake and BigQuery** the standard for analytics: scans and aggregations over billions of rows.
 
 The name causes a classic confusion. **Wide-column stores** such as **Cassandra, HBase, ScyllaDB and Bigtable** are a different thing: they group data by row key into "column families" and are built for fast writes and key lookups, not analytical scans. Both families often share the same storage engine design, the **LSM tree**, explained below.
 
@@ -27,7 +27,7 @@ Why column storage reads less and compresses better is animated on the [Parquet]
 
 ## Writing fast: the LSM tree
 
-Updating values in place on disk means random I/O. Most wide-column stores (Cassandra, HBase, Bigtable, ScyllaDB), many time-series databases, and ClickHouse's MergeTree engine instead use a **log-structured merge tree (LSM)**: buffer writes in memory, write sorted immutable files sequentially, and merge them in the background.
+Updating values in place on disk means random I/O. Most wide-column stores (Cassandra, HBase, Bigtable, ScyllaDB) and many time-series databases instead use a **log-structured merge tree (LSM)**: buffer writes in memory, write sorted immutable files sequentially, and merge them in the background. ClickHouse's MergeTree uses the same idea without the memtable: each insert writes a sorted, immutable "part" directly, and parts are merged in the background.
 
 {{< fig kicker="$ INSERT INTO events (key, value) VALUES ('k31', ...)" title="The LSM write path: buffer, flush, compact" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 340">
@@ -74,17 +74,17 @@ Updating values in place on disk means random I/O. Most wide-column stores (Cass
   </g>
   <g class="f" data-step="5">
     <rect x="20" y="252" width="430" height="62" rx="6" fill="#260246"/>
-    <text x="36" y="276" class="m" font-size="12" fill="#EEEAF5">GET k12 → memtable → FILE 3 → FILE 2 …</text>
+    <text x="36" y="276" class="m" font-size="12" fill="#EEEAF5">GET k12 → memtable → newest file → older …</text>
     <text x="36" y="298" font-size="11" fill="#DCC9EE">newest first; bloom filters skip files without the key</text>
   </g>
 </svg>
 <ol class="lx-caps">
-  <li>An LSM engine has a sorted <b>memtable</b> in RAM, an append-only <b>WAL</b>, and immutable sorted <b>files</b> on disk (SSTables in Cassandra, "parts" in ClickHouse).</li>
+  <li>An LSM engine has a sorted <b>memtable</b> in RAM, an append-only <b>WAL</b>, and immutable sorted <b>files</b> on disk (SSTables in Cassandra and RocksDB).</li>
   <li>A write is first appended to the <b>WAL</b>. Appending is sequential, so it is fast, and it makes the write survive a crash.</li>
   <li>Then it goes into the <b>memtable</b> and the client gets its <b>ack</b>. No data file was touched.</li>
   <li>When the memtable is full it is <b>flushed</b> as a new sorted file in one sequential write. The WAL for it can now be discarded.</li>
   <li>In the background, <b>compaction</b> merge-sorts small files into bigger ones, keeping only the newest version of each key and dropping deleted ones.</li>
-  <li>Reads pay the price: check the memtable, then files from <b>newest to oldest</b>. Bloom filters and compaction keep this cheap.</li>
+  <li>Reads pay the price: check the memtable, then files from <b>newest to oldest</b>, stopping at the first match. Bloom filters and compaction keep this cheap.</li>
 </ol>
 {{< /fig >}}
 

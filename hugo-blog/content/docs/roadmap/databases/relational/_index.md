@@ -25,9 +25,9 @@ A **relational database** stores data in **tables** (relations) made of rows and
   <line x1="20" y1="66" x2="250" y2="66" stroke="#E7E7EF"/>
   <g class="m" font-size="12" fill="#8C8899" font-weight="700"><text class="m" x="36" y="58">id</text><text class="m" x="86" y="58">name</text><text class="m" x="176" y="58">city</text></g>
   <g class="m" font-size="12" fill="#17151F">
-    <text class="m" x="36" y="84">1</text><text class="m" x="86" y="84">ali</text><text class="m" x="176" y="84">TEH</text>
-    <text class="m" x="36" y="110">2</text><text class="m" x="86" y="110">sara</text><text class="m" x="176" y="110">SHZ</text>
-    <text class="m" x="36" y="136">3</text><text class="m" x="86" y="136">reza</text><text class="m" x="176" y="136">ISF</text>
+    <text class="m" x="36" y="84">1</text><text class="m" x="86" y="84">alice</text><text class="m" x="176" y="84">NYC</text>
+    <text class="m" x="36" y="110">2</text><text class="m" x="86" y="110">sam</text><text class="m" x="176" y="110">TOR</text>
+    <text class="m" x="36" y="136">3</text><text class="m" x="86" y="136">ryan</text><text class="m" x="176" y="136">CHI</text>
   </g>
   <text x="470" y="30" class="m" font-size="12" font-weight="700" fill="#5C5869">ORDERS</text>
   <rect x="470" y="40" width="270" height="130" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
@@ -65,8 +65,8 @@ A **relational database** stores data in **tables** (relations) made of rows and
     <text x="470" y="204" class="m" font-size="12" font-weight="700" fill="#5C5869">RESULT</text>
     <rect x="470" y="212" width="270" height="78" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/>
     <g class="m" font-size="12"><text class="m" x="486" y="232" fill="#8C8899" font-weight="700">name</text><text class="m" x="640" y="232" fill="#8C8899" font-weight="700">total</text>
-      <text class="m" x="486" y="256" fill="#17151F">ali</text><text class="m" x="640" y="256" fill="#17151F">700</text>
-      <text class="m" x="486" y="280" fill="#17151F">sara</text><text class="m" x="640" y="280" fill="#17151F">1100</text></g>
+      <text class="m" x="486" y="256" fill="#17151F">alice</text><text class="m" x="640" y="256" fill="#17151F">700</text>
+      <text class="m" x="486" y="280" fill="#17151F">sam</text><text class="m" x="640" y="280" fill="#17151F">1100</text></g>
   </g>
   <g class="f" data-step="5">
     <rect x="20" y="322" width="720" height="30" rx="6" fill="#fff" stroke="#C2382F" stroke-width="1.4"/>
@@ -77,8 +77,8 @@ A **relational database** stores data in **tables** (relations) made of rows and
   <li>Two tables. Each customer is stored <b>once</b>; each order stores only the customer's <b>id</b>.</li>
   <li><b>orders.customer_id</b> is a <b>foreign key</b>: every value must exist in <b>customers.id</b>.</li>
   <li>To answer "how much did each customer spend?", SQL <b>joins</b> the tables on that key.</li>
-  <li>For <b>sara</b> (id 2) the engine finds orders 102 and 103. An index on <b>customer_id</b> makes this a lookup, not a full scan.</li>
-  <li>The result: one row per customer. <b>reza</b> has no orders, so an inner join leaves him out (a <b>LEFT JOIN</b> would keep him).</li>
+  <li>For <b>sam</b> (id 2) the engine finds orders 102 and 103. An index on <b>customer_id</b> makes this a lookup, not a full scan.</li>
+  <li>The result: one row per customer. <b>ryan</b> has no orders, so an inner join leaves him out (a <b>LEFT JOIN</b> would keep him).</li>
   <li>The database <b>guards integrity</b>: an order for customer 9, who does not exist, is rejected.</li>
 </ol>
 {{< /fig >}}
@@ -87,7 +87,7 @@ A **relational database** stores data in **tables** (relations) made of rows and
 
 - **Row storage.** Rows are packed into fixed-size pages (8 KB in PostgreSQL, 16 KB in InnoDB). Reading or updating one whole row is cheap; scanning one column across 100 million rows is not. That is why analytics moves to [columnar]({{< relref "../noSQL/columnar" >}}) systems.
 - **Indexes.** A **B-tree** index on `customer_id` turns "find all orders of customer 2" from reading every page into a few page reads. Indexes speed up reads and slow down writes. See [Indexing]({{< relref "/docs/roadmap/distributed-systems-concepts/indexing" >}}).
-- **Write-ahead log (WAL).** Every change is first appended to a log and flushed to disk, then applied to pages. After a crash the database replays the log. The same log feeds replicas and [change data capture]({{< relref "/docs/roadmap/data-integration/cdc" >}}).
+- **Write-ahead log (WAL).** Every change is first appended to a log, and the log is flushed to disk at commit, before the changed data pages are written. After a crash the database replays the log. The same log feeds replicas and [change data capture]({{< relref "/docs/roadmap/data-integration/cdc" >}}).
 - **Transactions.** `BEGIN … COMMIT` groups changes so they all happen or none do (**ACID**). Concurrency control (MVCC in PostgreSQL and InnoDB) lets readers and writers work without blocking each other. See [ACID]({{< relref "/docs/roadmap/distributed-systems-concepts/acid" >}}).
 - **Query planner.** SQL says *what* you want; a cost-based optimizer decides *how*: which index, which join order, hash join or nested loop. `EXPLAIN ANALYZE` shows the plan.
 

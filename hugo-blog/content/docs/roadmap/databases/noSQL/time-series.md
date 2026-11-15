@@ -11,7 +11,7 @@ A **time-series database (TSDB)** stores measurements indexed by time: CPU usage
 ## What makes them different
 
 - **Partitioned by time.** Data is cut into time chunks (TimescaleDB "chunks", Prometheus 2-hour "blocks"). A query for the last hour opens only the newest chunks, and dropping old data is just deleting a chunk.
-- **Write-optimized.** New points go to an in-memory buffer plus a write-ahead log and are flushed as immutable compressed blocks, the same [LSM pattern]({{< relref "columnar" >}}) used by wide-column stores.
+- **Write-optimized.** In Prometheus and InfluxDB, new points go to an in-memory buffer plus a write-ahead log and are flushed as immutable compressed blocks, the same [LSM pattern]({{< relref "columnar" >}}) used by wide-column stores.
 - **Heavy compression.** Consecutive timestamps differ by a near-constant interval and values change slowly, so delta-of-delta encoding for timestamps and XOR (Gorilla) encoding for floats bring a point down to roughly 1 to 2 bytes.
 - **Downsampling and retention.** Keep raw 10-second data for 15 days, 5-minute averages for a year, and delete the rest automatically. TimescaleDB calls these continuous aggregates; Prometheus delegates long-term storage to Thanos, Mimir or VictoriaMetrics.
 - **Time-aware queries.** Built-in functions for time buckets, rates, gap filling and "last value per series".
@@ -20,7 +20,7 @@ A **time-series database (TSDB)** stores measurements indexed by time: CPU usage
 
 | Database | Model | Notes |
 |---|---|---|
-| **[Prometheus](https://prometheus.io/)** | Pull-based metrics, PromQL | The standard for infrastructure and Kubernetes monitoring. Local storage only; Prometheus 3.0 (2024) added native OpenTelemetry ingestion. |
+| **[Prometheus](https://prometheus.io/)** | Pull-based metrics, PromQL | The standard for infrastructure and Kubernetes monitoring. Single-node local storage, with remote write for long-term storage; Prometheus 3.0 (2024) made OpenTelemetry (OTLP) ingestion a built-in feature. |
 | **[InfluxDB](https://www.influxdata.com/)** | Push-based, SQL and InfluxQL | InfluxDB 3 (Core and Enterprise GA in 2025) was rewritten in Rust on Apache Arrow, DataFusion and Parquet. Flux, the 2.x language, is in maintenance mode. |
 | **[TimescaleDB](https://www.timescale.com/)** | PostgreSQL extension | Hypertables auto-partitioned by time, columnar compression, full SQL and joins with your relational data. The company behind it renamed itself TigerData in 2025. |
 | **[QuestDB](https://questdb.com/)**, **ClickHouse** | Columnar SQL | Strong for high-volume event and market data with SQL analytics. |

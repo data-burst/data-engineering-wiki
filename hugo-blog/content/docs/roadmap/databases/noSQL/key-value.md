@@ -10,7 +10,7 @@ A **key-value store** is the simplest database model: you `put(key, value)` and 
 
 ## How it works
 
-- **Lookup by key only.** There is no "find all users in Tehran" unless you build that index yourself. Design keys around how you read: `session:8f3a`, `cart:u-42`, `rate:ip:10.0.0.7:2026-11-16T09:30`.
+- **Lookup by key only.** There is no "find all users in New York" unless you build that index yourself. Design keys around how you read: `session:8f3a`, `cart:u-42`, `rate:ip:10.0.0.7:2026-11-16T09:30`.
 - **Partitioning by hash.** In a cluster, `hash(key)` decides which node owns the key. Redis Cluster uses 16,384 hash slots; DynamoDB hashes the partition key. Adding nodes moves only some keys. See [Sharding]({{< relref "/docs/roadmap/distributed-systems-concepts/sharding" >}}).
 - **In memory or on disk.** Redis and Valkey keep everything in RAM (with optional snapshots and an append-only file for durability). DynamoDB, RocksDB and FoundationDB store data on SSD and are fully durable.
 - **Expiry.** A **TTL** deletes a key automatically after a time, which is what makes key-value stores natural caches.
@@ -22,7 +22,7 @@ A **key-value store** is the simplest database model: you `put(key, value)` and 
 | **[Redis](https://redis.io/)** | In memory | Rich value types: strings, hashes, lists, sets, sorted sets, streams. Licensing changed in 2024 (RSAL/SSPL); Redis 8 (2025) added AGPLv3 as an open-source option. |
 | **[Valkey](https://valkey.io/)** | In memory | BSD-licensed fork of Redis 7.2 under the Linux Foundation, created in 2024. Drop-in compatible; used by AWS ElastiCache and Google Memorystore. |
 | **[Amazon DynamoDB](https://aws.amazon.com/dynamodb/)** | Durable, managed | Key-value and document. Partition key plus optional sort key, single-digit-millisecond latency at any scale, pay per request or provisioned capacity. |
-| **[RocksDB](https://rocksdb.org/)** | Embedded, on disk | An LSM-tree library, not a server. The storage engine inside Kafka Streams, Flink state, CockroachDB and many others. |
+| **[RocksDB](https://rocksdb.org/)** | Embedded, on disk | An LSM-tree library, not a server. The storage engine inside Kafka Streams, Flink state, TiKV and many others (CockroachDB replaced it with Pebble, a Go rewrite). |
 | **[etcd](https://etcd.io/)** | Durable, Raft-replicated | Small, strongly consistent store for configuration and coordination (Kubernetes state). Not for bulk data. |
 
 ## When to use one

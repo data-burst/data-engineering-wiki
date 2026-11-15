@@ -35,16 +35,16 @@ Pick a mode, then step through. Same cluster, same failure: only the choice at s
     <symbol id="ico-pc" viewBox="0 0 24 20"><rect x="3" y="2" width="18" height="12" rx="1.5"/><path d="M1 18h22"/></symbol>
   </defs>
   <rect class="partition-zone" x="530" y="95" width="190" height="150" rx="10"/>
-  <line x1="95" y1="170" x2="330" y2="70" stroke="#D5DAE3" stroke-width="1.2" stroke-dasharray="2 5"/>
-  <line x1="95" y1="170" x2="620" y2="170" stroke="#D5DAE3" stroke-width="1.2" stroke-dasharray="2 5"/>
+  <line x1="95" y1="170" x2="330" y2="70" stroke="#DCDAE6" stroke-width="1.2" stroke-dasharray="2 5"/>
+  <line x1="95" y1="170" x2="620" y2="170" stroke="#DCDAE6" stroke-width="1.2" stroke-dasharray="2 5"/>
   <line class="link" x1="330" y1="70" x2="330" y2="270"/>
   <line class="link x3" x1="330" y1="70" x2="620" y2="170"/>
   <line class="link x3" x1="330" y1="270" x2="620" y2="170"/>
   <text class="scis" x="468" y="112" font-size="18" fill="#C2382F">✂</text>
   <text class="scis" x="468" y="246" font-size="18" fill="#C2382F">✂</text>
-  <g><rect x="40" y="138" width="110" height="64" rx="6" fill="#fff" stroke="#2B3446" stroke-width="1.4"/>
-    <use href="#ico-pc" x="83" y="148" width="24" height="20" fill="none" stroke="#2747D6" stroke-width="1.4"/>
-    <text x="95" y="190" text-anchor="middle" class="m" font-weight="600" font-size="12" fill="#0E1525">CLIENT</text></g>
+  <g><rect x="40" y="138" width="110" height="64" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <use href="#ico-pc" x="83" y="148" width="24" height="20" fill="none" stroke="#531A8A" stroke-width="1.4"/>
+    <text x="95" y="190" text-anchor="middle" class="m" font-weight="600" font-size="12" fill="#17151F">CLIENT</text></g>
   <g class="node n1"><rect x="265" y="27" width="130" height="86" rx="6"/><use class="ico" href="#ico-db" x="276" y="38" width="16" height="18"/><text class="nm" x="340" y="52" text-anchor="middle">NODE 1</text><text class="val" x="330" y="82" text-anchor="middle">x = 1</text><text class="st" x="330" y="102" text-anchor="middle">ok</text></g>
   <g class="node n2"><rect x="265" y="227" width="130" height="86" rx="6"/><use class="ico" href="#ico-db" x="276" y="238" width="16" height="18"/><text class="nm" x="340" y="252" text-anchor="middle">NODE 2</text><text class="val" x="330" y="282" text-anchor="middle">x = 1</text><text class="st" x="330" y="302" text-anchor="middle">ok</text></g>
   <g class="node n3"><rect x="555" y="127" width="130" height="86" rx="6"/><use class="ico" href="#ico-db" x="566" y="138" width="16" height="18"/><text class="nm" x="630" y="152" text-anchor="middle">NODE 3</text><text class="val" x="620" y="182" text-anchor="middle">x = 1</text><text class="st" x="620" y="202" text-anchor="middle">ok</text></g>

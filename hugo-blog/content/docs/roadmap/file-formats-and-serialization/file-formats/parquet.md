@@ -43,40 +43,40 @@ A Parquet file isn't one big blob. Rows are cut into **row groups** (typically ~
 
 {{< fig kicker="$ SELECT id, amount FROM orders WHERE amount > 500" title="Predicate pushdown with min/max stats" >}}
 <svg class="lx-svg" viewBox="0 0 760 300">
-  <rect x="10" y="10" width="740" height="280" rx="12" fill="#FCFCFD" stroke="#DDE1E8" stroke-width="1.5"/>
-  <text x="26" y="36" class="m" font-size="13" font-weight="700" fill="#4A5468">orders.parquet</text>
+  <rect x="10" y="10" width="740" height="280" rx="12" fill="#FBFBFE" stroke="#E7E7EF" stroke-width="1.5"/>
+  <text x="26" y="36" class="m" font-size="13" font-weight="700" fill="#5C5869">orders.parquet</text>
   <!-- row group 0 -->
-  <g><rect x="26" y="50" width="330" height="150" rx="10" fill="#FFFFFF" stroke="#DDE1E8"/>
+  <g><rect x="26" y="50" width="330" height="150" rx="10" fill="#FFFFFF" stroke="#E7E7EF"/>
     <text x="40" y="74" font-weight="700" font-size="15">Row group 0 · rows 1–3</text>
     <g class="m" font-size="12" font-weight="700">
-      <rect x="40" y="88" width="70" height="96" rx="6" fill="#F7F8FA"/><text x="75" y="140" text-anchor="middle">id</text>
-      <rect x="118" y="88" width="70" height="96" rx="6" fill="#F7F8FA"/><text x="153" y="140" text-anchor="middle">user</text>
-      <rect x="196" y="88" width="70" height="96" rx="6" fill="#F7F8FA"/><text x="231" y="140" text-anchor="middle">city</text>
-      <rect x="274" y="88" width="70" height="96" rx="6" fill="#EBEFFD"/><text x="309" y="140" text-anchor="middle">amount</text>
+      <rect x="40" y="88" width="70" height="96" rx="6" fill="#F7F7FB"/><text x="75" y="140" text-anchor="middle">id</text>
+      <rect x="118" y="88" width="70" height="96" rx="6" fill="#F7F7FB"/><text x="153" y="140" text-anchor="middle">user</text>
+      <rect x="196" y="88" width="70" height="96" rx="6" fill="#F7F7FB"/><text x="231" y="140" text-anchor="middle">city</text>
+      <rect x="274" y="88" width="70" height="96" rx="6" fill="#F4EEFA"/><text x="309" y="140" text-anchor="middle">amount</text>
     </g></g>
   <!-- row group 1 -->
-  <g><rect x="372" y="50" width="330" height="150" rx="10" fill="#FFFFFF" stroke="#DDE1E8"/>
+  <g><rect x="372" y="50" width="330" height="150" rx="10" fill="#FFFFFF" stroke="#E7E7EF"/>
     <text x="386" y="74" font-weight="700" font-size="15">Row group 1 · rows 4–6</text>
     <g class="m" font-size="12" font-weight="700">
-      <rect x="386" y="88" width="70" height="96" rx="6" fill="#F7F8FA"/><text x="421" y="140" text-anchor="middle">id</text>
-      <rect x="464" y="88" width="70" height="96" rx="6" fill="#F7F8FA"/><text x="499" y="140" text-anchor="middle">user</text>
-      <rect x="542" y="88" width="70" height="96" rx="6" fill="#F7F8FA"/><text x="577" y="140" text-anchor="middle">city</text>
-      <rect x="620" y="88" width="70" height="96" rx="6" fill="#EBEFFD"/><text x="655" y="140" text-anchor="middle">amount</text>
+      <rect x="386" y="88" width="70" height="96" rx="6" fill="#F7F7FB"/><text x="421" y="140" text-anchor="middle">id</text>
+      <rect x="464" y="88" width="70" height="96" rx="6" fill="#F7F7FB"/><text x="499" y="140" text-anchor="middle">user</text>
+      <rect x="542" y="88" width="70" height="96" rx="6" fill="#F7F7FB"/><text x="577" y="140" text-anchor="middle">city</text>
+      <rect x="620" y="88" width="70" height="96" rx="6" fill="#F4EEFA"/><text x="655" y="140" text-anchor="middle">amount</text>
     </g></g>
   <!-- footer -->
-  <g><rect x="26" y="214" width="676" height="62" rx="10" fill="#0E1525"/>
-    <text x="42" y="238" font-weight="700" font-size="14" fill="#8FA6FF">Footer</text>
-    <text x="42" y="262" class="m" font-size="12.5" fill="#E6E9F0">schema · RG0 amount: min 120, max 450 · RG1 amount: min 600, max 1200</text></g>
+  <g><rect x="26" y="214" width="676" height="62" rx="10" fill="#17151F"/>
+    <text x="42" y="238" font-weight="700" font-size="14" fill="#E2B6FB">Footer</text>
+    <text x="42" y="262" class="m" font-size="12.5" fill="#EEEAF5">schema · RG0 amount: min 120, max 450 · RG1 amount: min 600, max 1200</text></g>
   <!-- steps -->
-  <g class="f" data-step="1"><rect x="22" y="210" width="684" height="70" rx="12" fill="none" stroke="#2747D6" stroke-width="3"/></g>
+  <g class="f" data-step="1"><rect x="22" y="210" width="684" height="70" rx="12" fill="none" stroke="#531A8A" stroke-width="3"/></g>
   <g class="f fade" data-step="2"><rect x="26" y="50" width="330" height="150" rx="10" fill="rgba(252,252,253,.82)"/>
     <line x1="60" y1="70" x2="320" y2="190" stroke="#C2382F" stroke-width="3"/><line x1="320" y1="70" x2="60" y2="190" stroke="#C2382F" stroke-width="3"/>
     <rect x="96" y="112" width="190" height="34" rx="8" fill="#FFFFFF" stroke="#C2382F"/><text x="191" y="135" text-anchor="middle" font-weight="700" font-size="14" fill="#C2382F">skipped · max 450 ≤ 500</text></g>
   <g class="f fade" data-step="3">
     <rect x="464" y="88" width="148" height="96" rx="6" fill="rgba(252,252,253,.8)"/>
-    <rect x="383" y="85" width="76" height="102" rx="8" fill="none" stroke="#2747D6" stroke-width="3"/>
-    <rect x="617" y="85" width="76" height="102" rx="8" fill="none" stroke="#2747D6" stroke-width="3"/>
-    <text x="690" y="74" text-anchor="end" font-weight="700" font-size="12" fill="#2747D6">2 / 8 chunks read</text></g>
+    <rect x="383" y="85" width="76" height="102" rx="8" fill="none" stroke="#531A8A" stroke-width="3"/>
+    <rect x="617" y="85" width="76" height="102" rx="8" fill="none" stroke="#531A8A" stroke-width="3"/>
+    <text x="690" y="74" text-anchor="end" font-weight="700" font-size="12" fill="#531A8A">2 / 8 chunks read</text></g>
 </svg>
 <ol class="lx-caps">
   <li>The file: two row groups, each holding four column chunks, plus a footer.</li>

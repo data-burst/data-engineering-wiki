@@ -36,10 +36,10 @@ Wrap HTML in the `fig` shortcode. Anything with class `f` and `data-step="N"` ap
 ```html
 {{< fig kicker="$ ./replicate" title="Leader copies a write to followers" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 600 200">
-  <rect x="20" y="70" width="120" height="60" rx="6" fill="#fff" stroke="#2B3446"/>
+  <rect x="20" y="70" width="120" height="60" rx="6" fill="#fff" stroke="#3D3A49"/>
   <text x="80" y="105" text-anchor="middle">Leader</text>
   <g class="f" data-step="1">
-    <rect x="440" y="70" width="120" height="60" rx="6" fill="#fff" stroke="#2747D6"/>
+    <rect x="440" y="70" width="120" height="60" rx="6" fill="#fff" stroke="#531A8A"/>
     <text x="500" y="105" text-anchor="middle">Follower</text>
   </g>
 </svg>
@@ -54,7 +54,7 @@ No JavaScript is needed for step-by-step reveals. For custom motion (moving pack
 
 ### Style rules
 
-- One accent color (`#2747D6`). Use red (`#C2382F`) only for failure or wrong data. Everything else is navy and grey.
+- One accent color (`#531A8A`). Use red (`#C2382F`) only for failure or wrong data. Everything else is navy and grey.
 - Monospace (`class="m"` in SVG) for labels, IDs and values; normal text for sentences.
 - One idea per step. Keep captions short.
 

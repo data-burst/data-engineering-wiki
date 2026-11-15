@@ -1,11 +1,35 @@
 baseURL = "https://wiki.databurst.tech"
 languageCode = "en-us"
-title = "Databurst Data Engineering Wiki"
+title = "DataBurst Data Engineering Wiki"
 theme = "hugo-book"
 googleAnalytics = "G-5TB3E0SGK4"
+enableRobotsTXT = true
 
 [params]
 BookTheme = "light"
+description = "Free, open data engineering wiki: distributed systems, storage, file formats, streaming and data architecture, explained with interactive animations."
+images = ["logo.jpg"]
 
 [markup.goldmark.renderer]
 unsafe = true
+
+[sitemap]
+changeFreq = "weekly"
+
+# Plain-text outputs for search and AI engines (GEO):
+#   /llms.txt          site index for LLM crawlers
+#   <page>/source.txt  raw markdown of each page
+[outputFormats.txt]
+mediaType = "text/plain"
+baseName = "source"
+isPlainText = true
+[outputFormats.llms]
+mediaType = "text/plain"
+baseName = "llms"
+isPlainText = true
+notAlternative = true
+
+[outputs]
+home = ["html", "rss", "llms"]
+page = ["html", "txt"]
+section = ["html", "txt"]

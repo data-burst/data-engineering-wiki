@@ -1,0 +1,11 @@
+# {{ .Site.Title }}
+
+> {{ .Site.Params.description }}
+
+Each page is also available as raw markdown by appending `source.txt` to its URL.
+
+{{ range (where (where .Site.Pages "Section" "docs") "Kind" "in" (slice "page" "section")).ByWeight -}}
+{{ if and .Title (not .Params.bookHidden) -}}
+- [{{ .Title }}]({{ .Permalink }}){{ with .Description }}: {{ . }}{{ end }}
+{{ end -}}
+{{ end -}}

@@ -1,3 +1,6 @@
+---
+description: "Free, open data engineering wiki: distributed systems, storage, file formats, streaming and data architecture, explained with interactive animations."
+---
 # Databurst Data Engineering Wiki
 
 ## Welcome to DataBurst Wiki! 🚀

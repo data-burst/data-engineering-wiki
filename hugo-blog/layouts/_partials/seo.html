@@ -1,0 +1,21 @@
+{{/* Extra SEO/GEO on top of the theme's description, Open Graph, canonical and microdata. */}}
+{{ partial "twitter_cards.html" . }}
+<link rel="alternate" type="text/plain" title="llms.txt" href="{{ "llms.txt" | absURL }}">
+{{- $desc := or .Description .Summary .Site.Params.description | plainify | htmlUnescape | truncate 300 -}}
+{{- $crumbs := slice -}}
+{{- range $i, $p := .Ancestors.Reverse -}}
+  {{- if $p.Title }}{{ $crumbs = $crumbs | append (dict "@type" "ListItem" "position" (len $crumbs | add 1) "name" $p.Title "item" $p.Permalink) }}{{ end -}}
+{{- end -}}
+{{- $crumbs = $crumbs | append (dict "@type" "ListItem" "position" (len $crumbs | add 1) "name" (or .Title .Site.Title) "item" .Permalink) -}}
+{{- $org := dict "@type" "Organization" "name" "DataBurst" "url" "https://databurst.tech" "logo" ("logo.jpg" | absURL) -}}
+{{- $ld := slice -}}
+{{- if .IsHome -}}
+  {{- $ld = $ld | append (dict "@context" "https://schema.org" "@type" "WebSite" "name" .Site.Title "url" .Site.BaseURL "description" $desc "publisher" $org) -}}
+{{- else -}}
+  {{- $art := dict "@context" "https://schema.org" "@type" "TechArticle" "headline" .Title "description" $desc "url" .Permalink "inLanguage" "en" "publisher" $org "author" $org "isAccessibleForFree" true "proficiencyLevel" "Beginner" -}}
+  {{- if not .Lastmod.IsZero }}{{ $art = merge $art (dict "dateModified" (.Lastmod.Format "2006-01-02")) }}{{ end -}}
+  {{- $ld = $ld | append $art -}}
+  {{- $ld = $ld | append (dict "@context" "https://schema.org" "@type" "BreadcrumbList" "itemListElement" $crumbs) -}}
+{{- end -}}
+{{ range $ld }}<script type="application/ld+json">{{ . | jsonify | safeJS }}</script>
+{{ end }}

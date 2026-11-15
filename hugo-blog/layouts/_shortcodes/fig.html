@@ -1,0 +1,21 @@
+{{/* Animated lesson figure. Usage:
+  {{< fig kicker="$ ./cap --partition" title="..." hook="cap" >}} raw HTML with .f[data-step] + ol.lx-caps {{< /fig >}}
+*/}}
+<figure class="lx-fig" {{ with .Get "hook" }}data-hook="{{ . }}"{{ end }} tabindex="0">
+  <header class="lx-head">
+    {{ with .Get "kicker" }}<div class="lx-kicker">{{ . }}</div>{{ end }}
+    {{ with .Get "title" }}<div class="lx-title">{{ . | markdownify }}</div>{{ end }}
+  </header>
+  <div class="lx-body">{{ .Inner | safeHTML }}</div>
+  <div class="lx-details"><div class="lx-stepno"></div><div class="lx-cap"></div></div>
+  <footer class="lx-ctl">
+    <div class="lx-prog"></div>
+    <div class="lx-btns">
+      <button class="lx-b" data-do="speed" aria-label="Playback speed">1×</button>
+      <button class="lx-b" data-do="prev" aria-label="Previous step">‹</button>
+      <button class="lx-b solid" data-do="play">▶ Play</button>
+      <button class="lx-b" data-do="next">Step</button>
+      <button class="lx-b" data-do="reset" aria-label="Restart">↺</button>
+    </div>
+  </footer>
+</figure>

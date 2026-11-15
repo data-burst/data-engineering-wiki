@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: prod   # waits for an approval if the environment requires one
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: aws-actions/configure-aws-credentials@v4
         with: { role-to-assume: arn:aws:iam::123456789012:role/dag-deployer, aws-region: eu-central-1 }
       - run: aws s3 sync dags/ s3://acme-airflow/dags/ --delete
@@ -60,7 +60,7 @@ gh run watch            # follow an Actions run
 
 - **Long-lived cloud keys as repository secrets.** Use OIDC federation so each run gets short-lived credentials.
 - **Workflows triggered by `pull_request_target` that check out PR code.** This runs untrusted fork code with your secrets. Read GitHub's security hardening guide before using it.
-- **Admins bypassing protection.** Include administrators in rulesets so "just this once" pushes to `main` do not happen.
+- **Admins bypassing protection.** Keep administrators off the ruleset bypass list so "just this once" pushes to `main` do not happen.
 - **Giant monorepo checks on every PR.** Use path filters so the dbt checks run only when `models/` changes.
 
 ## Learning Resources

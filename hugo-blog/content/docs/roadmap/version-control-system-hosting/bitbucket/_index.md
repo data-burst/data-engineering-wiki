@@ -11,7 +11,7 @@ weight: 3
 ## Facts to get right
 
 - **Git only.** Bitbucket used to host Mercurial repositories too, but **dropped Mercurial support in 2020**. Older articles that list Mercurial as a Bitbucket advantage are outdated.
-- **Cloud vs Data Center.** **Bitbucket Cloud** is the SaaS at bitbucket.org. The self-hosted **Bitbucket Server** product reached end of support in February 2024; self-hosted customers use **Bitbucket Data Center**.
+- **Cloud vs Data Center.** **Bitbucket Cloud** is the SaaS at bitbucket.org. The self-hosted **Bitbucket Server** product reached end of support in February 2024; self-hosted customers use **Bitbucket Data Center**. Atlassian is retiring Jira and Confluence Data Center in 2029, but has said Bitbucket Data Center will continue.
 - **Free tier.** Bitbucket Cloud's free plan includes private repositories for small teams (up to 5 users) with a monthly allowance of Pipelines build minutes.
 
 ## Key features

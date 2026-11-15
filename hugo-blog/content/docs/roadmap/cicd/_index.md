@@ -1,107 +1,150 @@
 ---
 weight: 26
 title: CI/CD
+description: "CI/CD for data engineers: pipeline stages animated, continuous delivery vs deployment, testing SQL and dbt in CI, GitOps, and the main CI tools compared."
+bookToC: false
 ---
+<div class="lx-kicker-line">$ git push origin main   # and the pipeline takes it from here</div>
 
-# CICD
+# CI/CD
 
-## Introduction
+**CI/CD** is the practice of letting automation build, test and release every change. **Continuous Integration (CI)** means everyone merges small changes into the main branch often, and each change is automatically built and tested so breakage is caught within minutes. **Continuous Delivery (CD)** means every change that passes CI is packaged and deployable at the push of a button; **Continuous Deployment** goes one step further and ships it to production with no human gate.
 
-Continuous Integration and Continuous Deployment (CI/CD) are key practices in modern software 
-development that aim to enhance productivity, code quality, 
-and the speed of delivering software updates. Continuous Integration 
-(CI) involves the frequent integration of code changes into a shared repository, 
-where automated builds and tests are run to detect and fix issues early 
-in the development process. This practice helps in maintaining a codebase 
-that is always in a deployable state, reducing the risk of integration 
-problems and enabling developers to focus on building features rather 
-than fixing bugs. Popular CI tools like Jenkins, Circle CI, and GitLab CI 
-facilitate this process by automating code integration, testing, and reporting, 
-thus ensuring that each code change is verified by an automated build.
+For data teams the "code" includes SQL models, DAGs, schemas and infrastructure, and a broken change does not just crash: it can silently write wrong numbers into a dashboard. CI/CD is how you catch that before it reaches production data.
 
-Continuous Deployment (CD) extends CI by automating the release of tested code 
-changes to production environments, allowing for the rapid delivery of new features, 
-bug fixes, and updates to end users. This practice ensures that software can be 
-released at any time with minimal manual intervention, reducing the time to market 
-and improving the responsiveness to user feedback and changing requirements. 
-Tools like Jenkins, and Argo CD support CD by automating the deployment process, 
-including tasks such as environment provisioning, configuration management, 
-and monitoring. By implementing CI/CD, development teams can achieve a seamless 
-and efficient workflow, enhancing collaboration, increasing deployment frequency, 
-and ultimately delivering higher quality software to users more reliably and quickly.
+## A pipeline, step by step
 
+{{< fig kicker="$ cat .github/workflows/etl.yml" title="Two runs of the same pipeline: one stopped by a test, one shipped" >}}
+<svg class="lx-svg lx-canvas" viewBox="0 0 760 230">
+  <g font-size="11" fill="#5C5869" text-anchor="middle">
+    <text class="m" x="150" y="34">COMMIT</text><text class="m" x="260" y="34">BUILD</text><text class="m" x="370" y="34">TEST</text>
+    <text class="m" x="480" y="34">PACKAGE</text><text class="m" x="590" y="34">STAGING</text><text class="m" x="700" y="34">PROD</text>
+  </g>
+  <g font-size="12" font-weight="700" fill="#17151F"><text class="m" x="16" y="89">RUN #41</text><text class="m" x="16" y="179">RUN #42</text></g>
+  <g fill="none" stroke="#E7E7EF" stroke-width="1.4" stroke-dasharray="4 3">
+    <rect x="100" y="56" width="100" height="58" rx="6"/><rect x="210" y="56" width="100" height="58" rx="6"/><rect x="320" y="56" width="100" height="58" rx="6"/>
+    <rect x="430" y="56" width="100" height="58" rx="6"/><rect x="540" y="56" width="100" height="58" rx="6"/><rect x="650" y="56" width="100" height="58" rx="6"/>
+    <rect x="100" y="146" width="100" height="58" rx="6"/><rect x="210" y="146" width="100" height="58" rx="6"/><rect x="320" y="146" width="100" height="58" rx="6"/>
+    <rect x="430" y="146" width="100" height="58" rx="6"/><rect x="540" y="146" width="100" height="58" rx="6"/><rect x="650" y="146" width="100" height="58" rx="6"/>
+  </g>
+  <g class="f" data-step="1">
+    <rect x="100" y="56" width="100" height="58" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="150" y="81" text-anchor="middle" class="m" font-size="12" font-weight="700" fill="#17151F">a1f3e2</text><text x="150" y="100" text-anchor="middle" font-size="11" fill="#5C5869">new join</text>
+    <rect x="210" y="56" width="100" height="58" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="260" y="81" text-anchor="middle" class="m" font-size="12" font-weight="700" fill="#531A8A">PASS</text><text x="260" y="100" text-anchor="middle" font-size="11" fill="#5C5869">lint, compile</text>
+  </g>
+  <g class="f" data-step="2">
+    <rect x="320" y="56" width="100" height="58" rx="6" fill="#FCEDEB" stroke="#C2382F" stroke-width="1.4"/>
+    <text x="370" y="81" text-anchor="middle" class="m" font-size="12" font-weight="700" fill="#C2382F">FAIL</text><text x="370" y="100" text-anchor="middle" class="m" font-size="11" fill="#C2382F">dup order_id</text>
+    <g font-size="11" fill="#8C8899" text-anchor="middle"><text x="480" y="89">skipped</text><text x="590" y="89">skipped</text><text x="700" y="89">skipped</text></g>
+  </g>
+  <g class="f" data-step="3">
+    <rect x="100" y="146" width="100" height="58" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="150" y="171" text-anchor="middle" class="m" font-size="12" font-weight="700" fill="#17151F">b7c9d0</text><text x="150" y="190" text-anchor="middle" font-size="11" fill="#5C5869">fix join key</text>
+    <rect x="210" y="146" width="100" height="58" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="260" y="171" text-anchor="middle" class="m" font-size="12" font-weight="700" fill="#531A8A">PASS</text><text x="260" y="190" text-anchor="middle" font-size="11" fill="#5C5869">lint, compile</text>
+    <rect x="320" y="146" width="100" height="58" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="370" y="171" text-anchor="middle" class="m" font-size="12" font-weight="700" fill="#531A8A">PASS</text><text x="370" y="190" text-anchor="middle" font-size="11" fill="#5C5869">212 tests</text>
+  </g>
+  <g class="f" data-step="4">
+    <rect x="430" y="146" width="100" height="58" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="480" y="171" text-anchor="middle" class="m" font-size="11" font-weight="700" fill="#17151F">etl:b7c9d0</text><text x="480" y="190" text-anchor="middle" font-size="11" fill="#5C5869">image pushed</text>
+    <rect x="540" y="146" width="100" height="58" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="590" y="171" text-anchor="middle" class="m" font-size="12" font-weight="700" fill="#531A8A">PASS</text><text x="590" y="190" text-anchor="middle" font-size="11" fill="#5C5869">smoke test</text>
+  </g>
+  <g class="f" data-step="5">
+    <rect x="650" y="146" width="100" height="58" rx="6" fill="#531A8A" stroke="#531A8A" stroke-width="1.4"/>
+    <text x="700" y="171" text-anchor="middle" class="m" font-size="12" font-weight="700" fill="#fff">LIVE</text><text x="700" y="190" text-anchor="middle" font-size="11" fill="#F4EEFA">after approval</text>
+  </g>
+</svg>
+<ol class="lx-caps">
+  <li>Every push runs the same stages, left to right. A stage only starts if the one before it passed.</li>
+  <li>Run #41: a commit changes a join. <b>Build</b> passes: the code lints and the SQL compiles.</li>
+  <li>The <b>test</b> stage builds the models on sample data and a uniqueness test finds <b>duplicate order_id</b>s. The pipeline stops; nothing is deployed. This is CI doing its job.</li>
+  <li>Run #42 fixes the join key. Build and all <b>212 tests</b> pass.</li>
+  <li>The change is <b>packaged</b> once (an image tagged with the commit) and that same artifact is deployed to <b>staging</b>, where a smoke test runs against realistic data.</li>
+  <li>The same artifact goes to <b>prod</b>. With a manual approval this is <b>continuous delivery</b>; without one it is <b>continuous deployment</b>.</li>
+</ol>
+{{< /fig >}}
 
-## Gitlab CI
+## Typical stages
 
-GitLab CI is an integrated CICD tool within GitLab that allows developers to build, test, 
-and deploy their code with ease. With its deep integration into the GitLab ecosystem, 
-GitLab CI provides seamless automation of the entire CI/CD pipeline directly from the repository. 
-Users can define their pipeline configurations using a simple YAML file, .gitlab-ci.yml, 
-which specifies the stages, jobs, and scripts to be executed. 
-GitLab CI supports parallel execution of jobs, multi-platform builds, 
-and a rich set of features such as environment management and monitoring, 
-making it a comprehensive solution for end-to-end software development and delivery.
+| Stage | Purpose | Data examples |
+|---|---|---|
+| Lint and format | Fail fast on style and obvious errors | `ruff`, `sqlfluff`, `yamllint` |
+| Build | Compile, resolve dependencies, parse | `dbt compile`, Airflow DAG import test, `terraform validate` |
+| Unit tests | Test functions in isolation | `pytest` for transforms, dbt unit tests |
+| Data tests | Run models on a sample or a clone and check the output | dbt `unique` / `not_null` tests, Great Expectations, Soda |
+| Package | Produce one versioned artifact | Docker image, wheel, dbt manifest |
+| Deploy | Release the artifact to an environment | Push DAGs, `dbt build` in prod, `helm upgrade`, Argo CD sync |
 
+## CI/CD for data pipelines
 
-## Jenkins
+Data adds problems that application CI does not have:
 
-Jenkins is another widely used open-source automation server that facilitates 
-continuous integration and continuous deployment. 
-It is highly extensible, with a vast library of plugins that allow it to integrate 
-with various tools and technologies across the development lifecycle. 
-Jenkins can be configured to automate tasks like building, testing, and 
-deploying applications, which are defined in pipelines using its 
-intuitive interface or declarative pipeline syntax. 
-Its versatility and strong community support make Jenkins a popular choice for 
-organizations seeking a customizable and robust CI/CD solution.
+- **You need data to test.** Use small fixture datasets for unit tests, and a zero-copy clone or a sample of production for integration tests (Snowflake and BigQuery clones, Iceberg/Delta branches, lakeFS).
+- **Only build what changed.** dbt's **slim CI** (`dbt build --select state:modified+ --defer --state prod-manifest/`) builds just the modified models and their children against production references.
+- **Schema changes are deploys too.** Run migrations (Flyway, Liquibase, Alembic) in the pipeline, and check backward compatibility of event schemas in a [schema registry]({{< relref "../file-formats-and-serialization/serialization" >}}).
+- **Write-Audit-Publish.** In production, write new data to a staging location, audit it with tests, then publish atomically. It is CI for data itself, not just for code.
+- **Infrastructure in the same flow.** Run `terraform plan` on every pull request and `apply` on merge; see [Infrastructure as Code]({{< relref "../infrastructure-as-code" >}}).
 
+## Tools
 
-## Github Actions
+| Tool | Where it runs | Config | Notes |
+|---|---|---|---|
+| **GitHub Actions** | GitHub-hosted or self-hosted runners | `.github/workflows/*.yml` | Huge marketplace of reusable actions; default choice on GitHub |
+| **GitLab CI/CD** | GitLab runners | `.gitlab-ci.yml` | Built into GitLab, strong for self-hosted setups |
+| **Jenkins** | Your servers | `Jenkinsfile` (Groovy) | Most flexible, most maintenance; common in older enterprises |
+| **CircleCI**, **Buildkite** | SaaS or hybrid | YAML | Fast, good caching and parallelism |
+| **Argo CD**, **Flux** | Inside Kubernetes | Git repo of manifests | **GitOps**: the cluster pulls and reconciles whatever is in Git |
+| **Bitbucket Pipelines** | Atlassian cloud | `bitbucket-pipelines.yml` | Natural fit for Jira/Bitbucket shops |
 
-GitHub Actions is GitHub’s native CI/CD platform that enables developers to automate 
-their software workflows directly from their GitHub repositories. 
-By using YAML files to define workflows, users can create custom pipelines 
-triggered by events such as pushes, pull requests, and releases. 
-GitHub Actions supports a wide range of actions and integrations with 
-third-party services, providing flexibility and ease of use. Its tight 
-integration with GitHub allows developers to leverage the platform's features, 
-such as code review and project management, to streamline the entire 
-development process from code to deployment.
+A minimal GitHub Actions workflow for a dbt project:
 
+```yaml
+name: dbt-ci
+on: pull_request
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - run: uv run sqlfluff lint models/
+      - run: uv run dbt build --select state:modified+ --defer --state ./prod-manifest
+        env:
+          DBT_TARGET: ci
+```
 
-## CircleCI
+## Common mistakes
 
-CircleCI is a cloud-based CI/CD platform that focuses on providing speed 
-and reliability in automating the software delivery process. It supports 
-parallel execution, caching, and resource optimization to ensure fast and 
-efficient builds. CircleCI’s configuration is defined through YAML files, 
-enabling users to set up sophisticated workflows that include automated testing, 
-deployment, and notifications. Its ability to integrate with popular version 
-control systems like GitHub and Bitbucket, along with its powerful insights 
-and analytics, helps teams to continuously improve their development processes 
-and deliver high-quality software at a rapid pace.
-
+- **Rebuilding per environment.** Build the artifact once and promote the same one through staging and prod; otherwise you test one thing and ship another.
+- **Flaky tests that everyone ignores.** A red pipeline that is "usually fine" trains people to merge on red. Fix or delete flaky tests.
+- **Production credentials in CI.** Use short-lived credentials (OIDC federation to your cloud) and read-only roles for test stages.
+- **Testing only code, never data.** A pipeline that compiles but doubles revenue is still broken. Add data tests.
+- **Slow pipelines.** Over 10–15 minutes and people stop waiting for them. Cache dependencies, run tests in parallel, and build only what changed.
 
 ## Learning Resources
 
-Here are some suggestions for learning more about implementing CICD pipelines:
+### Foundations
 
-### Books
-- [Automating DevOps with GitLab CI/CD Pipelines](https://www.amazon.ca/Automating-DevOps-GitLab-Pipelines-efficient/dp/1803233001)
-- [Jenkins: The Definitive Guide](https://www.amazon.com/Jenkins-Definitive-Continuous-Integration-Masses/dp/1449305350)
-- [Jenkins 2: Up and Running](https://www.amazon.com/Jenkins-Deployment-Pipeline-Generation-Automation/dp/1491979593/)
-- [Hands-on GitHub Actions](https://www.amazon.com/Hands-GitHub-Actions-Implement-Applications/dp/1484264630)
+- [Continuous Integration, Martin Fowler](https://martinfowler.com/articles/continuousIntegration.html)
+- *Continuous Delivery*, Jez Humble and David Farley (Addison-Wesley)
+- *Accelerate*, Nicole Forsgren, Jez Humble and Gene Kim: the research behind DORA metrics
+- [DORA research program](https://dora.dev/)
+
+### Tool documentation
+
+- [GitHub Actions documentation](https://docs.github.com/en/actions)
+- [GitLab CI/CD documentation](https://docs.gitlab.com/ci/)
+- [Jenkins User Handbook](https://www.jenkins.io/doc/book/)
+- [CircleCI documentation](https://circleci.com/docs/)
+- [Argo CD documentation](https://argo-cd.readthedocs.io/)
+- [dbt: continuous integration](https://docs.getdbt.com/docs/deploy/continuous-integration)
 
 ### Courses
-- [GitLab CI CD Tutorial for Beginners](https://www.youtube.com/watch?v=qP8kir2GUgo)
-- [DevOps with GitLab CI Course](https://www.youtube.com/watch?v=PGyhBwLyK2U)
-- [JENKINS END TO END CICD](https://www.youtube.com/watch?v=JGQI5pkK82w)
-- [GitHub Actions Tutorial](https://www.youtube.com/watch?v=R8_veQiYBjI)
-- [How to Build a CI/CD Pipeline using CircleCI and GitHub](https://www.youtube.com/watch?v=qegFqum-M9o)
-- [CircleCI Part](https://www.youtube.com/watch?v=CB7vnoXI0pE)
 
-### Miscellaneous
-- [Get started with Gitlab CI/CD](https://docs.gitlab.com/ee/ci/)
-- [Jenkins Handbook](https://www.jenkins.io/doc/book/)
-- [Learn GitHub Actions](https://docs.github.com/en/actions/learn-github-actions)
-- [Circle CI Guide](https://circleci.com/docs/getting-started/)
+- [GitHub Actions Tutorial, TechWorld with Nana](https://www.youtube.com/watch?v=R8_veQiYBjI)
+- [GitLab CI/CD Tutorial for Beginners](https://www.youtube.com/watch?v=qP8kir2GUgo)
+- [DevOps with GitLab CI (freeCodeCamp)](https://www.youtube.com/watch?v=PGyhBwLyK2U)

@@ -248,7 +248,23 @@
     return { steps: 5, go };
   };
 
+  // Smooth expand/collapse for collapsible menu sections (theme toggles display:none instantly).
+  function menu() {
+    $$(document, '.book-menu input.toggle').forEach(t => t.addEventListener('change', () => {
+      const ul = t.nextElementSibling && t.nextElementSibling.nextElementSibling;
+      if (!ul || ul.tagName !== 'UL' || reduce) return;
+      const open = t.checked;
+      ul.style.display = 'block'; ul.style.overflow = 'hidden';
+      const h = ul.scrollHeight + 'px';
+      ul.getAnimations().forEach(a => a.cancel());
+      ul.animate([{ height: open ? '0px' : h, opacity: open ? 0 : 1 }, { height: open ? h : '0px', opacity: open ? 1 : 0 }],
+        { duration: 220, easing: 'cubic-bezier(.2,.8,.2,1)' })
+        .onfinish = () => { ul.style.display = ''; ul.style.overflow = ''; };
+    }));
+  }
+
   function boot() {
+    menu();
     $$(document, '.lx-fig').forEach(init);
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('lx-in'); io.unobserve(e.target); } }), { threshold: .2 });
     $$(document, '.lx-fig, .rise').forEach(el => io.observe(el));

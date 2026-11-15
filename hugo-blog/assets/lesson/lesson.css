@@ -184,3 +184,9 @@ code,kbd,pre,samp{font-family:var(--mono)}
 .markdown .lx-log td,.markdown .lx-log th,.markdown .rc-tbl td,.markdown .rc-tbl th{border:none;border-bottom:1px solid var(--line2);padding:.3rem .5rem}
 .markdown .lx-log th,.markdown .rc-tbl th{border-bottom-color:var(--line)}
 
+/* ---------- menu motion ---------- */
+.book-menu .book-icon{transition:transform .2s ease}
+.book-menu nav a{border-radius:5px;padding:.4em .5rem;margin:0 -.5rem;transition:background .15s,color .15s}
+.book-menu nav a:hover{background:var(--line2);color:var(--ink)}
+.book-menu nav a.active{background:var(--acc-l)}
+@media (prefers-reduced-motion:reduce){.book-menu .book-icon,.book-menu nav a{transition:none}}

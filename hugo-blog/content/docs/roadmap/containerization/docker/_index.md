@@ -60,8 +60,8 @@ Each instruction in a Dockerfile that changes the filesystem produces a **layer*
 ## A practical Dockerfile for a data job
 
 ```dockerfile
-# Stage 1: build wheels with compilers available
-FROM python:3.12-slim AS build
+# Stage 1: build wheels in the full image, which has compilers
+FROM python:3.12 AS build
 WORKDIR /app
 COPY requirements.txt .
 RUN pip wheel --wheel-dir /wheels -r requirements.txt
@@ -96,6 +96,8 @@ services:
 volumes:
   pgdata:
 ```
+
+MinIO stopped publishing community Docker images in late 2025, so `minio/minio` no longer gets updates; it is fine for a throwaway local stack, but for anything longer-lived consider an S3-compatible alternative such as SeaweedFS or Garage.
 
 Compose is for development and single-host setups. For many hosts, use [Kubernetes]({{< relref "../../container-orchestration/kubernetes" >}}).
 

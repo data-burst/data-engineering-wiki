@@ -51,7 +51,7 @@ Stick with Docker when your tooling assumes the Docker socket and you do not wan
 
 ## Common mistakes
 
-- **Expecting `restart: always` to survive reboots.** Without a daemon, nothing restarts containers on boot. Use Quadlet or `systemctl --user enable`.
+- **Expecting `--restart=always` to survive reboots.** Without a daemon, nothing restarts containers on boot unless systemd does it. Use Quadlet, or enable `podman-restart.service`.
 - **Short image names.** `podman pull postgres` may prompt for or resolve a registry differently than Docker. Use full names like `docker.io/library/postgres:17`.
 - **Mixing rootful and rootless storage.** Images pulled with `sudo podman` are not visible to your user, and vice versa.
 

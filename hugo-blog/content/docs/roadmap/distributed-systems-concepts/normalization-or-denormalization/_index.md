@@ -12,7 +12,7 @@ bookToC: false
 
 ## What goes wrong with copies
 
-{{< fig kicker="$ UPDATE ... SET city = 'Shiraz' WHERE customer = 'Sara'" title="An update anomaly, and the normalized fix" >}}
+{{< fig kicker="$ UPDATE ... SET city = 'Toronto' WHERE customer = 'Sam'" title="An update anomaly, and the normalized fix" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 290">
   <text x="20" y="30" class="m" font-size="12" font-weight="700" fill="#17151F">orders · denormalized</text>
   <!-- step 1 highlight (behind text) -->
@@ -24,22 +24,22 @@ bookToC: false
     <text class="m" x="30" y="56">ORDER</text><text class="m" x="100" y="56">CUSTOMER</text><text class="m" x="190" y="56">CITY</text><text class="m" x="290" y="56">AMOUNT</text>
   </g>
   <g font-size="12" fill="#17151F">
-    <text class="m" x="30" y="86">1001</text><text class="m" x="100" y="86">Sara</text><text class="m" x="190" y="86">Tehran</text><text class="m" x="290" y="86">250</text>
-    <text class="m" x="30" y="112">1002</text><text class="m" x="100" y="112">Ali</text><text class="m" x="190" y="112">Isfahan</text><text class="m" x="290" y="112">120</text>
-    <text class="m" x="30" y="138">1003</text><text class="m" x="100" y="138">Sara</text><text class="m" x="190" y="138">Tehran</text><text class="m" x="290" y="138">450</text>
-    <text class="m" x="30" y="164">1004</text><text class="m" x="100" y="164">Sara</text><text class="m" x="190" y="164">Tehran</text><text class="m" x="290" y="164">980</text>
+    <text class="m" x="30" y="86">1001</text><text class="m" x="100" y="86">Sam</text><text class="m" x="190" y="86">New York</text><text class="m" x="290" y="86">250</text>
+    <text class="m" x="30" y="112">1002</text><text class="m" x="100" y="112">Alice</text><text class="m" x="190" y="112">Chicago</text><text class="m" x="290" y="112">120</text>
+    <text class="m" x="30" y="138">1003</text><text class="m" x="100" y="138">Sam</text><text class="m" x="190" y="138">New York</text><text class="m" x="290" y="138">450</text>
+    <text class="m" x="30" y="164">1004</text><text class="m" x="100" y="164">Sam</text><text class="m" x="190" y="164">New York</text><text class="m" x="290" y="164">980</text>
   </g>
   <g class="f" data-step="1">
-    <text x="20" y="200" class="m" font-size="11" fill="#531A8A">Sara moved: her city is stored 3 times</text>
+    <text x="20" y="200" class="m" font-size="11" fill="#531A8A">Sam moved: the city is stored 3 times</text>
   </g>
   <!-- step 2: partial update -->
   <g class="f" data-step="2">
     <rect x="186" y="72" width="90" height="20" fill="#F4EEFA"/>
-    <text x="190" y="86" class="m" font-size="12" font-weight="700" fill="#531A8A">Shiraz</text>
+    <text x="190" y="86" class="m" font-size="12" font-weight="700" fill="#531A8A">Toronto</text>
     <rect x="186" y="124" width="90" height="20" fill="#F4EEFA"/>
-    <text x="190" y="138" class="m" font-size="12" font-weight="700" fill="#531A8A">Shiraz</text>
+    <text x="190" y="138" class="m" font-size="12" font-weight="700" fill="#531A8A">Toronto</text>
     <rect x="20" y="148" width="340" height="24" fill="none" stroke="#C2382F" stroke-width="2"/>
-    <text x="20" y="222" class="m" font-size="11" font-weight="700" fill="#C2382F">job updated 2 of 3 rows: Sara now lives in 2 cities</text>
+    <text x="20" y="222" class="m" font-size="11" font-weight="700" fill="#C2382F">job updated 2 of 3 rows: Sam now lives in 2 cities</text>
   </g>
   <!-- step 3: normalized -->
   <g class="f" data-step="3">
@@ -49,8 +49,8 @@ bookToC: false
     <line x1="400" y1="64" x2="740" y2="64" stroke="#E7E7EF" stroke-width="1.4"/>
     <g font-size="11" font-weight="700" fill="#8C8899"><text class="m" x="410" y="56">ID</text><text class="m" x="470" y="56">NAME</text><text class="m" x="560" y="56">CITY</text></g>
     <g font-size="12" fill="#17151F">
-      <text class="m" x="410" y="86">7</text><text class="m" x="470" y="86">Sara</text><text class="m" x="560" y="86" font-weight="700" fill="#531A8A">Shiraz</text>
-      <text class="m" x="410" y="112">8</text><text class="m" x="470" y="112">Ali</text><text class="m" x="560" y="112">Isfahan</text>
+      <text class="m" x="410" y="86">7</text><text class="m" x="470" y="86">Sam</text><text class="m" x="560" y="86" font-weight="700" fill="#531A8A">Toronto</text>
+      <text class="m" x="410" y="112">8</text><text class="m" x="470" y="112">Alice</text><text class="m" x="560" y="112">Chicago</text>
     </g>
     <text x="470" y="134" class="m" font-size="11" fill="#531A8A">UPDATE customers … → 1 row</text>
     <text x="410" y="160" class="m" font-size="12" font-weight="700" fill="#17151F">orders</text>
@@ -71,7 +71,7 @@ bookToC: false
 </svg>
 <ol class="lx-caps">
   <li>A denormalized <b>orders</b> table repeats the customer's name and city on every order.</li>
-  <li>Sara moves to Shiraz. The fact "where Sara lives" is stored <b>three times</b>, so the update must find and change all three rows.</li>
+  <li>Sam moves to Toronto. The fact "where Sam lives" is stored <b>three times</b>, so the update must find and change all three rows.</li>
   <li>A job (or a race with another write) changes only two. The table now contradicts itself: an <b>update anomaly</b>.</li>
   <li><b>Normalized</b>: the city lives once in <b>customers</b>; orders keep only <code>customer_id</code>. The move is a one-row update and cannot be half-applied.</li>
   <li>The price: every query that shows an order with its city now needs a <b>JOIN</b>. On one machine that is cheap; across shards or in a giant fact table it can be the slowest part of the query.</li>
@@ -84,12 +84,12 @@ Each normal form removes one kind of redundancy. In practice, aiming for **3NF**
 
 | Form | Rule | Violation example | Fix |
 |---|---|---|---|
-| **1NF** | One value per cell, no repeating groups | `phones = '0912…, 0935…'` | A `customer_phones` table |
+| **1NF** | One value per cell, no repeating groups | `phones = '212-555-0101, 416-555-0199'` | A `customer_phones` table |
 | **2NF** | 1NF, and every column depends on the *whole* key | In `order_items(order_id, product_id, product_name)`, the name depends only on `product_id` | Move names to `products` |
 | **3NF** | 2NF, and no column depends on another non-key column | `orders(customer_id, customer_city)`: city depends on the customer, not the order | Move city to `customers` |
 | **BCNF** | Every determinant is a candidate key | Rare edge cases with overlapping keys | Split the table further |
 
-Normalization also prevents **insert anomalies** (cannot store a new customer until they order) and **delete anomalies** (deleting Ali's only order deletes the fact that Ali exists).
+Normalization also prevents **insert anomalies** (cannot store a new customer until they order) and **delete anomalies** (deleting Alice's only order deletes the fact that Alice exists).
 
 ## Where each one wins
 

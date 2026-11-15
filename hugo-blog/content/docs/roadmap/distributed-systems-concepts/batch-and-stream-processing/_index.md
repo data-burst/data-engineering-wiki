@@ -37,7 +37,7 @@ Press **Play**. The same events go to both pipelines. Watch the **counters** and
   <div class="bs-out"><div class="num">0</div><small>orders counted</small><div class="lag">behind by 0.0 s</div></div>
 </div>
 <div class="bs-truth">Orders that really happened: <b>0</b></div>
-<ol class="lx-caps"><li>The stream count tracks reality almost instantly. The batch count <b>jumps</b> on schedule and is always a little behind. Switch to <b>micro-batch</b> (how Spark Structured Streaming works) and the gap shrinks.</li></ol>
+<ol class="lx-caps"><li>The stream count tracks reality almost instantly. The batch count <b>jumps</b> on schedule and is always a little behind. Switch to <b>micro-batch</b> (the default mode of Spark Structured Streaming) and the gap shrinks.</li></ol>
 {{< /fig >}}
 
 <div class="lx-cards">
@@ -55,7 +55,7 @@ In batch, "yesterday's data" is a closed folder. In a stream, an event from 10:5
 - **Watermark**: the engine's guess that "no more events older than *T* will come", which is when a window like *10:00–11:00* can be closed.
 - **Windows**: tumbling (fixed, non-overlapping), sliding, and session windows.
 
-Exactly-once results come from **checkpointed state + idempotent or transactional sinks**, not from the network delivering each message once.
+Exactly-once results come from **a replayable source + checkpointed state + idempotent or transactional sinks**, not from the network delivering each message once.
 
 ## How to choose
 

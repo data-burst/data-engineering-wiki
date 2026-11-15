@@ -81,7 +81,7 @@ Each system gets two letters: what it does during a partition (PA or PC) and wha
 | System | Class | Notes |
 |---|---|---|
 | Cassandra, ScyllaDB, Riak | PA/EL | Tunable per query: `QUORUM` reads and writes move toward EC |
-| DynamoDB | PA/EL | Eventually consistent reads by default; strongly consistent reads are EC (on the base table) |
+| DynamoDB | PA/EL | Eventually consistent reads by default; strongly consistent reads are EC (not available on global secondary indexes) |
 | MongoDB | PA/EC (Abadi, 2012) | Today depends on write and read concern; `majority` + linearizable reads behave PC/EC |
 | PNUTS (Yahoo) | PC/EL | Abadi's example of an unusual combination |
 | Spanner, CockroachDB, YugabyteDB | PC/EC | Consensus on every write; pay latency for correctness |

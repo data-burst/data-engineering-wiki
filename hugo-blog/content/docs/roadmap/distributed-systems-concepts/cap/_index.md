@@ -73,7 +73,7 @@ Pick a mode, then step through. Same cluster, same failure: only the choice at s
 </ol>
 {{< /fig >}}
 
-So the honest reading of CAP is: **P is not optional.** Networks fail, so during a partition you choose between **C** and **A**. "CA" systems only exist on a single machine.
+So the honest reading of CAP is: **P is not optional.** Networks fail, so during a partition you choose between **C** and **A**. "CA" only makes sense on a single machine, where there is no network to split.
 
 ## Real systems, real choices
 
@@ -112,4 +112,4 @@ Cassandra is **PA/EL** (fast, eventually consistent). Spanner is **PC/EC** (cons
 
 ### Books
 
-- *Designing Data-Intensive Applications* (2nd ed.), Martin Kleppmann: chapters on replication and consistency
+- *Designing Data-Intensive Applications* (2nd ed.), Martin Kleppmann and Chris Riccomini: chapters on replication and consistency

@@ -90,7 +90,7 @@ A **shard key** (or partition key) is the column that decides where a row goes. 
 | **Range** | Sorted key ranges per shard | Range scans, ordered reads | Hot spots on increasing keys | HBase, Bigtable, CockroachDB, TiDB, MongoDB ranged shards |
 | **Hash** | `hash(key)` decides the shard | Even spread of reads and writes | Range queries become scatter-gather | Cassandra, DynamoDB, Kafka (default partitioner), Redis Cluster |
 | **Consistent hashing** | Keys and nodes on a hash ring | Adding a node moves only ~1/N of keys | Uneven without virtual nodes | Dynamo-style stores, Cassandra vnodes, CDNs |
-| **Directory / lookup** | A mapping table says where each key lives | Moving single tenants, uneven tenants | The directory is one more service to keep available | Vitess, many multi-tenant SaaS setups |
+| **Directory / lookup** | A mapping table says where each key lives | Moving single tenants, uneven tenants | The directory is one more service to keep available | Vitess lookup vindexes, many multi-tenant SaaS setups |
 
 Plain `hash(key) % N` has a nasty property: change N from 3 to 4 and almost every key moves. Real systems avoid that with consistent hashing or with **many more partitions than nodes** (for example 256 partitions on 4 nodes) so rebalancing just moves whole partitions.
 

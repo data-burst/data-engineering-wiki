@@ -8,10 +8,10 @@ bookToC: false
 
 # ACID
 
-**ACID** is the set of guarantees a database gives a **transaction**, a group of reads and writes that should behave as one unit. A transfer of 100 from Ali to Sara is two updates; ACID promises that both happen or neither does, that concurrent transfers do not corrupt each other, and that a committed transfer survives a power cut.
+**ACID** is the set of guarantees a database gives a **transaction**, a group of reads and writes that should behave as one unit. A transfer of 100 from Alice to Sam is two updates; ACID promises that both happen or neither does, that concurrent transfers do not corrupt each other, and that a committed transfer survives a power cut.
 
 <div class="lx-cards">
-  <div class="lx-card"><div class="lab">A · Atomicity</div><h4>All or nothing</h4><p>If anything fails mid-transaction, every change is rolled back. Never "Ali debited, Sara not credited".</p></div>
+  <div class="lx-card"><div class="lab">A · Atomicity</div><h4>All or nothing</h4><p>If anything fails mid-transaction, every change is rolled back. Never "Alice debited, Sam not credited".</p></div>
   <div class="lx-card"><div class="lab">C · Consistency</div><h4>Rules still hold</h4><p>Constraints (foreign keys, <code>CHECK balance &gt;= 0</code>, unique keys) are true before and after. Mostly your schema's job.</p></div>
   <div class="lx-card"><div class="lab">I · Isolation</div><h4>Concurrency looks safe</h4><p>Transactions running at the same time do not see each other's half-done work. How strictly depends on the isolation level.</p></div>
   <div class="lx-card"><div class="lab">D · Durability</div><h4>Committed means saved</h4><p>Once <code>COMMIT</code> returns, the change survives a crash: it is in the write-ahead log on disk (and often on a replica).</p></div>
@@ -29,7 +29,7 @@ Atomicity and durability are rarely the problem in practice. Isolation is, becau
 
 {{< fig kicker="$ psql -c 'SHOW default_transaction_isolation'   # read committed" title="A lost update: two checkouts, one item" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 270">
-  <text x="20" y="30" class="m" font-size="11" fill="#5C5869">product 7 has 1 left · T1 = Ali's checkout · T2 = Sara's checkout</text>
+  <text x="20" y="30" class="m" font-size="11" fill="#5C5869">product 7 has 1 left · T1 = Alice's checkout · T2 = Sam's checkout</text>
   <line x1="20" y1="118" x2="560" y2="118" stroke="#E7E7EF" stroke-width="1.2"/>
   <line x1="20" y1="182" x2="560" y2="182" stroke="#E7E7EF" stroke-width="1.2"/>
   <text x="20" y="100" class="m" font-size="12" font-weight="700" fill="#17151F">T1</text>
@@ -77,7 +77,7 @@ Atomicity and durability are rarely the problem in practice. Isolation is, becau
   </g>
 </svg>
 <ol class="lx-caps">
-  <li>One item left in stock. Ali and Sara press "Buy" at the same moment, starting transactions <b>T1</b> and <b>T2</b>.</li>
+  <li>One item left in stock. Alice and Sam press "Buy" at the same moment, starting transactions <b>T1</b> and <b>T2</b>.</li>
   <li>Both read <b>stock = 1</b>. Each sees "in stock", which was true when it looked.</li>
   <li>T1 computes 1 − 1 = 0, writes <b>stock = 0</b>, inserts an order and commits.</li>
   <li>T2 does the same math on its <b>stale read</b> and overwrites stock with 0. Two orders, one item: T1's decrement was <b>lost</b>. READ COMMITTED allows this.</li>
@@ -115,8 +115,8 @@ The same letter means two different things:
 
 ## ACID in data engineering
 
-- **Warehouses** (Snowflake, BigQuery, Redshift) give ACID per statement or transaction, usually with snapshot isolation.
-- **Lakehouse table formats** (Apache Iceberg, Delta Lake, Apache Hudi) bring ACID commits to files on object storage: a commit atomically swaps a metadata pointer, and concurrent writers use optimistic concurrency (one wins, the other retries).
+- **Warehouses** give ACID per statement or transaction, but isolation varies: Snowflake runs READ COMMITTED, BigQuery snapshot isolation, Redshift serializable or snapshot depending on configuration.
+- **Lakehouse table formats** (Apache Iceberg, Delta Lake, Apache Hudi) bring ACID commits to files on object storage: a commit atomically publishes a new version of the table metadata, and concurrent writers use optimistic concurrency (one wins, the other retries).
 - **NoSQL stores** traditionally offered single-row atomicity and **BASE** (basically available, soft state, eventually consistent). Many now add transactions: MongoDB multi-document transactions, DynamoDB `TransactWriteItems`.
 - Across databases or services you need [distributed transactions]({{< relref "/docs/roadmap/distributed-systems-concepts/transaction" >}}) or sagas.
 

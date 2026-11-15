@@ -14,7 +14,7 @@ The trade is simple: strong consistency needs replicas to coordinate on every op
 
 ## Quorums: tuning between the two
 
-Leaderless databases such as Cassandra and DynamoDB-style stores let you choose, per request, how many replicas must answer. With **N** replicas, a write waits for **W** acknowledgements and a read asks **R** replicas.
+Leaderless (Dynamo-style) databases such as Cassandra, ScyllaDB and Riak let you choose, per request, how many replicas must answer. With **N** replicas, a write waits for **W** acknowledgements and a read asks **R** replicas.
 
 {{< fig kicker="$ cqlsh -e 'CONSISTENCY QUORUM'" title="N = 3 replicas: a stale read, a quorum read, and repair" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 300">
@@ -80,7 +80,7 @@ Leaderless databases such as Cassandra and DynamoDB-style stores let you choose,
   <li>A write of <b>v2</b> with <b>W = 2</b> succeeds once A and B confirm. The copy to C is dropped.</li>
   <li>A read with <b>R = 1</b> happens to ask C and returns <b>v1</b>. Fast, available, and <b>stale</b>.</li>
   <li>A read with <b>R = 2</b> must ask two replicas. Any two overlap with the two that took the write, so it sees v2 and returns the newest. That is the <b>R + W &gt; N</b> rule.</li>
-  <li>The reader notices C is behind and writes v2 back (<b>read repair</b>). Background <b>anti-entropy</b> does the same for data nobody reads. The replicas have <b>eventually</b> converged.</li>
+  <li>The coordinator notices C is behind and writes v2 back (<b>read repair</b>). Background <b>anti-entropy</b> does the same for data nobody reads. The replicas have <b>eventually</b> converged.</li>
 </ol>
 {{< /fig >}}
 
@@ -110,7 +110,7 @@ Eventually consistent systems that accept writes on several replicas must merge 
 ## Real settings you will meet
 
 - **Amazon S3**: strong read-after-write consistency for all objects since December 2020. Older "S3 is eventually consistent" advice is outdated.
-- **DynamoDB**: eventually consistent reads by default; `ConsistentRead=true` for strong reads at twice the read cost (base tables only, not global secondary indexes).
+- **DynamoDB**: eventually consistent reads by default; `ConsistentRead=true` for strong reads at twice the read cost (not available on global secondary indexes).
 - **Cassandra**: consistency level per query (`ONE`, `QUORUM`, `LOCAL_QUORUM`, `ALL`).
 - **PostgreSQL / MySQL read replicas**: the primary is strong; async replicas are eventually consistent. See [Replication]({{< relref "/docs/roadmap/distributed-systems-concepts/replication" >}}).
 - **Data pipelines**: a CDC stream, a search index or a cache fed from a database is an eventually consistent copy of it.

@@ -31,30 +31,30 @@ The most common setup is **single-leader** (also called primary/replica): client
     <text x="75" y="153" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">CLIENT</text></g>
   <g><rect x="270" y="110" width="150" height="80" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="345" y="134" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">LEADER</text>
-    <text x="345" y="160" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">city = Tehran</text>
+    <text x="345" y="160" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">city = New York</text>
     <text x="345" y="180" text-anchor="middle" class="m" font-size="11" fill="#8C8899">log pos 41</text></g>
   <g><rect x="590" y="20" width="150" height="80" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="665" y="44" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">FOLLOWER 1</text>
-    <text x="665" y="70" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">city = Tehran</text>
+    <text x="665" y="70" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">city = New York</text>
     <text x="665" y="90" text-anchor="middle" class="m" font-size="11" fill="#8C8899">applied 41</text></g>
   <g><rect x="590" y="200" width="150" height="80" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="665" y="224" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">FOLLOWER 2</text>
-    <text x="665" y="250" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">city = Tehran</text>
+    <text x="665" y="250" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">city = New York</text>
     <text x="665" y="270" text-anchor="middle" class="m" font-size="11" fill="#8C8899">applied 41</text></g>
   <!-- step 1: write to leader -->
   <g class="f" data-step="1">
     <line x1="130" y1="148" x2="266" y2="148" stroke="#531A8A" stroke-width="2" marker-end="url(#rp-a)"/>
-    <text x="200" y="138" text-anchor="middle" class="m" font-size="11" fill="#531A8A">WRITE city=Shiraz</text>
+    <text x="200" y="138" text-anchor="middle" class="m" font-size="11" fill="#531A8A">WRITE city=Toronto</text>
     <text x="200" y="168" text-anchor="middle" class="m" font-size="11" fill="#5C5869">ACK right away</text>
     <rect x="280" y="146" width="130" height="38" fill="#fff"/>
-    <text x="345" y="160" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">city = Shiraz</text>
+    <text x="345" y="160" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">city = Toronto</text>
     <text x="345" y="180" text-anchor="middle" class="m" font-size="11" fill="#8C8899">log pos 42</text>
   </g>
   <!-- step 2: ship log -->
   <g class="f" data-step="2">
     <line x1="420" y1="130" x2="586" y2="62" stroke="#531A8A" stroke-width="2" marker-end="url(#rp-a)"/>
     <rect x="600" y="56" width="130" height="38" fill="#fff"/>
-    <text x="665" y="70" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">city = Shiraz</text>
+    <text x="665" y="70" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">city = Toronto</text>
     <text x="665" y="90" text-anchor="middle" class="m" font-size="11" fill="#8C8899">applied 42</text>
     <rect x="600" y="258" width="130" height="18" fill="#fff"/>
     <text x="665" y="270" text-anchor="middle" class="m" font-size="11" fill="#5C5869">applied 41 · lag 2 s</text>
@@ -66,7 +66,7 @@ The most common setup is **single-leader** (also called primary/replica): client
     <rect x="330" y="236" width="110" height="44" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="385" y="263" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">CLIENT 2</text>
     <line x1="588" y1="262" x2="444" y2="262" stroke="#C2382F" stroke-width="2" marker-end="url(#rp-r)"/>
-    <text x="516" y="254" text-anchor="middle" class="m" font-size="11" fill="#C2382F">Tehran (stale)</text>
+    <text x="516" y="254" text-anchor="middle" class="m" font-size="11" fill="#C2382F">New York (stale)</text>
   </g>
   <!-- step 4: catch up -->
   <g class="f" data-step="4">
@@ -74,23 +74,23 @@ The most common setup is **single-leader** (also called primary/replica): client
     <rect x="588" y="198" width="154" height="84" rx="7" fill="none" stroke="#FBFBFE" stroke-width="2.6"/>
     <rect x="590" y="200" width="150" height="80" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="665" y="224" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">FOLLOWER 2</text>
-    <text x="665" y="250" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">city = Shiraz</text>
+    <text x="665" y="250" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">city = Toronto</text>
     <text x="665" y="270" text-anchor="middle" class="m" font-size="11" fill="#8C8899">applied 42</text>
   </g>
 </svg>
 <table class="lx-log">
 <tr><th>NO.</th><th>STEP</th><th>FROM</th><th>TO</th><th>TYPE</th><th>INFO</th></tr>
-<tr class="f" data-step="1"><td>1</td><td>01</td><td>client</td><td>leader</td><td class="tag">WRITE</td><td>user 42 city = Shiraz → log pos 42, ack</td></tr>
+<tr class="f" data-step="1"><td>1</td><td>01</td><td>client</td><td>leader</td><td class="tag">WRITE</td><td>user 42 city = Toronto → log pos 42, ack</td></tr>
 <tr class="f" data-step="2"><td>2</td><td>02</td><td>leader</td><td>follower1</td><td class="tag">REPLICATE</td><td>pos 42 applied</td></tr>
 <tr class="f" data-step="2"><td>3</td><td>02</td><td>leader</td><td>follower2</td><td class="tag">REPLICATE</td><td>pos 42 delayed (busy disk, slow link)</td></tr>
-<tr class="f" data-step="3"><td>4</td><td>03</td><td>client2</td><td>follower2</td><td class="err">READ</td><td>city = Tehran · stale by 2 s</td></tr>
+<tr class="f" data-step="3"><td>4</td><td>03</td><td>client2</td><td>follower2</td><td class="err">READ</td><td>city = New York · stale by 2 s</td></tr>
 <tr class="f" data-step="4"><td>5</td><td>04</td><td>leader</td><td>follower2</td><td class="tag">REPLICATE</td><td>pos 42 applied · replicas agree</td></tr>
 </table>
 <ol class="lx-caps">
-  <li>One leader and two followers all store <b>user 42: city = Tehran</b>. Only the leader accepts writes.</li>
-  <li>The user moves to Shiraz. The leader appends the change to its <b>log</b> and, in <b>async</b> mode, confirms to the client immediately.</li>
+  <li>One leader and two followers all store <b>user 42: city = New York</b>. Only the leader accepts writes.</li>
+  <li>The user moves to Toronto. The leader appends the change to its <b>log</b> and, in <b>async</b> mode, confirms to the client immediately.</li>
   <li>The leader streams the log to its followers. Follower 1 applies it; follower 2 is busy and <b>lags</b> behind.</li>
-  <li>Another client reads from follower 2 and gets <b>Tehran</b>: a <b>stale read</b> caused by replication lag.</li>
+  <li>Another client reads from follower 2 and gets <b>New York</b>: a <b>stale read</b> caused by replication lag.</li>
   <li>Follower 2 catches up and the replicas agree again. Async replicas are <b>eventually consistent</b>.</li>
 </ol>
 {{< /fig >}}
@@ -113,7 +113,7 @@ PostgreSQL controls this with `synchronous_commit` and `synchronous_standby_name
 |---|---|---|---|
 | **Single-leader** | One leader per dataset (or per partition) | PostgreSQL, MySQL, MongoDB replica sets, Kafka partitions | Failover: detecting a dead leader, avoiding two leaders (split brain) |
 | **Multi-leader** | One leader per region or device | Multi-region MySQL/Postgres setups, offline-first apps, CouchDB | Write conflicts: two leaders change the same row at once |
-| **Leaderless** | Any replica; client writes to several | Cassandra, ScyllaDB, Riak, DynamoDB internally | Needs quorums, read repair and conflict resolution; see [Consistency vs Eventual Consistency]({{< relref "/docs/roadmap/distributed-systems-concepts/consistency-vs-eventual-consistency" >}}) |
+| **Leaderless** | Any replica; client writes to several | Cassandra, ScyllaDB, Riak, the original Amazon Dynamo design | Needs quorums, read repair and conflict resolution; see [Consistency vs Eventual Consistency]({{< relref "/docs/roadmap/distributed-systems-concepts/consistency-vs-eventual-consistency" >}}) |
 
 Leader election and failover in modern systems usually rely on a consensus protocol (Raft in etcd, CockroachDB, Kafka KRaft; Paxos in Spanner) so that the cluster agrees on exactly one leader.
 
@@ -128,7 +128,7 @@ Async followers are always a little behind, normally milliseconds, sometimes min
 ## How replicas are fed
 
 - **Statement-based**: ship the SQL text. Breaks on `NOW()`, `RANDOM()` and triggers. Mostly historical.
-- **Physical log (WAL) shipping**: ship disk-level changes. Exact copies, but leader and follower must run the same version.
+- **Physical log (WAL) shipping**: ship disk-level changes. Exact copies, but leader and follower must run the same major version.
 - **Logical (row-based) log**: ship "row X changed from A to B". Works across versions and is what [change data capture]({{< relref "/docs/roadmap/data-integration/cdc" >}}) tools like Debezium read.
 
 ## Replication vs sharding

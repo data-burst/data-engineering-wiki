@@ -8,7 +8,7 @@ bookToC: false
 
 # Distributed Transactions
 
-A **distributed transaction** is a group of changes that spans more than one database, shard or service and must **all succeed or all fail**. Moving 100 from Ali's account on one shard to Sara's account on another is the classic example: debiting Ali without crediting Sara is not acceptable, even if a machine crashes halfway.
+A **distributed transaction** is a group of changes that spans more than one database, shard or service and must **all succeed or all fail**. Moving 100 from Alice's account on one shard to Sam's account on another is the classic example: debiting Alice without crediting Sam is not acceptable, even if a machine crashes halfway.
 
 Inside one database this is plain [ACID]({{< relref "/docs/roadmap/distributed-systems-concepts/acid" >}}): the write-ahead log makes the commit atomic. Across machines there is no shared log, so the machines need a protocol to agree on one outcome.
 
@@ -16,21 +16,21 @@ Inside one database this is plain [ACID]({{< relref "/docs/roadmap/distributed-s
 
 2PC adds a **coordinator** that asks every participant to get ready, then tells all of them the single decision.
 
-{{< fig kicker="$ ./transfer --from ali@nodeA --to sara@nodeB --amount 100" title="Two-phase commit, and what happens when the coordinator dies" >}}
+{{< fig kicker="$ ./transfer --from alice@nodeA --to sam@nodeB --amount 100" title="Two-phase commit, and what happens when the coordinator dies" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 330">
   <line x1="330" y1="96" x2="140" y2="210" stroke="#B5B0C4" stroke-width="1.4" stroke-dasharray="5 5"/>
   <line x1="430" y1="96" x2="620" y2="210" stroke="#B5B0C4" stroke-width="1.4" stroke-dasharray="5 5"/>
   <g><rect x="280" y="20" width="200" height="76" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="380" y="44" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">COORDINATOR</text>
-    <text x="380" y="66" text-anchor="middle" class="m" font-size="11" fill="#5C5869">txn 81: Ali → Sara 100</text>
+    <text x="380" y="66" text-anchor="middle" class="m" font-size="11" fill="#5C5869">txn 81: Alice → Sam 100</text>
     <text x="380" y="86" text-anchor="middle" class="m" font-size="11" fill="#8C8899">log: (empty)</text></g>
   <g><rect x="40" y="210" width="200" height="86" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="140" y="234" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">NODE A</text>
-    <text x="140" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">Ali = 500</text>
+    <text x="140" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">Alice = 500</text>
     <text x="140" y="284" text-anchor="middle" class="m" font-size="11" fill="#8C8899">idle</text></g>
   <g><rect x="520" y="210" width="200" height="86" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="620" y="234" text-anchor="middle" class="m" font-size="12" font-weight="600" fill="#17151F">NODE B</text>
-    <text x="620" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">Sara = 200</text>
+    <text x="620" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">Sam = 200</text>
     <text x="620" y="284" text-anchor="middle" class="m" font-size="11" fill="#8C8899">idle</text></g>
   <!-- step 1: prepare -->
   <g class="f" data-step="1">
@@ -44,10 +44,10 @@ Inside one database this is plain [ACID]({{< relref "/docs/roadmap/distributed-s
     <text x="203" y="166" text-anchor="end" class="m" font-size="11" font-weight="700" fill="#531A8A">YES ↑</text>
     <text x="557" y="166" class="m" font-size="11" font-weight="700" fill="#531A8A">↑ YES</text>
     <rect x="50" y="248" width="180" height="42" fill="#fff"/>
-    <text x="140" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">Ali = 400 ?</text>
+    <text x="140" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">Alice = 400 ?</text>
     <text x="140" y="284" text-anchor="middle" class="m" font-size="11" fill="#531A8A">PREPARED · row locked</text>
     <rect x="530" y="248" width="180" height="42" fill="#fff"/>
-    <text x="620" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">Sara = 300 ?</text>
+    <text x="620" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#531A8A">Sam = 300 ?</text>
     <text x="620" y="284" text-anchor="middle" class="m" font-size="11" fill="#531A8A">PREPARED · row locked</text>
   </g>
   <!-- step 3: coordinator crash -->
@@ -60,7 +60,7 @@ Inside one database this is plain [ACID]({{< relref "/docs/roadmap/distributed-s
     <text x="140" y="284" text-anchor="middle" class="m" font-size="11" font-weight="700" fill="#C2382F">IN DOUBT · lock held</text>
     <rect x="530" y="274" width="180" height="16" fill="#fff"/>
     <text x="620" y="284" text-anchor="middle" class="m" font-size="11" font-weight="700" fill="#C2382F">IN DOUBT · lock held</text>
-    <text x="40" y="318" class="m" font-size="11" fill="#C2382F">other writes to Ali and Sara wait…</text>
+    <text x="40" y="318" class="m" font-size="11" fill="#C2382F">other writes to Alice and Sam wait…</text>
   </g>
   <!-- step 4: recovery -->
   <g class="f" data-step="4">
@@ -73,10 +73,10 @@ Inside one database this is plain [ACID]({{< relref "/docs/roadmap/distributed-s
     <text x="168" y="186" text-anchor="end" class="m" font-size="11" font-weight="700" fill="#531A8A">COMMIT ↓</text>
     <text x="590" y="186" class="m" font-size="11" font-weight="700" fill="#531A8A">↓ COMMIT</text>
     <rect x="50" y="248" width="180" height="42" fill="#fff"/>
-    <text x="140" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">Ali = 400</text>
+    <text x="140" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">Alice = 400</text>
     <text x="140" y="284" text-anchor="middle" class="m" font-size="11" fill="#531A8A">COMMITTED · unlocked</text>
     <rect x="530" y="248" width="180" height="42" fill="#fff"/>
-    <text x="620" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">Sara = 300</text>
+    <text x="620" y="260" text-anchor="middle" class="m" font-size="13" font-weight="700" fill="#17151F">Sam = 300</text>
     <text x="620" y="284" text-anchor="middle" class="m" font-size="11" fill="#531A8A">COMMITTED · unlocked</text>
     <rect x="36" y="306" width="300" height="18" fill="#FBFBFE"/>
   </g>
@@ -90,7 +90,7 @@ Inside one database this is plain [ACID]({{< relref "/docs/roadmap/distributed-s
 <tr class="f" data-step="4"><td>5</td><td>04</td><td>coordinator</td><td>A, B</td><td class="tag">COMMIT</td><td>recovered from log · locks released</td></tr>
 </table>
 <ol class="lx-caps">
-  <li>Transfer 100 from <b>Ali</b> (Node A) to <b>Sara</b> (Node B). A <b>coordinator</b> drives the commit.</li>
+  <li>Transfer 100 from <b>Alice</b> (Node A) to <b>Sam</b> (Node B). A <b>coordinator</b> drives the commit.</li>
   <li><b>Phase 1</b>: the coordinator sends <b>PREPARE</b> to every participant.</li>
   <li>Each participant writes its changes durably, <b>locks the rows</b> and votes <b>YES</b>. A YES is a promise: "I will commit if told to, even after a crash."</li>
   <li>The coordinator logs <b>COMMIT</b>, then crashes before telling anyone. The participants are <b>in doubt</b>: they promised, so they cannot abort alone, and they do not know the decision. Locks stay held and other writes <b>block</b>.</li>
@@ -116,7 +116,7 @@ Spanner also uses **TrueTime** (GPS and atomic clocks with a bounded error) to g
 
 ## When to use what
 
-- **Same database, many shards**: let a database built for it (Spanner, CockroachDB, Citus, Vitess) handle commit. Do not build your own.
+- **Same database, many shards**: let a database built for it (Spanner, CockroachDB, YugabyteDB, Citus) handle commit. Do not build your own.
 - **Database + message broker**: use the outbox pattern, not a "write to DB, then publish to Kafka" dual write.
 - **Several services owned by different teams**: use a saga with idempotent steps and compensations. 2PC across services couples their availability.
 - **Data pipelines**: make sinks idempotent (upsert by key, or overwrite a partition) so a retried job never double-writes.

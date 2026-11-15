@@ -70,7 +70,7 @@ An **index** is an extra data structure that lets a database find rows without r
       <rect x="300" y="20" width="160" height="36" rx="6"/><rect x="320" y="90" width="120" height="36" rx="6"/><rect x="390" y="160" width="100" height="36" rx="6"/>
     </g>
     <text x="20" y="54" class="m" font-size="12" font-weight="700" fill="#531A8A">INDEX SCAN · 3 index + 1 heap page</text>
-    <text x="545" y="228" class="m" font-size="11" fill="#531A8A">id 642 → page 11</text>
+    <text x="545" y="228" class="m" font-size="11" fill="#531A8A">id 642 → page 12</text>
   </g>
   <!-- step 4: linked leaves -->
   <g class="f" data-step="4">
@@ -84,7 +84,7 @@ An **index** is an extra data structure that lets a database find rows without r
   <li>The <b>orders</b> table is stored as pages on disk, rows in the order they were inserted. We want one row: <b>id = 642</b>.</li>
   <li>With no index, the database must read <b>every page</b> and check every row: a <b>sequential scan</b>. Cost grows with the table.</li>
   <li>A <b>B-tree index</b> on <code>id</code> keeps keys sorted in a shallow tree. Each node holds many keys and points to the right child for each range.</li>
-  <li>Lookup: root says 642 is between 400 and 800, the next node sends it right of 600, the leaf holds <b>642 → page 11</b>. Four page reads instead of sixteen. On a billion rows, the tree is still only 3 to 5 levels deep.</li>
+  <li>Lookup: root says 642 is between 400 and 800, the next node sends it right of 600, the leaf holds <b>642 → page 12</b>. Four page reads instead of sixteen. On a billion rows, the tree is still only 3 to 5 levels deep.</li>
   <li>Leaves are linked in key order, so <b>range queries</b> and <code>ORDER BY id</code> descend once and then walk sideways.</li>
 </ol>
 {{< /fig >}}

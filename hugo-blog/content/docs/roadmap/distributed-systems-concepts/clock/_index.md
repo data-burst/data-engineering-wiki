@@ -13,7 +13,7 @@ In a distributed system **there is no single clock everyone can read**. Each mac
 ## Why wall-clock timestamps lie
 
 - **Drift**: a typical server clock drifts tens of parts per million, which adds up to seconds per day without correction.
-- **Sync error**: NTP over the internet keeps clocks within a few to tens of milliseconds; inside a good datacenter, around a millisecond or better. PTP and cloud time services (AWS Time Sync, Google's leap-smeared NTP) can reach microseconds.
+- **Sync error**: NTP over the internet keeps clocks within a few to tens of milliseconds; inside a good datacenter, around a millisecond or better. PTP with hardware timestamping (for example AWS Time Sync's PTP hardware clock on supported instances) can reach microseconds.
 - **Jumps**: when NTP corrects a clock, or a leap second is handled badly, time-of-day can move backwards.
 
 If node A stamps an order update at `10:00:00.120` and node B, whose clock runs 100 ms slow, stamps a later update at `10:00:00.050`, a last-write-wins database keeps the **older** one. That is real, silent data loss.
@@ -75,7 +75,7 @@ If node A stamps an order update at `10:00:00.120` and node B, whose clock runs 
   <li>Three nodes, three clocks that disagree by up to <b>130 ms</b>. Sorting events by these timestamps would be guesswork.</li>
   <li><b>Lamport clock</b>: every node keeps a counter and adds 1 per event. Node A has events <b>a = 1</b> and <b>b = 2</b>, and sends its counter with the message.</li>
   <li>Node B receives it and sets its counter to <b>max(own, received) + 1</b> = 3. A receive is always numbered after its send.</li>
-  <li>The same rule gives <b>e = 4</b> and <b>f = 5</b>. If x caused y, then L(x) &lt; L(y), so sorting by Lamport time never puts an effect before its cause.</li>
+  <li>Node C's first local event <b>d</b> gets 1. The same rule gives <b>e = 4</b> and <b>f = 5</b>. If x caused y, then L(x) &lt; L(y), so sorting by Lamport time never puts an effect before its cause.</li>
   <li>The reverse is not true: <b>d = 1</b> is smaller than <b>c = 3</b>, yet neither caused the other. <b>Vector clocks</b> keep one counter per node; [0,0,1] and [2,1,0] are not comparable, which proves d and c are <b>concurrent</b>.</li>
 </ol>
 {{< /fig >}}
@@ -91,7 +91,7 @@ If node A stamps an order update at `10:00:00.120` and node B, whose clock runs 
 | **Hybrid logical clock (HLC)** | Close to wall time, still respects causality | wall time + counter | CockroachDB, YugabyteDB, MongoDB cluster time |
 | **TrueTime** | A time interval with a guaranteed error bound | interval | Google Spanner (commit wait); AWS ClockBound offers a similar API |
 
-Spanner's trick: TrueTime says "now is between *t − ε* and *t + ε*" with ε of a few milliseconds, using GPS and atomic clocks. Before committing, Spanner **waits out** that uncertainty, so commit timestamps match real-time order across the planet. See [Distributed Transactions]({{< relref "/docs/roadmap/distributed-systems-concepts/transaction" >}}).
+Spanner's trick: TrueTime says "now is between *t − ε* and *t + ε*" with ε of at most a few milliseconds, using GPS and atomic clocks. Before committing, Spanner **waits out** that uncertainty, so commit timestamps match real-time order across the planet. See [Distributed Transactions]({{< relref "/docs/roadmap/distributed-systems-concepts/transaction" >}}).
 
 ## Why data engineers care
 

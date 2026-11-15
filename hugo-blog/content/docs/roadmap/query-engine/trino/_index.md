@@ -1,92 +1,73 @@
 ---
 title: "Trino"
+description: "What Trino is and how it works: coordinator and workers, connectors and catalogs, federated queries, fault-tolerant execution, and the PrestoSQL fork."
 weight: 3
 ---
 
 # Trino
 
-## Introduction
-Trino, formerly known as PrestoSQL, is an open-source distributed SQL query engine designed for running fast, interactive analytic queries on large datasets. Trino can query data across multiple sources, making it a powerful tool for data warehousing, data lakes, and real-time analytics.
+**Trino** is an open-source, distributed SQL query engine for fast, interactive analytics over data where it already lives: Parquet and ORC files on S3 or HDFS, Iceberg, Delta Lake and Hive tables, and also PostgreSQL, MySQL, Kafka, Elasticsearch and dozens of other systems through **connectors**. It has no storage of its own. A coordinator plans each query and a fleet of workers executes it in parallel, pipelining data through memory, so queries over terabytes return in seconds. Trino was called **PrestoSQL** until December 2020; it is the fork created by Presto's original authors.
 
-## Key Features
-1. **Distributed Query Processing:**
-- Executes queries across multiple nodes, offering high performance and scalability.
-- Optimized for interactive, low-latency query execution.
+<img src="trino-twitter.png" alt="Commander Bun Bun, the Trino mascot" width="110">
 
-2. **SQL Compatibility:**
-- Supports standard ANSI SQL, making it accessible to users familiar with SQL.
-- Advanced SQL features, including window functions, arrays, and nested data types.
+## How Trino runs a query
 
-3. **Data Source Integration:**
-- Connects to a wide range of data sources: HDFS, S3, relational databases, NoSQL databases, and other data stores.
-- Unified interface to query data across different storage systems.
+The general flow (coordinator, splits, parallel scans, partial aggregation, exchange, final aggregation) is animated on the [Query Engine]({{< relref "/docs/roadmap/query-engine" >}}) page. Trino-specific pieces:
 
-4. **Performance Optimization:**
-- Cost-Based Optimizer: Uses statistics to choose the most efficient execution plan.
-- In-Memory Processing: Reduces query latency by processing data in memory.
+- **Coordinator**: accepts queries over HTTP (CLI, JDBC, BI tools), parses and optimizes them with a cost-based optimizer, breaks the plan into **stages**, and schedules **tasks** on workers. It also returns results to the client.
+- **Workers**: run tasks, read **splits** through connectors, and exchange data with each other over HTTP. Data flows between operators in columnar **pages** held in memory.
+- **Connectors and catalogs**: a connector is a plugin that knows how to talk to one kind of system. A **catalog** is a configured instance of a connector (`etc/catalog/lake.properties`, `etc/catalog/crm.properties`). Tables are addressed as `catalog.schema.table`.
 
-5. **Extensibility:**
-- Connector Architecture: Easily add new data sources by developing custom connectors.
-- Support for User-Defined Functions (UDFs): Create custom functions to extend query capabilities.
+## Federation: one query, several systems
 
-6. **Fault Tolerance and Reliability:**
-- Designed for high availability and fault tolerance, ensuring robust query execution even during node failures.
+```sql
+-- Join lake data (Iceberg on S3) with live CRM data (PostgreSQL)
+SELECT c.segment, SUM(o.amount) AS revenue
+FROM lake.sales.orders AS o
+JOIN crm.public.customers AS c ON o.customer_id = c.id
+WHERE o.dt >= DATE '2026-11-01'
+GROUP BY c.segment;
+```
 
-### Architecture
-1. **Coordinator:**
-- Manages the query lifecycle, including parsing, planning, and scheduling.
-- Distributes tasks to worker nodes for execution.
+Trino pushes what it can into each source (filters, projections, sometimes aggregates and limits into PostgreSQL) and does the join itself. Federation is great for exploration and small dimension tables; for heavy recurring joins, copy the data into the lake.
 
-2. **Workers:**
-- Execute tasks assigned by the coordinator.
-- Perform data processing tasks like reading from data sources, filtering, joining, and aggregating data.
+## Fault-tolerant execution
 
-3. **Connectors:**
-- Plugins that enable Trino to communicate with various data sources.
-- Provide a standardized way to access different types of data stores.
+By default Trino is pipelined: if a worker dies, the whole query fails and must be rerun. That is fine for 10-second dashboard queries, painful for 3-hour ETL. Since 2022, **fault-tolerant execution** (`retry-policy=TASK`) writes intermediate exchange data to a spooling store such as S3, so only failed tasks retry. It makes Trino usable for batch ETL at the cost of extra I/O.
 
-### Use Cases
-1. **Data Warehousing:**
-- Acts as a query layer on top of existing data warehouses, providing fast, scalable querying capabilities.
+## History: Presto, PrestoSQL, Trino
 
-2. **Data Lakes:**
-- Enables querying of large-scale data lakes, integrating data from various sources for comprehensive analysis.
+| Year | Event |
+|---|---|
+| 2012 | Martin Traverso, Dain Sundstrom, David Phillips and Eric Hwang start Presto at Facebook to replace slow Hive queries. |
+| 2013 | Presto is open-sourced. |
+| 2019 (Jan) | The founders leave Facebook and continue development as **PrestoSQL**, under the Presto Software Foundation. |
+| 2019 (Sep) | Facebook donates the original repository (**PrestoDB**) and the Presto trademark to the Linux Foundation's Presto Foundation. |
+| 2020 (Dec) | PrestoSQL is renamed **Trino** because of the trademark. The foundation becomes the Trino Software Foundation. |
+| 2022 | Amazon Athena engine version 3 moves to Trino. Fault-tolerant execution lands. |
 
-3. **Real-Time Analytics:**
-- Supports real-time data analysis by querying data across different systems with low latency.
+Since then the two projects have diverged; see [Presto]({{< relref "../presto" >}}) for how they compare today.
 
-4. **Business Intelligence:**
-- Powers BI tools, offering fast and reliable access to large datasets for reporting and analytics.
+## Where you meet Trino
 
-5. **Ad Hoc Queries:**
-- Facilitates exploratory data analysis with the ability to run complex, ad hoc queries on diverse data sources.
+- **Self-hosted** on Kubernetes (official Helm chart) or VMs.
+- **Starburst**: the main commercial company behind Trino (Starburst Enterprise and Starburst Galaxy).
+- **Amazon Athena** (serverless, engine v3 is Trino-based) and **Amazon EMR**.
+- Inside many in-house lakehouse platforms as the interactive SQL layer, often next to Spark for ETL.
 
-### Advantages
-1. **High Performance:** Optimized for fast query execution with low latency.
-2. **Scalability:** Easily scales out to handle increasing data volumes and complex queries.
-3. **Flexibility:** Supports a wide range of data sources and formats, enabling comprehensive data analysis.
-4. **Ease of Use:** Standard ANSI SQL support makes it accessible to users with SQL knowledge.
-5. **Extensibility:** Connector architecture allows integration with new data sources and systems.
+## Common mistakes
 
-
-![Trino](trino-twitter.png)
-
-Trino is a robust and versatile SQL query engine designed for high-performance, distributed querying across diverse data sources. Its ability to handle large-scale data processing with low latency makes it ideal for data warehousing, data lakes, real-time analytics, business intelligence, and ad hoc querying. With its extensibility, high availability, and ease of use, Trino empowers organizations to derive insights from their data quickly and efficiently.
-
-
+- **Undersized memory.** Joins and aggregations happen in memory; set `query.max-memory-per-node` deliberately and enable spill-to-disk or fault-tolerant mode for big queries.
+- **Letting the coordinator also act as a worker** in production clusters. It slows planning for everyone.
+- **Over-relying on federation.** Pulling a 500 GB PostgreSQL table through JDBC on every query will hurt both Trino and the database.
+- **Ignoring table statistics.** Without `ANALYZE` (or Iceberg/Delta stats), the cost-based optimizer guesses join order and can pick a terrible plan.
 
 ## Learning Resources
-### Books
-- [Trino: The Definitive Guide, 2nd Edition](https://www.oreilly.com/library/view/trino-the-definitive/9781098137229/)
 
-### Courses
-- [What is Trino?](https://www.youtube.com/watch?v=zA8RFDpoJ0A)
-- [How does Trino process a query? | Starburst Academy](https://www.youtube.com/watch?v=uE2rc7HxpCs)
-- [Trino: An Origin Story](https://www.youtube.com/watch?v=_VUQ-Jh-M68)
-- [Understanding Trino](https://www.youtube.com/watch?v=SKNJObdGCsY)
-
-### Miscellaneous
-- [Trino, a query engine that runs at ludicrous speed](https://trino.io/)
-- [Understanding Trino Architecture: Unleashing the Power of Distributed SQL Queries](https://medium.com/@geektuhin/understanding-trino-architecture-unleashing-the-power-of-distributed-sql-queries-e996aa3eb39f)
-- [Trino](https://www.starburst.io/data-glossary/trino/)
-- [Trino Github](https://github.com/trinodb/trino)
+- [Trino documentation](https://trino.io/docs/current/) and [Trino concepts](https://trino.io/docs/current/overview/concepts.html)
+- *Trino: The Definitive Guide* (2nd ed.), Matt Fuller, Manfred Moser and Martin Traverso (free PDF from Starburst)
+- [Presto: SQL on Everything](https://trino.io/paper.html) (ICDE 2019): the architecture paper
+- [Trino blog: "We're rebranding PrestoSQL as Trino"](https://trino.io/blog/2020/12/27/announcing-trino.html)
+- [Trino docs: fault-tolerant execution](https://trino.io/docs/current/admin/fault-tolerant-execution.html)
+- [Trino: An Origin Story](https://www.youtube.com/watch?v=_VUQ-Jh-M68): video
+- [Trino on GitHub](https://github.com/trinodb/trino)

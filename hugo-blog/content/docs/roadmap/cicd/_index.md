@@ -108,13 +108,13 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: astral-sh/setup-uv@v6
       - run: uv sync
       - run: uv run sqlfluff lint models/
-      - run: uv run dbt build --select state:modified+ --defer --state ./prod-manifest
-        env:
-          DBT_TARGET: ci
+      # ./prod-manifest must hold manifest.json from the last production run,
+      # e.g. downloaded from object storage in an earlier step
+      - run: uv run dbt build --target ci --select state:modified+ --defer --state ./prod-manifest
 ```
 
 ## Common mistakes

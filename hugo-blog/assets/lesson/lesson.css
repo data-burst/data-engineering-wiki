@@ -101,7 +101,7 @@ code,kbd,pre,samp{font-family:var(--mono)}
 .lx-card p{margin:0;font-size:.875rem;color:var(--muted);line-height:1.55}
 .lx-svg{width:100%;height:auto;display:block}
 .lx-svg text{font-family:var(--sans)}
-.lx-svg .m{font-family:var(--mono)}
+.lx-svg .m,.lx-svg .m text{font-family:var(--mono)}
 
 /* ===== CAP ===== */
 .cap-modes{display:flex;gap:.4rem;align-items:center;font-size:.85rem;color:var(--muted);margin-bottom:.6rem;flex-wrap:wrap}

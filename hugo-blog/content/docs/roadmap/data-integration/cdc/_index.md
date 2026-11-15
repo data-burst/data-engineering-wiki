@@ -22,13 +22,13 @@ The reliable way to do it is **log-based CDC**: read the database's own transact
     <line x1="100" y1="70" x2="100" y2="104" stroke="#3D3A49" stroke-width="1.4" marker-end="url(#cdc-ar)"/><text x="110" y="92" font-size="11" fill="#8C8899">SQL</text>
     <rect x="20" y="108" width="290" height="206" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="36" y="130" font-size="12" font-weight="600" fill="#17151F">POSTGRES</text>
     <text x="36" y="154" font-size="11" fill="#8C8899">TABLE orders</text>
-    <g font-size="12" fill="#3D3A49"><text x="36" y="176">id 5</text><text x="90" y="176">SHZ</text><text x="140" y="176">new</text></g>
+    <g font-size="12" fill="#3D3A49"><text x="36" y="176">id 5</text><text x="90" y="176">TOR</text><text x="140" y="176">new</text></g>
     <line x1="36" y1="214" x2="294" y2="214" stroke="#E7E7EF"/>
     <text x="36" y="236" font-size="11" fill="#8C8899">WAL (write-ahead log)</text>
     <rect x="36" y="246" width="258" height="50" rx="4" fill="#F7F7FB" stroke="#E7E7EF"/>
   </g>
   <g class="f m" data-step="1">
-    <g font-size="12" fill="#3D3A49"><text x="36" y="198">id 7</text><text x="90" y="198">TEH</text><text x="140" y="198">new</text></g>
+    <g font-size="12" fill="#3D3A49"><text x="36" y="198">id 7</text><text x="90" y="198">NYC</text><text x="140" y="198">new</text></g>
     <rect x="44" y="256" width="76" height="30" rx="4" fill="#F4EEFA" stroke="#DCC9EE"/><text x="82" y="276" text-anchor="middle" font-size="11.5" fill="#17151F">INS 7</text>
   </g>
   <g class="f m" data-step="2">
@@ -57,12 +57,12 @@ The reliable way to do it is **log-based CDC**: read the database's own transact
 </svg>
 <table class="lx-log">
 <tr><th>NO.</th><th>STEP</th><th>WHERE</th><th>OP</th><th>INFO</th></tr>
-<tr class="f" data-step="1"><td>1</td><td>01</td><td>app → pg</td><td class="tag">INSERT</td><td>INSERT INTO orders VALUES (7, 'TEH', 'new')</td></tr>
+<tr class="f" data-step="1"><td>1</td><td>01</td><td>app → pg</td><td class="tag">INSERT</td><td>INSERT INTO orders VALUES (7, 'NYC', 'new')</td></tr>
 <tr class="f" data-step="2"><td>2</td><td>02</td><td>app → pg</td><td class="tag">UPDATE</td><td>UPDATE orders SET status = 'paid' WHERE id = 7</td></tr>
 <tr class="f" data-step="3"><td>3</td><td>03</td><td>app → pg</td><td class="tag">DELETE</td><td>DELETE FROM orders WHERE id = 5</td></tr>
-<tr class="f" data-step="5"><td>4</td><td>05</td><td>kafka</td><td class="tag">op=c</td><td>key 7 · before null · after {id 7, TEH, new}</td></tr>
-<tr class="f" data-step="5"><td>5</td><td>05</td><td>kafka</td><td class="tag">op=u</td><td>key 7 · before {status new} · after {status paid}</td></tr>
-<tr class="f" data-step="5"><td>6</td><td>05</td><td>kafka</td><td class="tag">op=d</td><td>key 5 · before {id 5, SHZ, new} · after null</td></tr>
+<tr class="f" data-step="5"><td>4</td><td>05</td><td>kafka</td><td class="tag">op=c</td><td>key 7 · before null · after {id 7, NYC, new}</td></tr>
+<tr class="f" data-step="5"><td>5</td><td>05</td><td>kafka</td><td class="tag">op=u</td><td>key 7 · before {id 7, NYC, new} · after {id 7, NYC, paid}</td></tr>
+<tr class="f" data-step="5"><td>6</td><td>05</td><td>kafka</td><td class="tag">op=d</td><td>key 5 · before {id 5, TOR, new} · after null</td></tr>
 </table>
 <ol class="lx-caps">
   <li>An app writes to Postgres. Order <b>5</b> already exists. Below the table sits the <b>WAL</b>, the log Postgres writes before changing any data.</li>
@@ -70,7 +70,7 @@ The reliable way to do it is **log-based CDC**: read the database's own transact
   <li>Order 7 is paid. The row changes in place, but the WAL keeps an <b>UPDATE</b> record: history is preserved.</li>
   <li>Order 5 is deleted. A table scan would never notice it is gone; the WAL has a <b>DELETE</b> record.</li>
   <li><b>Debezium</b> reads the WAL through a <b>replication slot</b>, like a replica would. It never queries the table.</li>
-  <li>Each record becomes a <b>change event</b> with <b>before</b> and <b>after</b> images, keyed by primary key, so all changes to one order land in order on one partition. Consumers apply them.</li>
+  <li>Each record becomes a <b>change event</b> with <b>before</b> and <b>after</b> images, keyed by primary key, so all changes to one order land in order on one partition. (Full <b>before</b> images on update and delete need <code>REPLICA IDENTITY FULL</code>; by default Postgres logs only the key.)</li>
 </ol>
 {{< /fig >}}
 

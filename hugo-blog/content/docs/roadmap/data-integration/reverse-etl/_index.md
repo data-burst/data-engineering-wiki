@@ -23,25 +23,25 @@ The pattern is also called **data activation** or **operational analytics**, and
     <g font-size="11" fill="#8C8899"><text x="36" y="80">email</text><text x="150" y="80">ltv</text><text x="206" y="80">segment</text></g>
     <line x1="30" y1="88" x2="290" y2="88" stroke="#E7E7EF"/>
     <g font-size="11.5" fill="#3D3A49">
-      <text x="36" y="110">ali@</text><text x="150" y="110">900</text><text x="206" y="110">regular</text>
-      <text x="36" y="136">sara@</text><text x="150" y="136">300</text><text x="206" y="136">regular</text>
-      <text x="36" y="162">reza@</text><text x="150" y="162">120</text><text x="206" y="162">regular</text>
+      <text x="36" y="110">alice@</text><text x="150" y="110">900</text><text x="206" y="110">regular</text>
+      <text x="36" y="136">sam@</text><text x="150" y="136">300</text><text x="206" y="136">regular</text>
+      <text x="36" y="162">ryan@</text><text x="150" y="162">120</text><text x="206" y="162">regular</text>
     </g>
     <rect x="530" y="30" width="210" height="190" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text x="546" y="54" font-size="12" font-weight="600" fill="#17151F">CRM · contacts</text>
     <g font-size="11" fill="#8C8899"><text x="546" y="80">email</text><text x="636" y="80">segment</text></g>
     <line x1="540" y1="88" x2="730" y2="88" stroke="#E7E7EF"/>
     <g font-size="11.5" fill="#3D3A49">
-      <text x="546" y="110">ali@</text><text x="636" y="110">regular</text>
-      <text x="546" y="136">sara@</text><text x="636" y="136">regular</text>
-      <text x="546" y="162">reza@</text><text x="636" y="162">regular</text>
+      <text x="546" y="110">alice@</text><text x="636" y="110">regular</text>
+      <text x="546" y="136">sam@</text><text x="636" y="136">regular</text>
+      <text x="546" y="162">ryan@</text><text x="636" y="162">regular</text>
     </g>
   </g>
   <g class="f m" data-step="1">
     <rect x="28" y="96" width="264" height="20" rx="3" fill="#F4EEFA"/>
-    <g font-size="11.5" fill="#531A8A"><text x="36" y="110">ali@</text><text x="150" y="110">1300</text><text x="206" y="110">VIP</text></g>
+    <g font-size="11.5" fill="#531A8A"><text x="36" y="110">alice@</text><text x="150" y="110">1300</text><text x="206" y="110">VIP</text></g>
     <rect x="28" y="174" width="264" height="20" rx="3" fill="#F4EEFA"/>
-    <g font-size="11.5" fill="#531A8A"><text x="36" y="188">mina@</text><text x="150" y="188">2100</text><text x="206" y="188">VIP</text></g>
+    <g font-size="11.5" fill="#531A8A"><text x="36" y="188">maya@</text><text x="150" y="188">2100</text><text x="206" y="188">VIP</text></g>
     <text x="36" y="212" font-size="11" fill="#8C8899">refreshed by dbt at 06:00</text>
   </g>
   <g class="f m" data-step="2">
@@ -56,18 +56,18 @@ The pattern is also called **data activation** or **operational analytics**, and
     <text x="415" y="196" text-anchor="middle" font-size="11" fill="#531A8A">upsert by email</text>
     <text x="415" y="212" text-anchor="middle" font-size="11" fill="#531A8A">2 records sent, not 4</text>
     <rect x="538" y="96" width="194" height="20" rx="3" fill="#F4EEFA"/>
-    <g font-size="11.5" fill="#531A8A"><text x="546" y="110">ali@</text><text x="636" y="110">VIP</text></g>
+    <g font-size="11.5" fill="#531A8A"><text x="546" y="110">alice@</text><text x="636" y="110">VIP</text></g>
     <rect x="538" y="174" width="194" height="20" rx="3" fill="#F4EEFA"/>
-    <g font-size="11.5" fill="#531A8A"><text x="546" y="188">mina@</text><text x="636" y="188">VIP</text></g>
+    <g font-size="11.5" fill="#531A8A"><text x="546" y="188">maya@</text><text x="636" y="188">VIP</text></g>
   </g>
   <g class="f" data-step="4">
     <rect x="20" y="236" width="720" height="40" rx="6" fill="#260246"/>
-    <text x="380" y="261" text-anchor="middle" font-size="13" fill="#EEEAF5">Sales sees "VIP" on Ali's contact; a CRM workflow assigns an account manager.</text>
+    <text x="380" y="261" text-anchor="middle" font-size="13" fill="#EEEAF5">Sales sees "VIP" on Alice's contact; a CRM workflow assigns an account manager.</text>
   </g>
 </svg>
 <ol class="lx-caps">
   <li>A <b>customer_360</b> model in the warehouse and the CRM's contact list. Right now they agree.</li>
-  <li>The nightly dbt run updates the model: Ali crossed the <b>VIP</b> threshold and Mina is a new customer.</li>
+  <li>The nightly dbt run updates the model: Alice crossed the <b>VIP</b> threshold and Maya is a new customer.</li>
   <li>The sync engine compares the model with what it sent last time. Only <b>2 of 4 rows</b> changed.</li>
   <li>It <b>upserts</b> just those rows through the CRM's API, matched on a stable key (email or CRM id), within the API's rate limits.</li>
   <li>The insight now lives where the work happens. No one has to open a dashboard.</li>

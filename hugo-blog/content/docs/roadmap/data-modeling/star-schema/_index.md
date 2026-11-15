@@ -114,11 +114,11 @@ Customers move, products change category. How the dimension handles change decid
 - **Type 2, add a row**: close the old version and insert a new one with its own surrogate key and validity dates. History is preserved.
 - **Type 3, add a column**: keep `previous_city` next to `city`. Only one level of history.
 
-{{< fig kicker="$ dbt snapshot --select dim_customer" title="SCD Type 2: a customer moves from Tehran to Shiraz" >}}
+{{< fig kicker="$ dbt snapshot --select dim_customer" title="SCD Type 2: a customer moves from New York to Toronto" >}}
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 270">
   <g class="f" data-step="1">
     <rect x="160" y="12" width="440" height="32" rx="6" fill="#F4EEFA" stroke="#DCC9EE"/>
-    <text x="380" y="33" text-anchor="middle" class="m" font-size="12" fill="#531A8A" font-weight="700">source change · C-42 city = Shiraz · 2026-03-01</text>
+    <text x="380" y="33" text-anchor="middle" class="m" font-size="12" fill="#531A8A" font-weight="700">source change · C-42 city = Toronto · 2026-03-01</text>
   </g>
   <g class="m" font-size="12">
     <rect x="20" y="56" width="720" height="26" rx="4" fill="#F7F7FB"/>
@@ -127,7 +127,7 @@ Customers move, products change category. How the dimension handles change decid
       <text class="m" x="360" y="73">VALID_FROM</text><text class="m" x="480" y="73">VALID_TO</text><text class="m" x="610" y="73">IS_CURRENT</text>
     </g>
     <rect x="20" y="88" width="720" height="26" rx="4" fill="#fff" stroke="#E7E7EF"/>
-    <g fill="#17151F"><text class="m" x="36" y="105">101</text><text class="m" x="150" y="105">C-42</text><text class="m" x="260" y="105">Tehran</text>
+    <g fill="#17151F"><text class="m" x="36" y="105">101</text><text class="m" x="150" y="105">C-42</text><text class="m" x="260" y="105">New York</text>
       <text class="m" x="360" y="105">2024-05-10</text><text class="m" x="480" y="105">9999-12-31</text><text class="m" x="610" y="105">true</text></g>
   </g>
   <g class="f m" data-step="2" font-size="12">
@@ -136,25 +136,25 @@ Customers move, products change category. How the dimension handles change decid
   </g>
   <g class="f m" data-step="3" font-size="12">
     <rect x="20" y="120" width="720" height="26" rx="4" fill="#F4EEFA" stroke="#DCC9EE"/>
-    <g fill="#17151F" font-weight="700"><text class="m" x="36" y="137">205</text><text class="m" x="150" y="137">C-42</text><text class="m" x="260" y="137">Shiraz</text>
+    <g fill="#17151F" font-weight="700"><text class="m" x="36" y="137">205</text><text class="m" x="150" y="137">C-42</text><text class="m" x="260" y="137">Toronto</text>
       <text class="m" x="360" y="137">2026-03-01</text><text class="m" x="480" y="137">9999-12-31</text><text class="m" x="610" y="137">true</text></g>
   </g>
   <g class="f m" data-step="4" font-size="12">
     <text class="m" x="20" y="182" font-size="11" font-weight="700" fill="#8C8899">FACT_SALES</text>
     <rect x="20" y="192" width="345" height="56" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text class="m" x="36" y="214" fill="#17151F">order 9001 · 2026-01-15 · 80</text>
-    <text class="m" x="36" y="236" fill="#531A8A" font-weight="700">customer_key 101 → Tehran</text>
+    <text class="m" x="36" y="236" fill="#531A8A" font-weight="700">customer_key 101 → New York</text>
     <rect x="395" y="192" width="345" height="56" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <text class="m" x="411" y="214" fill="#17151F">order 9350 · 2026-04-02 · 120</text>
-    <text class="m" x="411" y="236" fill="#531A8A" font-weight="700">customer_key 205 → Shiraz</text>
+    <text class="m" x="411" y="236" fill="#531A8A" font-weight="700">customer_key 205 → Toronto</text>
   </g>
 </svg>
 <ol class="lx-caps">
-  <li>Customer <b>C-42</b> has one version in the dimension, valid "forever" (9999-12-31) and flagged current.</li>
-  <li>The source system reports that C-42 moved to Shiraz.</li>
+  <li>Customer <b>C-42</b> has one version in the dimension, valid "forever" (9999-12-31) and flagged current. (dbt snapshots leave <code>dbt_valid_to</code> NULL instead by default; the idea is the same.)</li>
+  <li>The source system reports that C-42 moved to Toronto.</li>
   <li>Type 2 does not overwrite. It <b>closes</b> the old version: <code>valid_to</code> is set and <code>is_current</code> becomes false.</li>
   <li>A <b>new row</b> with a new surrogate key (205) carries the new city from 2026-03-01 onward.</li>
-  <li>Facts point to the version that was true <b>when the event happened</b>. January revenue stays in Tehran, April revenue goes to Shiraz.</li>
+  <li>Facts point to the version that was true <b>when the event happened</b>. January revenue stays in New York, April revenue goes to Toronto.</li>
 </ol>
 {{< /fig >}}
 

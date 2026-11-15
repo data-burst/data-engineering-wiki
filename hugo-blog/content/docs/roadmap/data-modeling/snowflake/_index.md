@@ -80,7 +80,7 @@ In columnar warehouses, repeated strings compress very well (dictionary encoding
 ## When snowflaking makes sense
 
 - A hierarchy is **shared** by several dimensions (a geography table used by both stores and customers).
-- A sub-dimension is **large or changes often** on its own (customer demographics updated monthly while names rarely change). Kimball calls this an outrigger or mini-dimension.
+- A sub-dimension is **large or changes often** on its own (customer demographics updated monthly while names rarely change). Kimball splits such attributes into a **mini-dimension**; a secondary table referenced from a dimension is called an **outrigger**.
 - The source is already normalized and a **semantic layer** hides the joins from users.
 
 ## Common mistakes

@@ -1,67 +1,92 @@
 ---
+description: "Batch vs stream processing explained with a live simulation: latency, micro-batching, event time, watermarks and how to choose between Spark, Flink and Kafka Streams."
 weight: 8
+bookToC: false
 ---
+<div class="lx-kicker-line">$ ./pipeline --mode batch|stream</div>
 
 # Batch and Stream Processing
 
-## Introduction
+Data keeps arriving: orders, clicks, sensor readings. The question is simple: **do you process it in chunks later, or each event as it lands?**
 
-In distributed systems, data processing tasks are often categorized into two types: batch processing and stream processing. Both paradigms have distinct characteristics and are suited to different types of data processing needs. Understanding the differences between them can help in selecting the appropriate approach for a given requirement.
+- **Batch**: collect events for a while (an hour, a day), then run one job over all of them.
+- **Stream**: process every event within milliseconds to seconds of its arrival.
 
-### Batch Processing
+The difference is not speed of the engine. It's **how stale your answer is allowed to be**.
 
-Batch processing involves processing large volumes of data in groups or "batches". Data is collected over a period and processed in a single, large job. This method is not real-time and is designed for scenarios where it is acceptable to have some delay between data collection and obtaining results.
+## Watch them side by side
 
-- **High Throughput:** Optimized to process large volumes of data efficiently.
-- **Latency:** There is inherent latency from the time data is collected until it is processed, as the system waits for a full batch.
-- **Complex Computations:** Well-suited for complex, long-running processes that require access to all the data at once.
-- **Resource Optimization:** Can make better use of system resources by processing large blocks of data together.
+Press **Play**. The same events go to both pipelines. Watch the **counters** and the **"behind by"** clock.
 
-### Stream Processing
+{{< fig kicker="$ ./simulate --events orders" title="Same events, two pipelines" hook="stream" >}}
+<div class="bs-ctl">
+  <button class="lx-b solid" data-play>▶ Play</button>
+  <button class="lx-b ghost" data-burst>+ traffic spike</button>
+  <span class="sep"></span> Batch schedule:
+  <button class="lx-b on" data-every="8">Batch · 8 s</button>
+  <button class="lx-b" data-every="1">Micro-batch · 1 s</button>
+</div>
+<div class="bs-lane s">
+  <div class="bs-name">Stream<small>per event</small></div>
+  <div class="bs-track"><div class="bs-proc"><b>Flink</b>process<br>now</div></div>
+  <div class="bs-out"><div class="num">0</div><small>orders counted</small><div class="lag">behind by ~0 s</div></div>
+</div>
+<div class="bs-lane b">
+  <div class="bs-name">Batch<small>every 8 s</small></div>
+  <div class="bs-track"><div class="bs-bucket"></div><div class="bs-bucket-lbl">0 waiting</div><div class="bs-proc"><b>Spark job</b>runs on<br>schedule</div></div>
+  <div class="bs-out"><div class="num">0</div><small>orders counted</small><div class="lag">behind by 0.0 s</div></div>
+</div>
+<div class="bs-truth">Orders that really happened: <b>0</b></div>
+<ol class="lx-caps"><li>The stream count tracks reality almost instantly. The batch count <b>jumps</b> on schedule and is always a little behind. Switch to <b>micro-batch</b> (how Spark Structured Streaming works) and the gap shrinks.</li></ol>
+{{< /fig >}}
 
-Stream processing, in contrast, handles data in real-time as it flows in. This method is designed for tasks that require immediate processing and fast response times. Data is processed sequentially and incrementally, often without the need to store the entire dataset.
+<div class="lx-cards">
+  <div class="lx-card"><div class="lab">Batch</div><h4>Throughput and simplicity</h4><p>Re-run a whole day if logic changes. Cheap, easy to test, easy to backfill. Results are minutes to hours old.</p></div>
+  <div class="lx-card"><div class="lab">Stream</div><h4>Freshness</h4><p>Fraud alerts, live dashboards, recommendations. Needs state, checkpoints and care for late or duplicate events.</p></div>
+  <div class="lx-card"><div class="lab">Micro-batch</div><h4>The middle ground</h4><p>Tiny batches every second or so. Batch semantics with near-real-time latency.</p></div>
+</div>
 
-- **Low Latency:** Processes data with minimal delay, providing results in real-time or near-real-time.
-- **Continuity:** Data is processed continuously rather than in discrete batches.
-- **Scalability:** Designed to scale out across multiple nodes, handling high throughput and large data streams.
-- **Fault Tolerance:** Typically includes mechanisms to handle failures and ensure data integrity in a continuous processing environment.
+## The hard part of streaming: time
 
-### Choosing Between Batch and Stream Processing
+In batch, "yesterday's data" is a closed folder. In a stream, an event from 10:59 can arrive at 11:03 (a phone was offline). So streaming engines separate:
 
-The choice between batch and stream processing depends on the specific requirements of the application, including factors like:
+- **Event time**: when it happened (in the payload).
+- **Processing time**: when the engine saw it.
+- **Watermark**: the engine's guess that "no more events older than *T* will come", which is when a window like *10:00–11:00* can be closed.
+- **Windows**: tumbling (fixed, non-overlapping), sliding, and session windows.
 
-- **Data Volume:** Batch processing might be more appropriate for lower velocity data or when it's feasible to wait for the complete dataset to accumulate.
-- **Response Time:** Stream processing is necessary when the application demands immediate processing and quick response times.
-- **Complexity of Analysis:** Complex analyses that don’t require real-time decision-making might be more efficiently handled in batch mode.
+Exactly-once results come from **checkpointed state + idempotent or transactional sinks**, not from the network delivering each message once.
 
-![Batch and Stream Processing](batch-vs-streaming.png)
+## How to choose
 
-Many modern applications combine both processing types, using stream processing for real-time monitoring and alerting, and batch processing for deep analytics and reporting on historical data. This hybrid approach leverages the strengths of both processing methods to meet diverse data handling and analysis needs in distributed systems.
+| Question | Lean batch | Lean stream |
+|---|---|---|
+| How fresh must the answer be? | Hours are fine | Seconds matter |
+| Will logic change and need re-running on history? | Often | Rarely, or you keep a replayable log |
+| Team experience with stateful systems | Low | High |
+| Cost sensitivity | High | Freshness is worth paying for |
 
+Most platforms do both: stream into Kafka for real-time use, and land the same events in a lakehouse table for batch analytics. See [Lambda]({{< relref "/docs/roadmap/data-architecture/lambda" >}}) and [Kappa]({{< relref "/docs/roadmap/data-architecture/kappa" >}}).
 
+## Tools in 2026
 
-
-
-
-
-
+- **Batch:** Apache Spark, dbt + a warehouse (Snowflake, BigQuery, ClickHouse), DuckDB for single-node jobs, Airflow / Dagster for scheduling.
+- **Stream:** Apache Flink, Kafka Streams, Spark Structured Streaming, RisingWave / Materialize (streaming SQL).
+- **Logs / transport:** Apache Kafka, Redpanda, Pulsar.
 
 ## Learning Resources
 
-
-
 ### Books
-- [Streaming Systems](https://www.oreilly.com/library/view/streaming-systems/9781491983867/)
+
+- [Streaming Systems](https://www.oreilly.com/library/view/streaming-systems/9781491983867/): Akidau, Chernyak, Lax
 - [Fundamentals of Data Engineering](https://www.oreilly.com/library/view/fundamentals-of-data/9781098108298/)
-- ["Designing Data-Intensive Applications" by Martin Kleppmann](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/)
-- [Introduction to Apache Flink (Chapter 6)](https://www.oreilly.com/library/view/introduction-to-apache/9781491977132/)
+- [Designing Data-Intensive Applications](https://www.oreilly.com/library/view/designing-data-intensive-applications/9781491903063/): Martin Kleppmann
 
-### Courses
-- [Batch Processing vs Stream Processing | System Design Primer | Tech Primers](https://www.youtube.com/watch?v=A3Mvy8WMk04)
-- [What is Stream Processing? | Batch vs Stream Processing | Data Pipelines | Real-Time Data Processing](https://www.youtube.com/watch?v=ya4298V8Mqo)
+### Articles
 
+- [Streaming 101](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-101/) and [Streaming 102](https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/): Tyler Akidau
+- [Apache Flink: Timely Stream Processing](https://nightlies.apache.org/flink/flink-docs-stable/docs/concepts/time/)
 
-### Miscellaneous
-- [Difference between Batch Processing and Stream Processing](https://www.geeksforgeeks.org/difference-between-batch-processing-and-stream-processing/)
-- [Batch Processing vs Stream Processing: 7 Key Differences](https://atlan.com/batch-processing-vs-stream-processing/)
-- [Real-Time Vs. Batch Processing Vs. Stream Processing](https://www.harperdb.io/post/real-time-vs-batch-processing-vs-stream-processing)
+### Videos
+
+- [Batch Processing vs Stream Processing: Tech Primers](https://www.youtube.com/watch?v=A3Mvy8WMk04)

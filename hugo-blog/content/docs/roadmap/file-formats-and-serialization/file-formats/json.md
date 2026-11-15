@@ -10,8 +10,8 @@ description: "JSON for data engineers: objects and arrays, JSON Lines for big fi
 ```json
 {
   "order_id": 7,
-  "user": {"id": 42, "name": "Ali"},
-  "city": "Tehran",
+  "user": {"id": 42, "name": "Alice"},
+  "city": "New York",
   "items": [
     {"sku": "TEA-01", "qty": 2, "price": 3.5},
     {"sku": "CUP-07", "qty": 1, "price": 12.0}
@@ -30,8 +30,8 @@ JSON is **nested** and **self-describing**: every record carries its own field n
 A single JSON array of a million records must be parsed as one document. **JSON Lines** (also called NDJSON) puts **one JSON object per line** instead, so files can be streamed, split across workers and appended to:
 
 ```text
-{"order_id": 7, "city": "Tehran", "amount": 250}
-{"order_id": 8, "city": "Shiraz", "amount": 120}
+{"order_id": 7, "city": "New York", "amount": 250}
+{"order_id": 8, "city": "Toronto", "amount": 120}
 ```
 
 Spark, DuckDB, BigQuery, Snowflake and most log shippers read JSON Lines natively. If you control the producer, prefer it over one large array.

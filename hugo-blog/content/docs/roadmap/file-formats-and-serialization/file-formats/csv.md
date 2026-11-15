@@ -9,9 +9,9 @@ description: "What CSV is, how RFC 4180 quoting works, why naive comma splitting
 
 ```csv
 order_id,city,amount,created_at
-1,Tehran,250,2026-11-01T10:15:00Z
-2,Shiraz,120,2026-11-01T10:17:42Z
-3,"Tehran, Iran",450,2026-11-01T10:20:05Z
+1,New York,250,2026-11-01T10:15:00Z
+2,Toronto,120,2026-11-01T10:17:42Z
+3,"New York, NY",450,2026-11-01T10:20:05Z
 ```
 
 ## How it works
@@ -31,22 +31,22 @@ Everything else is convention: the header row, the encoding, the delimiter, how 
 <svg class="lx-svg lx-canvas" viewBox="0 0 760 270">
   <text x="24" y="34" class="m" font-size="11" fill="#8C8899">RAW LINE</text>
   <rect x="24" y="44" width="712" height="40" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
-  <text x="40" y="70" class="m" font-size="15" fill="#17151F">3,"Tehran, Iran",450</text>
+  <text x="40" y="70" class="m" font-size="15" fill="#17151F">3,"New York, NY",450</text>
   <g class="f" data-step="1">
     <text x="24" y="118" class="m" font-size="11" fill="#8C8899">line.split(",")  →  4 FIELDS</text>
     <g class="m" font-size="13">
       <rect x="24" y="128" width="110" height="34" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/><text x="79" y="150" text-anchor="middle">3</text>
-      <rect x="142" y="128" width="160" height="34" rx="6" fill="#fff" stroke="#C2382F" stroke-width="1.4"/><text x="222" y="150" text-anchor="middle" fill="#C2382F">"Tehran</text>
-      <rect x="310" y="128" width="160" height="34" rx="6" fill="#fff" stroke="#C2382F" stroke-width="1.4"/><text x="390" y="150" text-anchor="middle" fill="#C2382F"> Iran"</text>
+      <rect x="142" y="128" width="160" height="34" rx="6" fill="#fff" stroke="#C2382F" stroke-width="1.4"/><text x="222" y="150" text-anchor="middle" fill="#C2382F">"New York</text>
+      <rect x="310" y="128" width="160" height="34" rx="6" fill="#fff" stroke="#C2382F" stroke-width="1.4"/><text x="390" y="150" text-anchor="middle" fill="#C2382F"> NY"</text>
       <rect x="478" y="128" width="110" height="34" rx="6" fill="#fff" stroke="#C2382F" stroke-width="1.4"/><text x="533" y="150" text-anchor="middle" fill="#C2382F">450</text>
     </g>
-    <text x="600" y="150" font-size="12" fill="#C2382F">amount = ' Iran"'</text>
+    <text x="600" y="150" font-size="12" fill="#C2382F">amount = ' NY"'</text>
   </g>
   <g class="f" data-step="2">
     <text x="24" y="196" class="m" font-size="11" fill="#8C8899">csv.reader(...)  →  3 FIELDS</text>
     <g class="m" font-size="13">
       <rect x="24" y="206" width="110" height="34" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/><text x="79" y="228" text-anchor="middle">3</text>
-      <rect x="142" y="206" width="328" height="34" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/><text x="306" y="228" text-anchor="middle">Tehran, Iran</text>
+      <rect x="142" y="206" width="328" height="34" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/><text x="306" y="228" text-anchor="middle">New York, NY</text>
       <rect x="478" y="206" width="110" height="34" rx="6" fill="#F4EEFA" stroke="#DCC9EE" stroke-width="1.4"/><text x="533" y="228" text-anchor="middle">450</text>
     </g>
     <text x="600" y="228" font-size="12" fill="#531A8A">amount = 450</text>
@@ -75,8 +75,8 @@ Everything else is convention: the header row, the encoding, the delimiter, how 
 ## Common mistakes
 
 - **Splitting lines yourself.** Use the language's CSV module, DuckDB, Spark or `COPY`, never `split(",")`.
-- **Trusting type inference.** Excel turns `0912345678` into a number and gene names into dates. Declare column types when loading.
-- **Ignoring encoding.** Ask for UTF-8. Files from Excel often come with a byte-order mark (BOM) or as Windows-1252/1256, which garbles Persian and Arabic text.
+- **Trusting type inference.** Excel turns the ZIP code `02134` into the number `2134` and gene names into dates. Declare column types when loading.
+- **Ignoring encoding.** Ask for UTF-8. Files from Excel often come with a byte-order mark (BOM) or as Windows-1252, which garbles accented and non-Latin text.
 - **Using CSV as the storage layer.** Fine for landing files. For anything queried repeatedly, convert to [Parquet]({{< relref "parquet" >}}).
 - **Empty string vs NULL.** `,,` and `,"",` may mean different things to different tools. Agree on a NULL marker.
 

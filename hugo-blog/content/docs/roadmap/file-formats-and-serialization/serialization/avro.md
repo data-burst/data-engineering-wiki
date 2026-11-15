@@ -9,7 +9,7 @@ bookToC: false
 
 **Apache Avro** is a binary serialization format whose schema is written in JSON. A record is encoded as just its values, in schema order, with no field names or tags, so Avro data is very compact. The catch: you can only decode the bytes if you know the exact schema they were written with. Avro's key feature is what it does with that: it **resolves the writer's schema against the reader's schema**, so old and new versions of a producer and consumer can keep talking.
 
-Avro is the most common format for Kafka events and for CDC streams (Debezium, Confluent connectors), and it is also used as a row-oriented file format (`.avro` container files) for data exchange.
+Avro is a common format for Kafka events and CDC streams (Debezium, Confluent connectors), and it is also used as a row-oriented file format (`.avro` container files) for data exchange.
 
 ## The schema
 
@@ -26,7 +26,7 @@ Avro is the most common format for Kafka events and for CDC streams (Debezium, C
 }
 ```
 
-Primitive types are `null`, `boolean`, `int`, `long`, `float`, `double`, `bytes` and `string`. Complex types are `record`, `enum`, `array`, `map`, `union` and `fixed`. **Logical types** add meaning on top: `decimal`, `date`, `timestamp-millis`, `timestamp-micros` and `uuid`. An optional field is a union with `null`, and its default must be `null` (the first branch of the union).
+Primitive types are `null`, `boolean`, `int`, `long`, `float`, `double`, `bytes` and `string`. Complex types are `record`, `enum`, `array`, `map`, `union` and `fixed`. **Logical types** add meaning on top, for example `decimal`, `date`, `timestamp-millis`, `timestamp-micros` and `uuid`. An optional field is a union with `null`; list `null` first, because a union's default must match its first branch.
 
 ## Old reader, new writer
 
@@ -55,8 +55,8 @@ The producer team ships schema **v2**: it adds `email` and drops `city`. The con
     <rect x="20" y="228" width="340" height="44" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
     <g class="m" font-size="13">
       <rect x="30" y="236" width="64" height="28" rx="4" fill="#F4EEFA" stroke="#DCC9EE"/><text x="62" y="255" text-anchor="middle">42</text>
-      <rect x="100" y="236" width="74" height="28" rx="4" fill="#F4EEFA" stroke="#DCC9EE"/><text x="137" y="255" text-anchor="middle">"ali"</text>
-      <rect x="180" y="236" width="170" height="28" rx="4" fill="#F4EEFA" stroke="#DCC9EE"/><text x="265" y="255" text-anchor="middle">"ali@shop.ir"</text>
+      <rect x="100" y="236" width="74" height="28" rx="4" fill="#F4EEFA" stroke="#DCC9EE"/><text x="137" y="255" text-anchor="middle">"alice"</text>
+      <rect x="180" y="236" width="170" height="28" rx="4" fill="#F4EEFA" stroke="#DCC9EE"/><text x="265" y="255" text-anchor="middle">"alice@shop.com"</text>
     </g>
     <text x="20" y="290" class="m" font-size="11" fill="#5C5869">BYTES · values only, no names, no tags</text>
   </g>
@@ -79,7 +79,7 @@ The producer team ships schema **v2**: it adds `email` and drops `city`. The con
     <rect x="518" y="134" width="214" height="26" rx="4" fill="#F4EEFA" stroke="#DCC9EE"/>
     <text x="526" y="152" class="m" font-size="13" fill="#531A8A">city = "unknown"</text>
     <rect x="20" y="300" width="720" height="34" rx="6" fill="#260246"/>
-    <text x="380" y="322" text-anchor="middle" class="m" font-size="13" fill="#EEEAF5">consumer sees { id: 42, name: "ali", city: "unknown" }</text>
+    <text x="380" y="322" text-anchor="middle" class="m" font-size="13" fill="#EEEAF5">consumer sees { id: 42, name: "alice", city: "unknown" }</text>
   </g>
 </svg>
 <ol class="lx-caps">

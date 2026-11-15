@@ -10,8 +10,8 @@ description: "XML for data engineers: elements, attributes and namespaces, XSD v
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <orders xmlns="https://example.com/shop/v1">
-  <order id="7" currency="IRR">
-    <city>Tehran</city>
+  <order id="7" currency="USD">
+    <city>New York</city>
     <item sku="TEA-01" qty="2"/>
     <item sku="CUP-07" qty="1"/>
     <paid>true</paid>
@@ -21,7 +21,7 @@ description: "XML for data engineers: elements, attributes and namespaces, XSD v
 
 ## Building blocks
 
-- **Element**: `<city>Tehran</city>`. Elements nest to form the tree; there is exactly one root (`<orders>`).
+- **Element**: `<city>New York</city>`. Elements nest to form the tree; there is exactly one root (`<orders>`).
 - **Attribute**: `id="7"` on the opening tag. Good for short metadata; there is no hard rule about what goes in an attribute vs a child element, so every producer chooses differently.
 - **Namespace**: `xmlns="..."` scopes element names so two vocabularies can mix in one document. Forgetting the namespace is the most common reason an XPath query returns nothing.
 - **Schema (XSD)**: an optional XML Schema Definition that fixes structure and types. Unlike JSON, many XML feeds ship a strict XSD you can validate against.

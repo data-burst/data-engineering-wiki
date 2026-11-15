@@ -12,7 +12,7 @@ A **messaging or streaming platform** sits between the services that produce dat
 
 There are two families, and the difference matters:
 
-- **Message queues** (RabbitMQ, Amazon SQS, NATS core): a message is a **task**. It is delivered to one worker, acknowledged, and then deleted.
+- **Message queues** (RabbitMQ, Amazon SQS, ActiveMQ): a message is a **task**. It is delivered to one worker, acknowledged, and then deleted.
 - **Event logs / streaming platforms** (Apache Kafka, Redpanda, Apache Pulsar, Amazon Kinesis): a message is a **fact**. It is appended to a durable, ordered log and kept for a retention period. Any number of consumers read it independently, and can re-read it later.
 
 ## How a Kafka-style log works
@@ -35,17 +35,17 @@ There are two families, and the difference matters:
       <text x="252" y="263">0</text><text x="300" y="263">1</text><text x="348" y="263">2</text><text x="396" y="263">3</text>
     </g>
     <g font-size="11" text-anchor="middle" fill="#3D3A49">
-      <text x="252" y="100">sara</text><text x="300" y="100">omid</text><text x="348" y="100">sara</text>
-      <text x="252" y="190">ali</text><text x="300" y="190">reza</text><text x="348" y="190">ali</text>
-      <text x="252" y="280">mina</text><text x="300" y="280">nika</text><text x="348" y="280">mina</text><text x="396" y="280">nika</text>
+      <text x="252" y="100">sam</text><text x="300" y="100">owen</text><text x="348" y="100">sam</text>
+      <text x="252" y="190">alice</text><text x="300" y="190">ryan</text><text x="348" y="190">alice</text>
+      <text x="252" y="280">maya</text><text x="300" y="280">nora</text><text x="348" y="280">maya</text><text x="396" y="280">nora</text>
     </g>
   </g>
   <g class="f m" data-step="1">
     <line x1="150" y1="168" x2="184" y2="92" stroke="#531A8A" stroke-width="1.4" marker-end="url(#kf-ar)"/>
     <line x1="150" y1="184" x2="184" y2="180" stroke="#531A8A" stroke-width="1.4" marker-end="url(#kf-ar)"/>
-    <rect x="374" y="68" width="44" height="40" rx="4" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4"/><text x="396" y="83" text-anchor="middle" font-size="11" fill="#531A8A">3</text><text x="396" y="100" text-anchor="middle" font-size="11" fill="#531A8A">sara</text>
-    <rect x="374" y="158" width="44" height="40" rx="4" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4"/><text x="396" y="173" text-anchor="middle" font-size="11" fill="#531A8A">3</text><text x="396" y="190" text-anchor="middle" font-size="11" fill="#531A8A">ali</text>
-    <text x="20" y="232" font-size="11" fill="#531A8A">key ali  → P1</text><text x="20" y="248" font-size="11" fill="#531A8A">key sara → P0</text>
+    <rect x="374" y="68" width="44" height="40" rx="4" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4"/><text x="396" y="83" text-anchor="middle" font-size="11" fill="#531A8A">3</text><text x="396" y="100" text-anchor="middle" font-size="11" fill="#531A8A">sam</text>
+    <rect x="374" y="158" width="44" height="40" rx="4" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4"/><text x="396" y="173" text-anchor="middle" font-size="11" fill="#531A8A">3</text><text x="396" y="190" text-anchor="middle" font-size="11" fill="#531A8A">alice</text>
+    <text x="20" y="232" font-size="11" fill="#531A8A">key alice → P1</text><text x="20" y="248" font-size="11" fill="#531A8A">key sam   → P0</text>
   </g>
   <g class="f m" data-step="2">
     <rect x="540" y="20" width="200" height="300" rx="8" fill="#F7F7FB" stroke="#E7E7EF" stroke-width="1.4"/><text x="556" y="44" font-size="12" font-weight="600" fill="#17151F">GROUP billing</text>
@@ -71,7 +71,7 @@ There are two families, and the difference matters:
 </svg>
 <ol class="lx-caps">
   <li>A <b>topic</b> is split into <b>partitions</b>. Each partition is an append-only log, and each message gets a position in it: the <b>offset</b>.</li>
-  <li>The producer picks a partition by <b>hashing the key</b>. All orders for <b>ali</b> go to P1, so they stay in order. New messages are always appended at the end.</li>
+  <li>The producer picks a partition by <b>hashing the key</b>. All orders for <b>alice</b> go to P1, so they stay in order. New messages are always appended at the end.</li>
   <li>A <b>consumer group</b> splits the partitions among its members. Each partition is read by <b>exactly one</b> consumer in the group.</li>
   <li>Consumers <b>commit offsets</b>: "next, read offset 3". After a crash, a consumer resumes from its last commit, so messages may be re-read but not skipped.</li>
   <li>A new consumer <b>C3</b> joins. The group <b>rebalances</b> and P1 moves from C1 to C3. More consumers than partitions? The extras sit idle.</li>
@@ -98,7 +98,7 @@ There are two families, and the difference matters:
 | Per-message features | Routing, priorities, delays, dead-letter queues | Few; it's a log |
 | Good for | Background jobs, commands, RPC-style work | Event streams, CDC, analytics, event sourcing |
 
-The line is blurring: Kafka is adding queue-style **share groups** (KIP-932), and RabbitMQ **Streams** and NATS **JetStream** add log-style retention and replay.
+The line is blurring: Kafka added queue-style **share groups** (KIP-932, production-ready since Kafka 4.2), and RabbitMQ **Streams** and NATS **JetStream** add log-style retention and replay.
 
 ## Tools in 2026
 
@@ -109,7 +109,7 @@ The line is blurring: Kafka is adding queue-style **share groups** (KIP-932), an
 | [Apache Pulsar](https://pulsar.apache.org/) | Log + queue | Brokers are stateless; storage lives in BookKeeper. Multi-tenancy and geo-replication built in. |
 | [RabbitMQ](https://www.rabbitmq.com/) | Queue (plus Streams) | AMQP, flexible routing with exchanges. Quorum queues for durability. |
 | [NATS](https://nats.io/) | Pub/sub + JetStream | Very light, low latency. JetStream adds persistence and replay. |
-| Kinesis, Pub/Sub, Event Hubs | Managed logs | Cloud-native, no brokers to run. Event Hubs exposes a Kafka-compatible endpoint. |
+| Kinesis, Pub/Sub, Event Hubs | Managed services | Cloud-native, no brokers to run. Event Hubs exposes a Kafka-compatible endpoint. |
 
 ## Common mistakes
 

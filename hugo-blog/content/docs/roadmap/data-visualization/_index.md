@@ -38,7 +38,7 @@ description: "Data visualization for data engineers: picking the right chart for
     <text x="320" y="32" class="m" font-size="11" font-weight="700" fill="#531A8A">PART OF WHOLE</text>
     <text x="320" y="54" font-size="12.5" fill="#17151F">Share of</text><text x="320" y="70" font-size="12.5" fill="#17151F">sales by channel?</text>
     <line x1="320" y1="196" x2="438" y2="196" stroke="#E7E7EF"/>
-    <rect x="322" y="110" width="58" height="34" fill="#531A8A"/><rect x="380" y="110" width="32" height="34" fill="#3D3A49"/><rect x="412" y="110" width="24" height="34" fill="#DCC9EE"/>
+    <rect x="322" y="110" width="59" height="34" fill="#531A8A"/><rect x="381" y="110" width="32" height="34" fill="#3D3A49"/><rect x="413" y="110" width="23" height="34" fill="#DCC9EE"/>
     <text x="322" y="166" class="m" font-size="11" fill="#5C5869">web 52 · app 28</text><text x="322" y="182" class="m" font-size="11" fill="#5C5869">store 20 (%)</text>
     <text x="379" y="226" text-anchor="middle" class="m" font-size="11.5" font-weight="700" fill="#17151F">STACKED BAR</text>
   </g>
@@ -91,7 +91,7 @@ Other useful types: **tables** when people need exact values, **heatmaps** for t
 
 ## Rules that make charts honest and readable
 
-- **One message per chart.** Put it in the title: "Shiraz orders doubled since March", not "Orders by city".
+- **One message per chart.** Put it in the title: "Toronto orders doubled since March", not "Orders by city".
 - **Bars start at zero.** A truncated axis makes small differences look huge.
 - **Sort categories** by value unless they have a natural order (months, sizes).
 - **Use color with intent.** Grey for context, one highlight color for what matters. Keep palettes colorblind-safe and don't rely on color alone.
@@ -101,7 +101,7 @@ Other useful types: **tables** when people need exact values, **heatmaps** for t
 
 ## Dashboards
 
-- Put the **most important number top-left**; people read in a Z pattern.
+- Put the **most important number top-left**; that is where most readers look first.
 - Design for a **specific audience and decision**: an executive weekly review, an ops team watching a pipeline, an analyst exploring.
 - Keep it to a handful of charts; link to detail views instead of cramming.
 - Show **data freshness** ("updated 09:12") so users know whether to trust it.
@@ -132,7 +132,7 @@ The tool matters less than the model under it. Any of them will produce wrong nu
 
 - Pie charts with ten slices, or 3D charts of any kind.
 - A dashboard per request, until nobody knows which "revenue" is right.
-- Averages without distributions: the average order is 40, but most orders are 10 and a few are 2,000.
+- Averages without distributions: the average order is $40, but most orders are about $10 and a few are $2,000.
 - Querying raw event tables live from the dashboard, making every page load a full scan.
 - Charts with no units, no time range and no freshness indicator.
 

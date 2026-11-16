@@ -83,9 +83,103 @@ There are two families, and the difference matters:
 
 - **Partitions are the unit of parallelism and ordering.** Order is guaranteed only within a partition. Pick a key (order ID, user ID) so related events share a partition, and pick enough partitions for your peak consumer count.
 - **Replication**: each partition has a leader broker and follower replicas. With `acks=all` and `min.insync.replicas=2`, a write is only confirmed once it is on at least two brokers.
-- **Delivery semantics**: *at-most-once* (commit before processing), *at-least-once* (commit after processing, the usual default), and *exactly-once* within Kafka using idempotent producers plus transactions. For external systems, exactly-once really means at-least-once plus idempotent writes.
+- **Delivery semantics**: at-most-once, at-least-once or exactly-once, decided by *when* the consumer commits its offset relative to its work. See [the next section](#delivery-semantics).
 - **Retention and compaction**: delete messages after a time or size limit, or **compact** the topic to keep only the latest value per key (useful for CDC and changelogs).
 - **Schemas**: put a schema registry in front of producers so a breaking change can't reach consumers. See [Avro]({{< relref "/docs/roadmap/file-formats-and-serialization/serialization/avro" >}}).
+
+## Delivery semantics
+
+A consumer does two things with every message: it **processes** it (writes a row, calls an API) and it **commits its offset** (records "I'm done up to here"). These are two separate actions, and a crash can land between them. The order you do them in decides what a crash costs you.
+
+{{< fig kicker="$ consumer --group billing --kill-after-poll" title="Same crash, three outcomes" >}}
+<svg class="lx-svg lx-canvas" viewBox="0 0 760 350">
+  <defs><marker id="ds-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3D3A49"/></marker></defs>
+  <g class="m">
+    <text x="20" y="40" font-size="12" font-weight="700" fill="#17151F">orders · P0</text>
+    <text x="20" y="57" font-size="11" fill="#5C5869">offset / message</text>
+    <g fill="#fff" stroke="#3D3A49" stroke-width="1.4">
+      <rect x="170" y="22" width="50" height="40" rx="4"/><rect x="226" y="22" width="50" height="40" rx="4"/>
+      <rect x="338" y="22" width="50" height="40" rx="4"/><rect x="394" y="22" width="50" height="40" rx="4"/>
+    </g>
+    <rect class="pulse" x="282" y="22" width="50" height="40" rx="4" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.6"/>
+    <g font-size="11" text-anchor="middle" fill="#8C8899"><text x="195" y="37">40</text><text x="251" y="37">41</text><text x="307" y="37" fill="#531A8A">42</text><text x="363" y="37">43</text><text x="419" y="37">44</text></g>
+    <g font-size="11" text-anchor="middle" fill="#3D3A49"><text x="195" y="54">#1040</text><text x="251" y="54">#1041</text><text x="307" y="54" fill="#531A8A" font-weight="700">#1042</text><text x="363" y="54">#1043</text><text x="419" y="54">#1044</text></g>
+    <line class="flow" x1="444" y1="42" x2="470" y2="42" stroke="#531A8A" stroke-width="1.6"/>
+    <rect x="470" y="22" width="120" height="40" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="530" y="38" text-anchor="middle" font-size="12" font-weight="700" fill="#17151F">consumer</text><text x="530" y="54" text-anchor="middle" font-size="11" fill="#5C5869">billing</text>
+    <line class="flow" x1="590" y1="42" x2="620" y2="42" stroke="#531A8A" stroke-width="1.6"/>
+    <rect x="620" y="22" width="120" height="40" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="680" y="38" text-anchor="middle" font-size="12" font-weight="700" fill="#17151F">payments</text><text x="680" y="54" text-anchor="middle" font-size="11" fill="#5C5869">sink table</text>
+    <line x1="20" y1="80" x2="740" y2="80" stroke="#E7E7EF" stroke-width="1.4"/>
+    <text x="20" y="114" font-size="12" font-weight="700" fill="#17151F">AT-MOST-ONCE</text><text x="20" y="131" font-size="11" fill="#5C5869">commit, then work</text>
+    <text x="20" y="194" font-size="12" font-weight="700" fill="#17151F">AT-LEAST-ONCE</text><text x="20" y="211" font-size="11" fill="#5C5869">work, then commit</text>
+    <text x="20" y="274" font-size="12" font-weight="700" fill="#17151F">EXACTLY-ONCE</text><text x="20" y="291" font-size="11" fill="#5C5869">atomic or idempotent</text>
+    <line x1="20" y1="160" x2="740" y2="160" stroke="#E7E7EF" stroke-width="1"/><line x1="20" y1="240" x2="740" y2="240" stroke="#E7E7EF" stroke-width="1"/>
+  </g>
+  <g class="f slide-r m" data-step="1">
+    <g stroke="#3D3A49" stroke-width="1.4" marker-end="url(#ds-ar)"><line x1="270" y1="118" x2="288" y2="118"/><line x1="395" y1="118" x2="413" y2="118"/></g>
+    <rect x="165" y="96" width="105" height="44" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="217" y="115" text-anchor="middle" font-size="11.5" fill="#17151F">poll 42</text><text x="217" y="131" text-anchor="middle" font-size="11" fill="#5C5869">#1042</text>
+    <rect x="290" y="96" width="105" height="44" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="342" y="115" text-anchor="middle" font-size="11.5" fill="#17151F">commit 43</text><text x="342" y="131" text-anchor="middle" font-size="11" fill="#5C5869">offset saved</text>
+    <rect x="415" y="96" width="105" height="44" rx="6" fill="#FCEDEB" stroke="#C2382F" stroke-width="1.4"/>
+    <text x="467" y="115" text-anchor="middle" font-size="11.5" font-weight="700" fill="#C2382F">✗ crash</text><text x="467" y="131" text-anchor="middle" font-size="11" fill="#C2382F">before write</text>
+  </g>
+  <g class="f pop m" data-step="2">
+    <line x1="520" y1="118" x2="538" y2="118" stroke="#3D3A49" stroke-width="1.4" stroke-dasharray="3 3" marker-end="url(#ds-ar)"/>
+    <rect x="540" y="96" width="200" height="44" rx="6" fill="#FCEDEB" stroke="#C2382F" stroke-width="1.4"/>
+    <text x="640" y="115" text-anchor="middle" font-size="11.5" fill="#17151F">restart from 43</text><text x="640" y="131" text-anchor="middle" font-size="11" font-weight="700" fill="#C2382F">#1042 LOST</text>
+  </g>
+  <g class="f slide-r m" data-step="3">
+    <g stroke="#3D3A49" stroke-width="1.4" marker-end="url(#ds-ar)"><line x1="270" y1="198" x2="288" y2="198"/><line x1="395" y1="198" x2="413" y2="198"/></g>
+    <rect x="165" y="176" width="105" height="44" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="217" y="195" text-anchor="middle" font-size="11.5" fill="#17151F">poll 42</text><text x="217" y="211" text-anchor="middle" font-size="11" fill="#5C5869">#1042</text>
+    <rect x="290" y="176" width="105" height="44" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="342" y="195" text-anchor="middle" font-size="11.5" fill="#17151F">write #1042</text><text x="342" y="211" text-anchor="middle" font-size="11" fill="#5C5869">row in sink</text>
+    <rect x="415" y="176" width="105" height="44" rx="6" fill="#FCEDEB" stroke="#C2382F" stroke-width="1.4"/>
+    <text x="467" y="195" text-anchor="middle" font-size="11.5" font-weight="700" fill="#C2382F">✗ crash</text><text x="467" y="211" text-anchor="middle" font-size="11" fill="#C2382F">before commit</text>
+  </g>
+  <g class="f pop m" data-step="4">
+    <line x1="520" y1="198" x2="538" y2="198" stroke="#3D3A49" stroke-width="1.4" stroke-dasharray="3 3" marker-end="url(#ds-ar)"/>
+    <rect x="540" y="176" width="200" height="44" rx="6" fill="#FCEDEB" stroke="#C2382F" stroke-width="1.4"/>
+    <text x="640" y="195" text-anchor="middle" font-size="11.5" fill="#17151F">restart from 42</text><text x="640" y="211" text-anchor="middle" font-size="11" font-weight="700" fill="#C2382F">#1042 written twice</text>
+  </g>
+  <g class="f slide-r m" data-step="5">
+    <g stroke="#3D3A49" stroke-width="1.4" marker-end="url(#ds-ar)"><line x1="270" y1="278" x2="288" y2="278"/><line x1="520" y1="278" x2="538" y2="278"/></g>
+    <rect x="165" y="256" width="105" height="44" rx="6" fill="#fff" stroke="#3D3A49" stroke-width="1.4"/>
+    <text x="217" y="275" text-anchor="middle" font-size="11.5" fill="#17151F">poll 42</text><text x="217" y="291" text-anchor="middle" font-size="11" fill="#5C5869">#1042</text>
+    <rect x="290" y="256" width="230" height="44" rx="6" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4"/>
+    <text x="405" y="275" text-anchor="middle" font-size="11.5" font-weight="700" fill="#531A8A">one transaction</text><text x="405" y="291" text-anchor="middle" font-size="11" fill="#3D3A49">write #1042 + offset 43</text>
+    <rect x="540" y="256" width="200" height="44" rx="6" fill="#fff" stroke="#1F8A55" stroke-width="1.4"/>
+    <text x="640" y="275" text-anchor="middle" font-size="11.5" fill="#17151F">crash: both undone</text><text x="640" y="291" text-anchor="middle" font-size="11" font-weight="700" fill="#1F8A55">retry → #1042 once</text>
+  </g>
+  <g class="f pop m" data-step="6">
+    <rect x="165" y="312" width="575" height="28" rx="6" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="452" y="331" text-anchor="middle" font-size="11.5" fill="#531A8A">or an idempotent sink: MERGE ON event_id, a replay overwrites the same row</text>
+  </g>
+</svg>
+<ol class="lx-caps">
+  <li>The consumer reads offset 42 (order #1042) and must do two things: write a payment row and commit offset 43. A crash can hit between them.</li>
+  <li><b>At-most-once</b>: commit first, then process. The crash comes after the commit but before the write.</li>
+  <li>On restart the group resumes at 43. Order #1042 is <b>never processed</b>. No duplicates, but data loss.</li>
+  <li><b>At-least-once</b>: process first, then commit. The write succeeds, then the crash hits before the commit.</li>
+  <li>On restart the group resumes at the last commit, 42, and writes #1042 <b>again</b>. Nothing is lost, but you get a duplicate.</li>
+  <li><b>Exactly-once</b>: the write and the offset commit happen in <b>one transaction</b>. A crash rolls back both, so the retry processes #1042 exactly once.</li>
+  <li>When the sink can't join that transaction, make the write <b>idempotent</b>: upsert keyed by the event id, so a replay changes nothing.</li>
+</ol>
+{{< /fig >}}
+
+| Semantics | Commit order | On crash | Use when |
+|---|---|---|---|
+| At-most-once | Commit, then process | Messages lost | Losing a few is fine: metrics sampling, some logs |
+| At-least-once | Process, then commit | Messages repeated | The default; pair it with idempotent consumers |
+| Exactly-once | Process and commit atomically, or dedupe by key | Neither | Money, inventory, counts that must match |
+
+How exactly-once is done in practice:
+
+- **Inside Kafka** (read from a topic, write to a topic): use the **idempotent producer** (`enable.idempotence=true`, the default since Kafka 3.0), which stops broker-side duplicates from producer retries, plus **transactions** (`transactional.id`). The producer writes the output and the consumer offsets (`sendOffsetsToTransaction`) in one transaction, and downstream consumers read with `isolation.level=read_committed`. Kafka Streams turns this on with `processing.guarantee=exactly_once_v2`.
+- **Stream processors**: Flink and Spark Structured Streaming checkpoint offsets and state together, and use transactional or idempotent sinks so outputs line up with the checkpoint.
+- **External systems** (a database, a warehouse, an API): Kafka's transaction can't reach them. Either store the offset in the same database transaction as the result, or make the write idempotent (`MERGE`/upsert on a unique event id, or a dedup table). In practice "exactly-once" here means **at-least-once delivery plus idempotent processing**: the message may arrive twice, but the effect happens once.
 
 ## Queue vs log
 

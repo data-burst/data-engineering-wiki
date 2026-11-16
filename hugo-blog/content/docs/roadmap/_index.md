@@ -6,6 +6,8 @@ title: "Roadmap Step-by-Step"
 ---
 # Data Engineering Roadmap
 
+**Start here:** new to the field? Read [What is data engineering?]({{< relref "/docs/roadmap/introduction" >}}) for the big picture and how to follow this roadmap, and keep the [Glossary]({{< relref "/docs/roadmap/glossary" >}}) open for any term you don't know.
+
 [![roadmap](https://raw.githubusercontent.com/data-burst/data-engineering-public-assets/main/data-engineering-roadmap/roadmap.png)](https://github.com/data-burst/data-engineering-roadmap)
 
 

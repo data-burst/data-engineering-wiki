@@ -194,3 +194,28 @@ code,kbd,pre,samp{font-family:var(--mono)}
 .book-menu nav a:hover{background:var(--line2);color:var(--ink)}
 .book-menu nav a.active{background:var(--acc-l)}
 @media (prefers-reduced-motion:reduce){.book-menu .book-icon,.book-menu nav a{transition:none}}
+
+/* ---------- motion toolkit (opt-in classes for fig SVGs) ----------
+   .f.pop      fragment scales in from 92%           .f.slide-r / .f.slide-l  slides in from the left / right
+   .flow       dashed connector that "marches" (data moving); add .rev to reverse direction
+   .pulse      soft breathing highlight (use on one element at a time)
+   Moving packets: put <circle class="pkt-dot"><animateMotion dur="1.6s" repeatCount="indefinite" path="M..."/></circle>
+   inside an .f group; it travels once the group is visible. */
+.lx-svg .f.pop,.lx-svg .f.slide-r,.lx-svg .f.slide-l{transform-box:fill-box;transform-origin:center;transition:opacity .45s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+.lx-svg .f.pop{transform:scale(.92)}
+.lx-svg .f.slide-r{transform:translateX(-14px)}
+.lx-svg .f.slide-l{transform:translateX(14px)}
+.lx-svg .f.on.pop,.lx-svg .f.on.slide-r,.lx-svg .f.on.slide-l{transform:none}
+.lx-svg .flow{stroke-dasharray:6 6;animation:lx-flow 1.1s linear infinite}
+.lx-svg .flow.rev{animation-direction:reverse}
+@keyframes lx-flow{to{stroke-dashoffset:-12}}
+.lx-svg .pulse{transform-box:fill-box;transform-origin:center;animation:lx-pulse 2.4s ease-in-out infinite}
+@keyframes lx-pulse{0%,100%{opacity:1}50%{opacity:.55}}
+.lx-svg .pkt-dot{fill:var(--acc)}
+.lx-svg .pkt-dot.bad{fill:var(--bad)}
+.lx-svg .pkt-dot.ink{fill:var(--ink)}
+@media (prefers-reduced-motion:reduce){
+  .lx-svg .f.pop,.lx-svg .f.slide-r,.lx-svg .f.slide-l{transform:none;transition:none}
+  .lx-svg .flow,.lx-svg .pulse{animation:none}
+  .lx-svg .pkt-dot{display:none}
+}

@@ -9,6 +9,10 @@ description: "Free, open data engineering wiki: distributed systems, storage, fi
 
 Explore our central hub for all things data engineering:
 
+- 🧭 [**What is Data Engineering?**]({{< relref "/docs/roadmap/introduction" >}}): Start here. The data lifecycle, the roles around data, and how to follow the roadmap.
+
+- 📖 [**Glossary**]({{< relref "/docs/roadmap/glossary" >}}): Plain-English definitions of common data engineering terms, from ACID to watermarks.
+
 - 🗺️ [**The Data Engineering Roadmap**](https://github.com/data-burst/data-engineering-roadmap): Dive into topics tailored for both newcomers and seasoned experts.
 
 - 💡 [**DataBurst Products and Services**](https://github.com/data-burst): Discover how our solutions transform data operations and business intelligence.

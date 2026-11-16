@@ -77,7 +77,60 @@ HTTP is **stateless**: each request carries everything the server needs (credent
 
 Retry 429 and 5xx with exponential backoff (respect the `Retry-After` header). Never blindly retry 4xx: the request itself is wrong.
 
-## HTTP versions
+## HTTP/1.1 → HTTP/2 → HTTP/3
+
+The three versions carry the same methods, headers and status codes; what changed is how requests share the network. The main problem each version fixes is **head-of-line blocking**: one slow or lost piece holding up everything queued behind it.
+
+{{< fig kicker="$ curl -sI --http2 https://shop.com" title="Head-of-line blocking in HTTP/1.1, HTTP/2 and HTTP/3" >}}
+<svg class="lx-svg lx-canvas" viewBox="0 0 760 290">
+<defs>
+<marker id="hv-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5C5869"/></marker>
+</defs>
+<g class="m">
+<line x1="150" y1="24" x2="736" y2="24" stroke="#5C5869" stroke-width="1.2" marker-end="url(#hv-a)"/>
+<text x="150" y="16" font-size="11" fill="#5C5869">time →  (three files: A, B, C)</text>
+<text x="20" y="58" font-size="12.5" font-weight="700" fill="#17151F">HTTP/1.1</text><text x="20" y="74" font-size="11" fill="#5C5869">1 TCP conn</text>
+<line x1="20" y1="92" x2="740" y2="92" stroke="#DCDAE6"/>
+<text x="20" y="136" font-size="12.5" font-weight="700" fill="#17151F">HTTP/2</text><text x="20" y="152" font-size="11" fill="#5C5869">1 TCP conn</text>
+<text x="140" y="119" text-anchor="end" font-size="11" fill="#5C5869">A</text><text x="140" y="143" text-anchor="end" font-size="11" fill="#5C5869">B</text><text x="140" y="167" text-anchor="end" font-size="11" fill="#5C5869">C</text>
+<line x1="20" y1="194" x2="740" y2="194" stroke="#DCDAE6"/>
+<text x="20" y="238" font-size="12.5" font-weight="700" fill="#17151F">HTTP/3</text><text x="20" y="254" font-size="11" fill="#5C5869">QUIC over UDP</text>
+<text x="140" y="221" text-anchor="end" font-size="11" fill="#5C5869">A</text><text x="140" y="245" text-anchor="end" font-size="11" fill="#5C5869">B</text><text x="140" y="269" text-anchor="end" font-size="11" fill="#5C5869">C</text>
+</g>
+<g class="f slide-r m" data-step="1">
+<rect x="150" y="48" width="165" height="26" rx="4" fill="#531A8A"/><text x="232" y="65" text-anchor="middle" font-size="11" fill="#fff">A: GET → 200</text>
+<rect x="321" y="48" width="165" height="26" rx="4" fill="#F4EEFA" stroke="#531A8A"/><text x="403" y="65" text-anchor="middle" font-size="11" fill="#17151F">B: GET → 200</text>
+<rect x="492" y="48" width="165" height="26" rx="4" fill="#5C5869"/><text x="574" y="65" text-anchor="middle" font-size="11" fill="#fff">C: GET → 200</text>
+<text x="666" y="65" font-size="11" fill="#5C5869">done</text>
+</g>
+<g class="f slide-r m" data-step="2">
+<rect x="150" y="106" width="24" height="18" rx="3" fill="#531A8A" stroke="#531A8A"/><text x="162" y="119" text-anchor="middle" font-size="11" fill="#fff">A</text><rect x="180" y="130" width="24" height="18" rx="3" fill="#F4EEFA" stroke="#531A8A"/><text x="192" y="143" text-anchor="middle" font-size="11" fill="#17151F">B</text><rect x="210" y="154" width="24" height="18" rx="3" fill="#5C5869" stroke="#5C5869"/><text x="222" y="167" text-anchor="middle" font-size="11" fill="#fff">C</text><rect x="240" y="106" width="24" height="18" rx="3" fill="#531A8A" stroke="#531A8A"/><text x="252" y="119" text-anchor="middle" font-size="11" fill="#fff">A</text>
+</g>
+<g class="f m" data-step="3">
+<rect x="300" y="102" width="120" height="74" rx="4" fill="#C2382F" fill-opacity="0.07" stroke="#C2382F" stroke-dasharray="4 3"/>
+<text x="360" y="143" text-anchor="middle" font-size="11" fill="#C2382F">all streams wait</text>
+<g class="pulse"><rect x="270" y="130" width="24" height="18" rx="3" fill="#fff" stroke="#C2382F" stroke-dasharray="3 2"/><text x="282" y="143" text-anchor="middle" font-size="12" font-weight="700" fill="#C2382F">×</text></g><rect x="426" y="130" width="24" height="18" rx="3" fill="#F4EEFA" stroke="#531A8A"/><text x="438" y="143" text-anchor="middle" font-size="11" fill="#17151F">B</text><rect x="456" y="154" width="24" height="18" rx="3" fill="#5C5869" stroke="#5C5869"/><text x="468" y="167" text-anchor="middle" font-size="11" fill="#fff">C</text><rect x="486" y="106" width="24" height="18" rx="3" fill="#531A8A" stroke="#531A8A"/><text x="498" y="119" text-anchor="middle" font-size="11" fill="#fff">A</text><rect x="516" y="130" width="24" height="18" rx="3" fill="#F4EEFA" stroke="#531A8A"/><text x="528" y="143" text-anchor="middle" font-size="11" fill="#17151F">B</text><rect x="546" y="154" width="24" height="18" rx="3" fill="#5C5869" stroke="#5C5869"/><text x="558" y="167" text-anchor="middle" font-size="11" fill="#fff">C</text><rect x="576" y="106" width="24" height="18" rx="3" fill="#531A8A" stroke="#531A8A"/><text x="588" y="119" text-anchor="middle" font-size="11" fill="#fff">A</text><rect x="606" y="130" width="24" height="18" rx="3" fill="#F4EEFA" stroke="#531A8A"/><text x="618" y="143" text-anchor="middle" font-size="11" fill="#17151F">B</text><rect x="636" y="154" width="24" height="18" rx="3" fill="#5C5869" stroke="#5C5869"/><text x="648" y="167" text-anchor="middle" font-size="11" fill="#fff">C</text>
+<text x="666" y="143" font-size="11" fill="#5C5869">done</text>
+</g>
+<g class="f slide-r m" data-step="4">
+<rect x="150" y="208" width="24" height="18" rx="3" fill="#531A8A" stroke="#531A8A"/><text x="162" y="221" text-anchor="middle" font-size="11" fill="#fff">A</text><rect x="180" y="232" width="24" height="18" rx="3" fill="#F4EEFA" stroke="#531A8A"/><text x="192" y="245" text-anchor="middle" font-size="11" fill="#17151F">B</text><rect x="210" y="256" width="24" height="18" rx="3" fill="#5C5869" stroke="#5C5869"/><text x="222" y="269" text-anchor="middle" font-size="11" fill="#fff">C</text><rect x="240" y="208" width="24" height="18" rx="3" fill="#531A8A" stroke="#531A8A"/><text x="252" y="221" text-anchor="middle" font-size="11" fill="#fff">A</text>
+</g>
+<g class="f m" data-step="5">
+<rect x="300" y="228" width="120" height="26" rx="4" fill="#C2382F" fill-opacity="0.07" stroke="#C2382F" stroke-dasharray="4 3"/>
+<text x="360" y="245" text-anchor="middle" font-size="11" fill="#C2382F">only B waits</text>
+<g class="pulse"><rect x="270" y="232" width="24" height="18" rx="3" fill="#fff" stroke="#C2382F" stroke-dasharray="3 2"/><text x="282" y="245" text-anchor="middle" font-size="12" font-weight="700" fill="#C2382F">×</text></g><rect x="300" y="256" width="24" height="18" rx="3" fill="#5C5869" stroke="#5C5869"/><text x="312" y="269" text-anchor="middle" font-size="11" fill="#fff">C</text><rect x="330" y="208" width="24" height="18" rx="3" fill="#531A8A" stroke="#531A8A"/><text x="342" y="221" text-anchor="middle" font-size="11" fill="#fff">A</text><rect x="390" y="256" width="24" height="18" rx="3" fill="#5C5869" stroke="#5C5869"/><text x="402" y="269" text-anchor="middle" font-size="11" fill="#fff">C</text><rect x="420" y="208" width="24" height="18" rx="3" fill="#531A8A" stroke="#531A8A"/><text x="432" y="221" text-anchor="middle" font-size="11" fill="#fff">A</text><rect x="480" y="256" width="24" height="18" rx="3" fill="#5C5869" stroke="#5C5869"/><text x="492" y="269" text-anchor="middle" font-size="11" fill="#fff">C</text><rect x="426" y="232" width="24" height="18" rx="3" fill="#F4EEFA" stroke="#531A8A"/><text x="438" y="245" text-anchor="middle" font-size="11" fill="#17151F">B</text><rect x="456" y="232" width="24" height="18" rx="3" fill="#F4EEFA" stroke="#531A8A"/><text x="468" y="245" text-anchor="middle" font-size="11" fill="#17151F">B</text><rect x="486" y="232" width="24" height="18" rx="3" fill="#F4EEFA" stroke="#531A8A"/><text x="498" y="245" text-anchor="middle" font-size="11" fill="#17151F">B</text>
+<text x="516" y="245" font-size="11" font-weight="600" fill="#531A8A">done</text>
+</g>
+</svg>
+<ol class="lx-caps">
+  <li>A page needs three files, A, B and C, from the same server. Time runs left to right.</li>
+  <li><b>HTTP/1.1</b>: one request at a time per connection. B can't start until A's response is complete. Browsers work around it by opening about 6 connections per host.</li>
+  <li><b>HTTP/2</b>: all three requests share one TCP connection as interleaved <b>streams</b>. No waiting for a whole response.</li>
+  <li>One packet carrying B is <b>lost</b>. TCP delivers bytes strictly in order, so frames for A and C that already arrived sit in the buffer until B's packet is resent. Every stream stalls.</li>
+  <li><b>HTTP/3</b> runs on <b>QUIC</b> over UDP. Streams are still multiplexed on one connection, but QUIC orders bytes per stream, not per connection.</li>
+  <li>The same loss now delays <b>only stream B</b>. A and C keep flowing and the page finishes sooner.</li>
+</ol>
+{{< /fig >}}
 
 | Version | Transport | What changed |
 |---|---|---|
@@ -85,7 +138,7 @@ Retry 429 and 5xx with exponential backoff (respect the `Retry-After` header). N
 | HTTP/2 (2015) | TCP + TLS | Binary frames, many requests **multiplexed** over one connection, header compression. gRPC is built on it. |
 | HTTP/3 (2022) | QUIC over UDP | No TCP head-of-line blocking, faster connection setup, survives network changes (Wi-Fi to mobile) |
 
-Methods, status codes and headers are the same in all three. Since 2022, RFC 9110 defines these shared semantics separately from the wire formats.
+Since 2022, RFC 9110 defines these shared semantics separately from the wire formats.
 
 ## Common mistakes
 
@@ -93,6 +146,15 @@ Methods, status codes and headers are the same in all three. Since 2022, RFC 911
 - **Using GET for actions with side effects.** Crawlers, prefetchers and caches assume GET is safe.
 - **Sending credentials over plain HTTP.** Always use [HTTPS]({{< relref "https" >}}).
 - **Treating every non-200 as fatal.** 201, 204 and 304 are successes too.
+
+## Try it
+
+```bash
+curl -v https://example.com/ -o /dev/null      # the full request and response headers
+curl -sI https://www.google.com | head -1      # HTTP/2 200: the version the server picked
+curl -sI --http1.1 https://www.google.com | head -1   # force HTTP/1.1
+curl -sI --http3 https://www.google.com | head -1     # needs a curl built with HTTP/3 support
+```
 
 ## Learning Resources
 

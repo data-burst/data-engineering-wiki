@@ -75,12 +75,97 @@ Workflows are described as a **DAG** (directed acyclic graph): tasks are nodes, 
 - **Schedule and data interval**: a daily run for 2026-11-15 processes that day's data, even if it actually starts on the 16th or is re-run a month later. Tasks should read the logical date or data interval from the run context, never from `now()`.
 - **Dependencies**: explicit task-to-task edges, or **asset/data-aware scheduling**, where a DAG runs when the table it reads has been updated (Airflow assets, Dagster software-defined assets).
 - **Retries and timeouts**: retry transient errors with a delay; set a timeout so a hung task doesn't block the pipeline forever.
-- **Idempotency**: running a task twice for the same interval gives the same result. Overwrite a partition or `MERGE`, never blindly `INSERT`.
+- **Idempotency**: running a task twice for the same interval gives the same result. Overwrite a partition or `MERGE`, never blindly `INSERT`. See [idempotent tasks](#idempotent-tasks) below.
 - **Backfills and catch-up**: re-run history after a bug fix or for a new pipeline.
 - **Sensors and events**: start when a file lands, a Kafka message arrives or an upstream system finishes, instead of guessing a time.
 - **Observability**: run history, logs per task, durations, SLAs and alerts.
 
 The orchestrator should **coordinate** work, not do it. Heavy lifting belongs in Spark, the warehouse, dbt or a container; the orchestrator just triggers it and watches.
+
+## Idempotent tasks
+
+A task is **idempotent** when running it once or ten times for the same data interval leaves the target in the same state. Orchestrators assume this: a [retry and a backfill](#a-dag-run-by-run) both simply run the task again. If the task appends, every re-run adds another copy of the day.
+
+{{< fig kicker="$ airflow tasks clear sales_daily -t build_sales -s 2026-11-15" title="Run the same day twice: append vs overwrite" >}}
+<svg class="lx-svg lx-canvas" viewBox="0 0 760 330">
+  <g class="m">
+    <rect x="230" y="14" width="300" height="46" rx="6" fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4"/>
+    <text x="380" y="33" text-anchor="middle" font-size="12" font-weight="700" fill="#531A8A">build_sales · 2026-11-15</text>
+    <text x="380" y="51" text-anchor="middle" font-size="11" fill="#5C5869">computes 3 rows · SUM 77.50</text>
+    <g stroke="#8C8899" stroke-width="1.4"><line x1="300" y1="60" x2="195" y2="76"/><line x1="460" y1="60" x2="565" y2="76"/></g>
+    <rect x="20" y="76" width="350" height="248" rx="8" fill="#F7F7FB" stroke="#E7E7EF" stroke-width="1.4"/>
+    <rect x="390" y="76" width="350" height="248" rx="8" fill="#F7F7FB" stroke="#E7E7EF" stroke-width="1.4"/>
+    <text x="30" y="98" font-size="12" font-weight="700" fill="#17151F">APPEND</text>
+    <text x="30" y="116" font-size="11" fill="#5C5869">INSERT INTO sales SELECT …</text>
+    <text x="400" y="98" font-size="12" font-weight="700" fill="#17151F">OVERWRITE THE PARTITION</text>
+    <text x="400" y="116" font-size="11" fill="#5C5869">DELETE WHERE dt = '2026-11-15'; INSERT …</text>
+    <g font-size="11" fill="#8C8899"><text x="38" y="140">order_id</text><text x="104" y="140">dt</text><text x="242" y="140" text-anchor="end">amount</text>
+      <text x="408" y="140">order_id</text><text x="474" y="140">dt</text><text x="612" y="140" text-anchor="end">amount</text></g>
+  </g>
+  <g class="f slide-r m" data-step="1" font-size="11.5">
+    <g fill="#fff" stroke="#3D3A49" stroke-width="1.2">
+      <rect x="30" y="148" width="220" height="22" rx="3"/><rect x="30" y="172" width="220" height="22" rx="3"/><rect x="30" y="196" width="220" height="22" rx="3"/>
+      <rect x="400" y="148" width="220" height="22" rx="3"/><rect x="400" y="172" width="220" height="22" rx="3"/><rect x="400" y="196" width="220" height="22" rx="3"/>
+    </g>
+    <g fill="#17151F">
+      <text x="38" y="163">1001</text><text x="104" y="163">2026-11-15</text><text x="242" y="163" text-anchor="end">40.00</text>
+      <text x="38" y="187">1002</text><text x="104" y="187">2026-11-15</text><text x="242" y="187" text-anchor="end">25.50</text>
+      <text x="38" y="211">1003</text><text x="104" y="211">2026-11-15</text><text x="242" y="211" text-anchor="end">12.00</text>
+      <text x="408" y="163">1001</text><text x="474" y="163">2026-11-15</text><text x="612" y="163" text-anchor="end">40.00</text>
+      <text x="408" y="187">1002</text><text x="474" y="187">2026-11-15</text><text x="612" y="187" text-anchor="end">25.50</text>
+      <text x="408" y="211">1003</text><text x="474" y="211">2026-11-15</text><text x="612" y="211" text-anchor="end">12.00</text>
+    </g>
+    <g font-size="11" fill="#5C5869"><text x="262" y="163">run 1 · +3</text><text x="632" y="163">run 1 · 3 rows</text></g>
+  </g>
+  <g class="f slide-r m" data-step="2" font-size="11.5">
+    <circle class="pkt-dot bad" r="5"><animateMotion dur="1.6s" repeatCount="indefinite" path="M300 60 L195 76"/></circle>
+    <g fill="#FCEDEB" stroke="#C2382F" stroke-width="1.2">
+      <rect x="30" y="220" width="220" height="22" rx="3"/><rect x="30" y="244" width="220" height="22" rx="3"/><rect x="30" y="268" width="220" height="22" rx="3"/>
+    </g>
+    <g fill="#C2382F">
+      <text x="38" y="235">1001</text><text x="104" y="235">2026-11-15</text><text x="242" y="235" text-anchor="end">40.00</text>
+      <text x="38" y="259">1002</text><text x="104" y="259">2026-11-15</text><text x="242" y="259" text-anchor="end">25.50</text>
+      <text x="38" y="283">1003</text><text x="104" y="283">2026-11-15</text><text x="242" y="283" text-anchor="end">12.00</text>
+      <text x="262" y="235" font-size="11">run 2 · +3</text>
+      <text x="30" y="312" font-weight="700">SUM 155.00 ✗ day counted twice</text>
+    </g>
+  </g>
+  <g class="f pop m" data-step="3" font-size="11.5">
+    <circle class="pkt-dot" r="5"><animateMotion dur="1.6s" repeatCount="indefinite" path="M460 60 L565 76"/></circle>
+    <g fill="#F4EEFA" stroke="#531A8A" stroke-width="1.4">
+      <rect x="400" y="148" width="220" height="22" rx="3"/><rect x="400" y="172" width="220" height="22" rx="3"/><rect x="400" y="196" width="220" height="22" rx="3"/>
+    </g>
+    <g fill="#17151F">
+      <text x="408" y="163">1001</text><text x="474" y="163">2026-11-15</text><text x="612" y="163" text-anchor="end">40.00</text>
+      <text x="408" y="187">1002</text><text x="474" y="187">2026-11-15</text><text x="612" y="187" text-anchor="end">25.50</text>
+      <text x="408" y="211">1003</text><text x="474" y="211">2026-11-15</text><text x="612" y="211" text-anchor="end">12.00</text>
+    </g>
+    <text x="632" y="211" font-size="11" fill="#531A8A">run 2 · same 3</text>
+    <text x="400" y="312" font-weight="700" fill="#1F8A55">SUM 77.50 ✓ same result</text>
+  </g>
+  <g class="f pop m" data-step="4">
+    <rect x="400" y="228" width="330" height="66" rx="6" fill="#fff" stroke="#531A8A" stroke-width="1.4"/>
+    <text x="412" y="247" font-size="11.5" fill="#17151F">MERGE INTO sales t USING new s</text>
+    <text x="412" y="264" font-size="11.5" fill="#17151F">ON t.order_id = s.order_id</text>
+    <text x="412" y="283" font-size="11" fill="#531A8A">update if matched, else insert</text>
+  </g>
+</svg>
+<ol class="lx-caps">
+  <li>The daily task for <b>2026-11-15</b> computes three orders worth 77.50. Two versions of it write to the same kind of table.</li>
+  <li>Run 1: both tables get the same three rows. On the first run you can't tell them apart.</li>
+  <li>The task is retried after a timeout, or a backfill re-runs the day. The <b>append</b> version inserts the three rows again: revenue doubles, silently.</li>
+  <li>The <b>overwrite</b> version deletes the 2026-11-15 partition and writes it again, in one transaction. Still three rows, still 77.50.</li>
+  <li>When rows can change or arrive late, a <b>MERGE</b> on the business key does the same job: re-running updates the same rows instead of adding new ones.</li>
+</ol>
+{{< /fig >}}
+
+Ways to make a task idempotent:
+
+- **Overwrite the partition** for the run's data interval: `INSERT OVERWRITE ... PARTITION (dt = '{{ ds }}')`, Spark's dynamic partition overwrite, or `DELETE` + `INSERT` in one transaction. The simplest and most common pattern.
+- **MERGE / upsert on a key** (`order_id`) when a run touches rows across many partitions, or for late-arriving updates.
+- **Derive everything from the run context**: the data interval decides which rows are read and which partition is written. A task that reads "the last 24 hours" from `now()` reads different data on every retry.
+- **Deterministic file names** for file outputs (`s3://.../dt=2026-11-15/part-000.parquet`, overwritten) instead of random ones that pile up.
+- **Side effects** (emails, API calls, payments) need an idempotency key or a "sent" table checked before sending.
 
 ## A minimal Airflow 3 DAG
 

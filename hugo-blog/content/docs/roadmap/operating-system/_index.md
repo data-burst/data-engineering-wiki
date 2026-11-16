@@ -1,4 +1,5 @@
 ---
+title: "Operating System"
 bookCollapseSection: true
 weight: 2
 description: "Operating systems for data engineers: why production data platforms run on Linux, the core skills to learn, and how to work effectively from Windows with WSL."
@@ -11,7 +12,7 @@ Almost every production data system (databases, Kafka, Spark, Airflow, Kubernete
 
 | Page | What you learn |
 |---|---|
-| [Linux]({{< relref "linux" >}}) | Processes, files and permissions, the shell, memory and the OOM killer, systemd, and the kernel features behind containers. |
+| [Linux]({{< relref "linux" >}}) | The shell and pipes, sed and awk, permissions, processes and signals, environment variables, shell scripts, memory and the OOM killer. |
 | [Windows]({{< relref "windows" >}}) | Developing for Linux-based data platforms from Windows: WSL 2, Docker Desktop, PowerShell and common cross-platform pitfalls. |
 
 ## Learning Resources

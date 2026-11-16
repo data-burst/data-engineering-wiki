@@ -68,18 +68,7 @@ Lineage is the map of how data flows between tables, jobs and dashboards. Column
 
 ## Data quality
 
-Define quality as testable rules close to the data, and run them in the pipeline:
-
-| Dimension | Example check |
-|---|---|
-| Freshness | `fct_orders` updated within the last 2 hours |
-| Completeness | `customer_id` is never null |
-| Uniqueness | `order_id` is unique |
-| Validity | `status` in ('placed', 'paid', 'shipped', 'cancelled') |
-| Consistency | Sum of order lines equals order total |
-| Volume | Today's row count within 30% of the 7-day average |
-
-Tools: dbt tests, Great Expectations, Soda, and data observability platforms (Monte Carlo, Elementary) that learn baselines and alert on anomalies. Failing checks should **stop** bad data from reaching consumers, not just send an email.
+Quality is defined as testable rules close to the data (completeness, uniqueness, validity, accuracy, consistency, freshness) that run in the pipeline and **stop** bad data from reaching consumers instead of just sending an email. See [Data Quality]({{< relref "/docs/roadmap/data-governance/data-quality" >}}) for the dimensions animated, where to place checks and the tools.
 
 ## Data contracts
 
@@ -95,8 +84,20 @@ A **data catalog** is the search engine for your data: descriptions, owners, sch
 - **Access control**: role-based (RBAC) or attribute-based (ABAC, for example "analysts in the EU see EU rows only"), using row filters and column masking in the warehouse or catalog.
 - **Least privilege and auditing**: no shared superuser accounts; log who queried what.
 - **Encryption** in transit and at rest.
-- **Retention and deletion**: keep personal data only as long as needed and be able to delete one person's data everywhere, including old lakehouse snapshots and backups.
+- **Retention and deletion**: keep personal data only as long as needed and be able to delete one person's data everywhere. See [Retention](#retention).
 - **Regulations**: GDPR (EU), CCPA/CPRA (California), HIPAA (US health), and the EU AI Act for data used to train and run AI systems.
+
+## Retention
+
+A **retention policy** says how long each kind of data is kept and what happens after: delete, anonymize, or move to cheaper storage. Laws set the limits in both directions (GDPR says personal data only as long as needed; finance and tax rules often require several years), and storage cost does the rest. Write the policy per dataset in the catalog, then enforce it with the tools that already hold the data:
+
+| Where data lives | How retention is enforced |
+|---|---|
+| Kafka topics | `retention.ms` / `retention.bytes` per topic, or compaction to keep the latest value per key |
+| Object storage | Lifecycle rules: move to an archive tier after 90 days, delete after N years |
+| Partitioned tables | Drop partitions older than the limit (`DROP PARTITION`, partition expiration in BigQuery) |
+| Iceberg / Delta tables | Deleting rows is not enough: expire old snapshots (`expire_snapshots`, `VACUUM`) so deleted data is really gone |
+| Backups and logs | Their own retention, and included in deletion requests |
 
 ## Common mistakes
 

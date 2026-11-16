@@ -52,6 +52,8 @@ Wrap HTML in the `fig` shortcode. Anything with class `f` and `data-step="N"` ap
 
 No JavaScript is needed for step-by-step reveals. For custom motion (moving packets, live simulations) add a hook in `hugo-blog/assets/lesson/lesson.js` and pass `hook="name"`; see `cap`, `stream` and `rowcol` there as examples.
 
+Optional motion classes for SVG figures (no JavaScript): `pop`, `slide-r`, `slide-l` on an `.f` group change how it appears; `flow` on a dashed line makes it march like moving data; `pulse` gently highlights one element; a `<circle class="pkt-dot">` with an `<animateMotion>` inside an `.f` group draws a moving packet. All of them switch off for readers who prefer reduced motion.
+
 ### Style rules
 
 - One accent color (`#531A8A`). Use red (`#C2382F`) only for failure or wrong data. Everything else is navy and grey.
